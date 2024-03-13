@@ -48,9 +48,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vekexasia/bigint-buffer@workspace:.":
+"@vekexasia/bigint-uint8array@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@vekexasia/bigint-buffer@workspace:."
+  resolution: "@vekexasia/bigint-uint8array@workspace:."
   dependencies:
     bigint-buffer: "npm:^1.1.5"
   languageName: unknown

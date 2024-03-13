@@ -1,5 +1,5 @@
 {
-  "name": "@vekexasia/bigint-uint8array",
+  "name": "@vekexasia/bigint-constrained",
   "version": "2.0.0",
   "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
   "scripts": {
@@ -31,9 +31,6 @@
       "require": "./dist/cjs/buffers/index.js",
       "default": "./build/esm/buffers/index.js"
     }
-  },
-  "dependencies": {
-    "bigint-buffer": "^1.1.5"
   },
   "engines": {
     "node": ">= 14.0.0"

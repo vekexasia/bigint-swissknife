@@ -1,4 +1,4 @@
-import { byteBoundaries, assertIntBoundaries, assertUIntBoundaries } from '@/utils';
+import { byteBoundaries, assertIntBoundaries, assertUIntBoundaries } from '@/utils'
 import { describe, it, expect } from 'vitest'
 describe('utils', () => {
   it('boundaries', () => {

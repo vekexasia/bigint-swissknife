@@ -1,6 +1,9 @@
 {
   "name": "bigint-utils2",
   "packageManager": "yarn@4.1.0",
+  "scripts": {
+    "lint": "eslint --fix"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.19",
