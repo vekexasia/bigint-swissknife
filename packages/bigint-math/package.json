@@ -12,6 +12,9 @@
     "posttest": "npm run lint",
     "prepublishOnly": "npm run test"
   },
+  "peerDependencies": {
+    "@vekexasia/bigint-uint8array": "*"
+  },
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",

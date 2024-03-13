@@ -35,6 +35,20 @@ export const BigIntMath = {
   moduloAdd (addends: BigIntable[], modulus: BigIntable): bigint {
     const m = BigInt(modulus)
     return addends.reduce<bigint>((acc, val) => (acc + BigInt(val)) % m, 0n)
+  },
+
+  rand (max: bigint): bigint {
+    const isBrowser = Object.getPrototypeOf(
+      Object.getPrototypeOf(globalThis)
+    ) !== Object.prototype
+    if (isBrowser) {
+      const arr = new Uint8Array(8)
+      crypto.getRandomValues(arr)
+      return BigInt(arr.readBigInt64BE(0)) % max
+    }
+    crypto.randomBytes(8).readBigInt64BE(0)
+    return 0n
   }
 }
-Math.cbrt()
+
+Math.random()

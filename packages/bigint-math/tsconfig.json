@@ -1,8 +1,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "types": ["node"],
+    "lib": ["dom"],
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@vekexasia/bigint-uint8array": ["../bigint-uint8array/src/index.ts"]
     },
     "rootDir": "./"
   },
