@@ -1,0 +1,47 @@
+{
+  "name": "@vekexasia/bigint-buffer",
+  "version": "2.0.0",
+  "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
+  "scripts": {
+    "build": "rm -rf dist/; tsc -b ./tsconfig.build.cjs.json ./tsconfig.build.esm.json ./tsconfig.build.types.json",
+    "lint": "npx eslint --ext .ts src test",
+    "test": "vitest",
+    "benchmark": "vitest bench",
+    "coverage": "vitest run --coverage",
+    "pretest": "npm run build",
+    "posttest": "npm run lint",
+    "prepublishOnly": "npm run test"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js",
+      "default": "./build/esm/index.js"
+    },
+    "./utils": {
+      "types": "./dist/types/utils.d.ts",
+      "import": "./dist/esm/utils.js",
+      "require": "./dist/cjs/utils.js",
+      "default": "./build/esm/utils.js"
+    },
+    "./buffer": {
+      "types": "./dist/types/buffers/index.d.ts",
+      "import": "./dist/esm/buffers/index.js",
+      "require": "./dist/cjs/buffers/index.js",
+      "default": "./build/esm/buffers/index.js"
+    }
+  },
+  "dependencies": {
+    "bigint-buffer": "^1.1.5"
+  },
+  "engines": {
+    "node": ">= 14.0.0"
+  },
+  "author": {
+    "url": "https://www.andreabaccega.com/",
+    "email": "vekexasia@gmail.com",
+    "name": "Andrea Baccega"
+  },
+  "license": "MIT"
+}
