@@ -1,13 +1,14 @@
 import {defineConfig} from "vitest/config";
+import path from "path";
 
 export default defineConfig({
+  root: `${__dirname}`,
   optimizeDeps: {
     include: ["vitest > @vitest/expect > chai"]
   },
   test: {
     benchmark: {
       include: ['test/benchmark/**/*.test.ts'],
-
     },
     coverage: {
       provider: 'istanbul',

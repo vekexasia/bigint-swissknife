@@ -1,6 +1,8 @@
 import {defineConfig} from "vitest/config";
 
 export default defineConfig({
+  root: `${__dirname}`,
+
   optimizeDeps: {
     include: ["vitest > @vitest/expect > chai"]
   },

@@ -1,4 +1,3 @@
-import assert from 'assert'
 interface Bounds { min: bigint, max: bigint }
 export class CheckedBigInt {
   readonly #bits: number
@@ -48,7 +47,7 @@ export class CheckedBigInt {
     return new CheckedBigInt(this.#bits, this.value * other, this.boundaries)
   }
 
-  checkedPow(exponent: bigint): CheckedBigInt {
+  checkedPow (exponent: bigint): CheckedBigInt {
     return new CheckedBigInt(this.#bits, this.value ** exponent, this.boundaries)
   }
 
