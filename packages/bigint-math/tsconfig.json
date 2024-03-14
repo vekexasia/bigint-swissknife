@@ -1,15 +1,18 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "dist",
     "types": ["node"],
     "lib": ["dom"],
     "paths": {
-      "@/*": ["src/*"],
-      "@vekexasia/bigint-uint8array": ["../bigint-uint8array/src/index.ts"]
+      "@vekexasia/bigint-uint8array": ["../bigint-uint8array/dist/types/index.d.ts"],
+
     },
-    "rootDir": "./"
+    "rootDir": "."
   },
   "include": [
+    "../../build/types/globals.d.ts",
     "src/**/*",
     "test/**/*"
   ],

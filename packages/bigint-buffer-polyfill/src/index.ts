@@ -1,6 +1,6 @@
 import {
   converter
-} from '../index'
+} from '@vekexasia/bigint-uint8array'
 // impl start
 Buffer.prototype.writeBigIntBE = function (value: bigint, width: number, offset = 0) {
   return (converter.signed.be.toUint8Array(value, width) as Buffer).copy((this as Buffer), offset)

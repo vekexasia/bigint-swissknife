@@ -1,0 +1,36 @@
+{
+  "name": "@vekexasia/bigint-buffer-polyfill",
+  "version": "2.0.0",
+  "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
+  "scripts": {
+    "compile": "rm -rf dist/; rollup --config rollup.config.mjs",
+    "lint": "npx eslint --ext .ts src test",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
+
+  },
+  "exports": {
+    ".": {
+      "node": {
+        "import": "./dist/node.esm.mjs",
+        "default": "./dist/node.cjs.js"
+      },
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "engines": {
+    "node": ">= 15.0.0"
+  },
+  "author": {
+    "url": "https://www.andreabaccega.com/",
+    "email": "vekexasia@gmail.com",
+    "name": "Andrea Baccega"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@vekexasia/bigint-uint8array": "*"
+  },
+  "resolutions": {
+    "@vekexasia/bigint-uint8array": "portal:../bigint-uint8array"
+  }
+}

@@ -1,5 +1,8 @@
 import { type BigIntable } from './types.js'
-
+import { fillRandom } from './fillRandom.js'
+import {
+  converter
+} from '@vekexasia/bigint-uint8array'
 export const BigIntMath = {
   abs (value: BigIntable): bigint {
     const v = BigInt(value)
@@ -38,17 +41,9 @@ export const BigIntMath = {
   },
 
   rand (max: bigint): bigint {
-    const isBrowser = Object.getPrototypeOf(
-      Object.getPrototypeOf(globalThis)
-    ) !== Object.prototype
-    if (isBrowser) {
-      const arr = new Uint8Array(8)
-      crypto.getRandomValues(arr)
-      return BigInt(arr.readBigInt64BE(0)) % max
-    }
-    crypto.randomBytes(8).readBigInt64BE(0)
-    return 0n
+    const buffer = Uint8Array.from(new Array(BigIntMath.bitLength(max) / 8 + 1).fill(0))
+    fillRandom(buffer)
+    // return 0n
+    return converter.unsigned.be.toBigInt(buffer)
   }
 }
-
-Math.random()

@@ -1,4 +1,4 @@
-export const BELEs = [
+export const BELEs: Array<{ num: bigint, bytes: number, expect: string, type: 'le' | 'be' }> = [
   { num: 127n, bytes: 1, expect: '7f', type: 'le' },
   { num: -128n, bytes: 1, expect: '80', type: 'le' },
   { num: 63n, bytes: 1, expect: '3f', type: 'le' },

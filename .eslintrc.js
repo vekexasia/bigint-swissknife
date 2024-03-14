@@ -4,6 +4,7 @@ module.exports = {
         "es2020": true,
         "node": true
     },
+  "ignorePatterns": ["**/dist/**/*"],
     "extends": "standard-with-typescript",
     "overrides": [
         {

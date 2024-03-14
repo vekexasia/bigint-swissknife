@@ -5,6 +5,7 @@
   "scripts": {
     "build": "rm -rf dist/; tsc -b ./tsconfig.build.cjs.json ./tsconfig.build.esm.json ./tsconfig.build.types.json",
     "lint": "npx eslint --ext .ts src test",
+    "compile": "rollup --config rollup.config.mjs",
     "test": "vitest",
     "benchmark": "vitest bench",
     "coverage": "vitest run --coverage",
@@ -12,27 +13,17 @@
     "posttest": "npm run lint",
     "prepublishOnly": "npm run test"
   },
-  "peerDependencies": {
-    "@vekexasia/bigint-uint8array": "*"
-  },
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "default": "./build/esm/index.js"
-    },
-    "./utils": {
-      "types": "./dist/types/utils.d.ts",
-      "import": "./dist/esm/utils.js",
-      "require": "./dist/cjs/utils.js",
-      "default": "./build/esm/utils.js"
-    },
-    "./buffer": {
-      "types": "./dist/types/buffers/index.d.ts",
-      "import": "./dist/esm/buffers/index.js",
-      "require": "./dist/cjs/buffers/index.js",
-      "default": "./build/esm/buffers/index.js"
+      "node": {
+        "import": "./dist/esm/index.js",
+        "require": "./dist/cjs/index.js",
+        "default": "./build/esm/index.js"
+      },
+      "default": {
+        "default": "./dist/index.browser.esm.js"
+      },
+      "types": "./dist/types/index.d.ts"
     }
   },
   "engines": {
@@ -43,5 +34,8 @@
     "email": "vekexasia@gmail.com",
     "name": "Andrea Baccega"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.6"
+  }
 }

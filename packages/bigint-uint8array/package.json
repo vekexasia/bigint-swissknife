@@ -4,6 +4,7 @@
   "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
   "scripts": {
     "build": "rm -rf dist/; tsc -b ./tsconfig.build.cjs.json ./tsconfig.build.esm.json ./tsconfig.build.types.json",
+    "compile": "rm -rf dist/;rollup --config rollup.config.js  --configPlugin @rollup/plugin-typescript",
     "lint": "npx eslint --ext .ts src test",
     "test": "vitest",
     "benchmark": "vitest bench",
@@ -14,23 +15,18 @@
   },
   "exports": {
     ".": {
+      "node": {
+        "import": "./dist/node.esm.mjs",
+        "default": "./dist/node.cjs.js"
+      },
+      "default": {
+        "default": "./dist/browser.esm.js"
+      },
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "default": "./build/esm/index.js"
+      "script": "./dist/browser.iife.js"
     },
-    "./utils": {
-      "types": "./dist/types/utils.d.ts",
-      "import": "./dist/esm/utils.js",
-      "require": "./dist/cjs/utils.js",
-      "default": "./build/esm/utils.js"
-    },
-    "./buffer": {
-      "types": "./dist/types/buffers/index.d.ts",
-      "import": "./dist/esm/buffers/index.js",
-      "require": "./dist/cjs/buffers/index.js",
-      "default": "./build/esm/buffers/index.js"
-    }
+    "./umd": "./dist/browser.umd.js",
+    "./iife": "./dist/browser.iife.js"
   },
   "dependencies": {
     "bigint-buffer": "^1.1.5"
