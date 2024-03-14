@@ -3,8 +3,7 @@
   "version": "2.0.0",
   "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
   "scripts": {
-    "build": "rm -rf dist/; tsc -b ./tsconfig.build.cjs.json ./tsconfig.build.esm.json ./tsconfig.build.types.json",
-    "compile": "rm -rf dist/;rollup --config rollup.config.js  --configPlugin @rollup/plugin-typescript",
+    "build": "rm -rf dist/;rollup --config rollup.config.mjs",
     "lint": "npx eslint --ext .ts src test",
     "test": "vitest",
     "benchmark": "vitest bench",

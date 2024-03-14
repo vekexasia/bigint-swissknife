@@ -4,7 +4,7 @@
   "scripts": {
     "lint": "eslint --fix",
     "test": "vitest",
-    "compile": "rollup --config rollup.config.mjs"
+    "build": "./build/build.sh"
   },
   "devDependencies": {
     "@nodelib/fs.scandir": "^3.0.0",
