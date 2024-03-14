@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
   "scripts": {
-    "build": "rm -rf dist/; tsc -b ./tsconfig.build.cjs.json ./tsconfig.build.esm.json ./tsconfig.build.types.json",
+    "build": "rm -rf dist/; rollup --config rollup.config.mjs",
     "lint": "npx eslint --ext .ts src test",
     "test": "vitest",
     "benchmark": "vitest bench",
@@ -15,22 +15,11 @@
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "default": "./build/esm/index.js"
+      "import": "./dist/esm.js",
+      "require": "./dist/cjs.js"
     },
-    "./utils": {
-      "types": "./dist/types/utils.d.ts",
-      "import": "./dist/esm/utils.js",
-      "require": "./dist/cjs/utils.js",
-      "default": "./build/esm/utils.js"
-    },
-    "./buffer": {
-      "types": "./dist/types/buffers/index.d.ts",
-      "import": "./dist/esm/buffers/index.js",
-      "require": "./dist/cjs/buffers/index.js",
-      "default": "./build/esm/buffers/index.js"
-    }
+    "./iife": "./dist/iife.js",
+    "./umd": "./dist/umd.js"
   },
   "engines": {
     "node": ">= 14.0.0"

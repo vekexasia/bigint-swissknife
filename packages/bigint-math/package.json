@@ -3,28 +3,26 @@
   "version": "2.0.0",
   "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
   "scripts": {
-    "build": "rm -rf dist/; tsc -b ./tsconfig.build.cjs.json ./tsconfig.build.esm.json ./tsconfig.build.types.json",
     "lint": "npx eslint --ext .ts src test",
-    "compile": "rollup --config rollup.config.mjs",
+    "build": "rm -rf dist/; rollup --config rollup.config.mjs",
     "test": "vitest",
-    "benchmark": "vitest bench",
-    "coverage": "vitest run --coverage",
-    "pretest": "npm run build",
-    "posttest": "npm run lint",
-    "prepublishOnly": "npm run test"
+    "coverage": "vitest run --coverage"
   },
   "exports": {
     ".": {
       "node": {
-        "import": "./dist/esm/index.js",
-        "require": "./dist/cjs/index.js",
-        "default": "./build/esm/index.js"
+        "import": "./dist/node.esm.mjs",
+        "require": "./dist/node.cjs.js",
+        "default": "./dist/node.cjs.js"
       },
       "default": {
-        "default": "./dist/index.browser.esm.js"
+        "import": "./dist/browser.esm.mjs",
+        "default": "./dist/browser.cjs.js"
       },
       "types": "./dist/types/index.d.ts"
-    }
+    },
+    "./umd": "./dist/browser.umd.js",
+    "./iife": "./dist/browser.iife.js"
   },
   "engines": {
     "node": ">= 14.0.0"
@@ -35,7 +33,10 @@
     "name": "Andrea Baccega"
   },
   "license": "MIT",
-  "devDependencies": {
-    "@rollup/plugin-typescript": "^11.1.6"
+  "dependencies": {
+    "@vekexasia/bigint-uint8array": "*"
+  },
+  "resolutions": {
+    "@vekexasia/bigint-uint8array": "portal:../bigint-uint8array"
   }
 }

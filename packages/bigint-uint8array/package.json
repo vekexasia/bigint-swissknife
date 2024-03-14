@@ -19,9 +19,7 @@
         "import": "./dist/node.esm.mjs",
         "default": "./dist/node.cjs.js"
       },
-      "default": {
-        "default": "./dist/browser.esm.js"
-      },
+      "default": "./dist/browser.esm.js",
       "types": "./dist/types/index.d.ts",
       "script": "./dist/browser.iife.js"
     },

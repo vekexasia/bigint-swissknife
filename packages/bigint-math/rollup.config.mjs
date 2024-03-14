@@ -1,63 +1,134 @@
 import typescript from '@rollup/plugin-typescript'
-import commonjs from '@rollup/plugin-commonjs'
 import replace from '@rollup/plugin-replace'
-import {nodeResolve as resolve} from '@rollup/plugin-node-resolve'
-import { typescriptPaths } from 'rollup-plugin-typescript-paths';
+import nodeResolve from "@rollup/plugin-node-resolve";
+import alias from '@rollup/plugin-alias';
+import {typescriptPaths} from 'rollup-plugin-typescript-paths';
+import resolve from 'resolve';
+import * as fs from 'fs';
 
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-console.log(__dirname);
-console.log([`${__dirname}/../`, `${__dirname}/../../node_modules`, `${__dirname}/node_modules`]);
+import * as repl from "repl";
+
+const conf = [{name: 'node', browser: false}, {name: 'browser', browser: true}]
 /**
  * @type {import('rollup').RollupOptions[]}
  */
 const b = [
-  {
-    // input: '/src/fillRandom.ts',
-    input: 'src/index.ts',
-    output: {
-      dynamicImportInCjs: true,
-      inlineDynamicImports: true,
-      format: 'iife',
-      // dir: 'dist',
-      name: 'BigIntMath',
-      globals: {
-        crypto: 'crypto'
-      },
-    },
-    plugins: [
 
+  ...conf.map(({name, browser}) => ([
+    {
+      input: 'src/index.ts',
+      output: [{
+        format: 'cjs',
+        file: `dist/${name}.cjs.js`
+      }],
+      external: ['@vekexasia/bigint-uint8array'],
+      plugins: [
+        replace({
+          values: {
+            'await import(': 'require(',
+          },
+          delimiters: ['', ''],
+          preventAssignment: true
+        }),
+        replace({
+          values: {
+            'IS_BROWSER': `${browser}`,
+          },
+          preventAssignment: true
+        }),
+        typescript({
+          tsconfig: './tsconfig.json',
+          include: ['../../build/types/globals.d.ts', 'src/**/*.ts'],
+        }),
+      ]
+    },
+    {
+      input: 'src/index.ts',
+      output: [{
+        format: 'esm',
+        file: `dist/${name}.esm.mjs`
+      }],
+      external: ['@vekexasia/bigint-uint8array', 'crypto'],
+      plugins: [
+        replace({
+          values: {
+            'IS_BROWSER': `${browser}`,
+          },
+          preventAssignment: true
+        }),
+        typescript({
+          tsconfig: './tsconfig.json',
+          include: ['../../build/types/globals.d.ts', 'src/**/*.ts'],
+        }),
+      ]
+    }
+  ])).flat(),
+  // IIFE AND UMD
+  {
+    input: './src/index.ts',
+    output: [
+      {
+        format: 'iife',
+        name: 'BigIntMath',
+        file: 'dist/browser.iife.js',
+      },
+      {
+        format: 'umd',
+        name: 'BigIntMath',
+        file: 'dist/browser.umd.js',
+      }
+    ],
+    external: ['crypto'],
+    plugins: [
       replace({
-        preventAssignment: true,
         values: {
           'IS_BROWSER': 'true',
-        }
+        },
+        preventAssignment: true
       }),
       typescript({
         tsconfig: './tsconfig.json',
-        filterRoot: './src',
+        include: ['../../build/types/globals.d.ts', 'src/**/*.ts'],
       }),
-      commonjs({extensions: ['.js', '.cjs', '.ts']}),
-      resolve({
-        browser: true,
-        exportConditions: ['browser', 'default'],
-        // dedupe: ['bigint-uint8array', '@vekexasia/bigint-uint8array'],
-        // modulePaths: [`${__dirname}/../`, `${__dirname}/../../node_modules`, `${__dirname}/node_modules`],
-        mainFields: ['browser', 'module', 'main'],
+      alias( {
+        entries: [
+          { find: '@vekexasia/bigint-uint8array', replacement: `${process.cwd()}/../bigint-uint8array/dist/browser.esm.js` },
+        ]
       }),
 
     ]
-  }
-  // {
-  //   input: 'packages/bigint-math/src/fillRandom.ts',
-  //   plugins: [
-  //     typescript({
+  },
   //
-  //     })
-  //   ]
-  // }
+  // Types
+  {
+    input: 'src/index.ts',
+    output: [
+      {
+        dir: 'dist'
+      }
+    ],
+    external: ['@vekexasia/bigint-uint8array', 'crypto'],
+    plugins: [
+      typescript({
+        tsconfig: './tsconfig.json',
+
+        compilerOptions: {
+          rootDir: './src',
+          outDir: 'dist/types',
+          declaration: true,
+        },
+        include: ['../../../build/types/globals.d.ts', './**/*.ts'],
+      }),
+      {
+        name: 'remove-transpiled',
+        generateBundle: async (options,
+                               bundle, isWrite) => {
+          delete bundle['index.js']
+        }
+      }
+    ]
+  }
 ]
 
 export default b
