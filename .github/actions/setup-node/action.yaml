@@ -21,7 +21,10 @@ runs:
         node_version="${{ steps.setup-node.outputs.node-version }}"
         echo "node-version=${node_version#v}" >> "$GITHUB_OUTPUT"
     - shell: bash
-      run: npm install -g yarn@4.1.0
+      run: |
+        npm install -g corepack
+        corepack enable
+        yarn set version stable
 
     - name: Install node dependencies
       shell: bash
