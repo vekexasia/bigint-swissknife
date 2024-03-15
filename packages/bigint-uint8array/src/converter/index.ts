@@ -1,2 +1,2 @@
-// this gets replaced to browser.js in rollup
-export { converter } from './native.js'
+// this gets replaced to native.js in rollup
+export { converter } from './browser.js'

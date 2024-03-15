@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 cd packages;
-
-for package in $(ls -d */); do
+ordered_packages=("bigint-uint8array" "bigint-constrained" "bigint-math" "bigint-buffer-polyfill")
+for package in "${ordered_packages[@]}"; do
   cd $package;
   npm run build;
   cd ..;

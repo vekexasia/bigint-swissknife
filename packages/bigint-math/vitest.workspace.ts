@@ -4,18 +4,24 @@ import path from 'path'
 export default defineWorkspace([
   {
     extends: path.join(__dirname, 'vitest.config.mts'),
+    define: {
+      IS_BROWSER: false
+    },
     test: {
-      include: ['test/*.test.ts', 'test/node-only/**/*.test.ts'],
+      include: ['test/*.test.ts'],
       environment: 'node',
-      name: 'node-constrained'
+      name: 'node-math'
     }
   },
   {
     extends: path.join(__dirname, 'vitest.config.mts'),
+    define: {
+      IS_BROWSER: true
+    },
     test: {
       include: ['test/*.test.ts'],
       environment: 'jsdom',
-      name: 'browser-constrained',
+      name: 'browser-math',
       browser: {
         name: 'chrome',
         enabled: true

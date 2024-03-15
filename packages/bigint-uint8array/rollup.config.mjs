@@ -10,12 +10,7 @@ const browser = {
     file: 'dist/browser.esm.js'
   },
   plugins: [
-    replace({
-      preventAssignment: true,
-      values: {
-        'native.js': 'browser.js'
-      }
-    }),
+    ,
     typescript({
       tsconfig: './tsconfig.json',
       filterRoot: './src'
@@ -40,12 +35,7 @@ const browser2 = {
     }
   ],
   plugins: [
-    replace({
-      preventAssignment: true,
-      values: {
-        'native.js': 'browser.js'
-      }
-    }),
+
     typescript({
       tsconfig: './tsconfig.json',
       filterRoot: './src'
@@ -70,6 +60,12 @@ const b = [
     }],
     external: ['bigint-buffer'],
     plugins: [
+      replace({
+        preventAssignment: true,
+        values: {
+          'browser.js': 'native.js'
+        }
+      }),
       typescript({
         tsconfig: './tsconfig.json',
         filterRoot: './src'

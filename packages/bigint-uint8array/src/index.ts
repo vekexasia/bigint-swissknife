@@ -35,9 +35,18 @@ export interface BigIntConverter {
 }
 export interface Convert {
   /**
-   * Converts number into
+   * Converts number into Uint8Array
+   * @param num - number to convert
+   * @param bytes - number of bytes the result should have
+   * @throws RangeError if bytes is less than 1 or number does not fit into bytes
+   * @returns Uint8Array
    */
   readonly toUint8Array: (num: bigint, bytes: number) => Uint8Array
+  /**
+   * Converts Uint8Array into number
+   * @param arr - Uint8Array to convert
+   * @returns number
+   */
   readonly toBigInt: (arr: Uint8Array) => bigint
 }
 
