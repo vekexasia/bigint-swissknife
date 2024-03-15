@@ -33,10 +33,7 @@
     "name": "Andrea Baccega"
   },
   "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "@vekexasia/bigint-uint8array": "*"
-  },
-  "resolutions": {
-    "@vekexasia/bigint-uint8array": "portal:../bigint-uint8array"
   }
 }
