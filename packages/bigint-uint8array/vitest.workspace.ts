@@ -8,6 +8,9 @@ export default defineWorkspace([
       include: ['test/*.test.ts', 'test/node-only/**/*.test.ts'],
       environment: 'node',
       name: 'node-uint8array'
+    },
+    define: {
+      IS_BROWSER: false
     }
   },
   {
@@ -20,6 +23,11 @@ export default defineWorkspace([
         name: 'chrome',
         enabled: true
       }
+
+    },
+
+    define: {
+      IS_BROWSER: true
     }
   }
 ])

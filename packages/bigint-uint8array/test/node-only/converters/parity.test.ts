@@ -6,15 +6,15 @@ describe('parity', () => {
   for (let i = 8; i < 255; i++) {
     it(`should convert a ${i} lenght buffer to a big-endian BigInt`, () => {
       const t = Uint8Array.from(new Array(i).fill(0).map((_, i) => i))
-      expect(browserConverter.toBigUIntBE(t)).toEqual(nativeConverter.toBigUIntBE(t))
-      expect(browserConverter.toUint8ArrayBE(browserConverter.toBigUIntBE(t), i))
-        .toEqual(new Uint8Array(nativeConverter.toUint8ArrayBE(nativeConverter.toBigUIntBE(t), i)))
+      expect(browserConverter.arrayToBigEndian(t)).toEqual(nativeConverter.arrayToBigEndian(t))
+      expect(browserConverter.bigEndianToNewArray(browserConverter.arrayToBigEndian(t), i))
+        .toEqual(new Uint8Array(nativeConverter.bigEndianToNewArray(nativeConverter.arrayToBigEndian(t), i)))
     })
     it(`should convert a ${i} lenght buffer to a little-endian BigInt`, () => {
       const t = Uint8Array.from(new Array(i).fill(0).map((_, i) => i))
-      expect(browserConverter.toBigUIntLE(t)).toEqual(nativeConverter.toBigUIntLE(t))
-      expect(browserConverter.toUint8ArrayLE(browserConverter.toBigUIntLE(t), i))
-        .toEqual(new Uint8Array(nativeConverter.toUint8ArrayLE(nativeConverter.toBigUIntLE(t), i)))
+      expect(browserConverter.arrayToLittleEndian(t)).toEqual(nativeConverter.arrayToLittleEndian(t))
+      expect(browserConverter.littleEndianToNewArray(browserConverter.arrayToLittleEndian(t), i))
+        .toEqual(new Uint8Array(nativeConverter.littleEndianToNewArray(nativeConverter.arrayToLittleEndian(t), i)))
     })
   }
 })

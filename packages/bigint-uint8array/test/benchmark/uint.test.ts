@@ -1,11 +1,11 @@
 import { bench } from 'vitest'
 import { converter } from '../../src/index.js'
 
-bench('.be.toUint8Array', () => {
-  converter.unsigned.be.toUint8Array(4611686018427387903n, 8)
+bench('.be.toNewArray', () => {
+  converter.unsigned.be.toNewArray(4611686018427387903n, 8)
 })
 bench('.le.toUint8Array', () => {
-  converter.unsigned.le.toUint8Array(9223372036854775807n, 5)
+  converter.unsigned.le.toNewArray(9223372036854775807n, 5)
 })
 
 bench('.be.toBigInt', () => {

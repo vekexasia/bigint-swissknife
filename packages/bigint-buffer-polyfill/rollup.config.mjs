@@ -1,33 +1,14 @@
 import typescript from '@rollup/plugin-typescript'
-import replace from '@rollup/plugin-replace'
-import nodeResolve from "@rollup/plugin-node-resolve";
+import {rollupCreate, rollupTypes} from "../../build/rollupconfigcreator.mjs";
 
+const tsOptions = {compilerOptions: {rootDir: '.'}};
 /**
  * @type {import('rollup').RollupOptions[]}
  */
 const b = [
-  {
-    input: 'src/index.ts',
-    output: [{
-      format: 'cjs',
-      file: 'dist/node.cjs.js'
-    }, {
-      format: 'esm',
-      file: 'dist/node.esm.mjs'
-    }],
-    external: ['@vekexasia/bigint-uint8array'],
-    plugins: [
-      typescript({
-        tsconfig: './tsconfig.json',
-        compilerOptions: {
-          rootDir: "./src",
-          outDir: 'dist/types',
-          declaration: true,
-        }
-      }),
-
-    ]
-  }
+  {... rollupCreate({isBrowser: false, isEsm: false}, tsOptions), external: ['@vekexasia/bigint-uint8array']},
+  {... rollupCreate({isBrowser: false, isEsm: true},tsOptions), external: ['@vekexasia/bigint-uint8array']},
+  {... rollupTypes(), external: ['@vekexasia/bigint-uint8array']},
 
 ]
 

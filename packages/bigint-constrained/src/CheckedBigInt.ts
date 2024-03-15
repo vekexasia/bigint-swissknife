@@ -1,4 +1,4 @@
-interface Bounds { min: bigint, max: bigint }
+export interface Bounds { min: bigint, max: bigint }
 
 /**
  * A class that represents a signed or unsigned integer of a specific bit size.
@@ -7,6 +7,19 @@ export class CheckedBigInt {
   readonly #bits: number
   public readonly value: bigint
   readonly boundaries: Bounds
+
+  /**
+   * Creates a new CheckedBigInt.
+   * @param bits - bits size for this instance
+   * @param value - initial value
+   * @param signed - if true, the integer is signed, otherwise it is unsigned . If Bounds, it is used as boundaries.
+   * @example
+   * ```ts
+   * const a = new CheckedBigInt(8, 1n, false) // u8
+   * const b = new CheckedBigInt(8, 1n, true) // i8
+   * const c = new CheckedBigInt(8, 1n, { min: 0n, max: 2n }) // u8 with custom boundaries
+   * ```
+   */
   constructor (bits: number, value: bigint, signed: boolean | Bounds) {
     if (bits <= 0) {
       throw new RangeError('CheckedBigInt: bits must be greater than 0')
@@ -43,7 +56,12 @@ export class CheckedBigInt {
    * Add another integer to this integer, checking for overflow.
    * @param other The integer to add.
    * @returns A new CheckedBigInt with the result of the addition.
-   * @throws {RangeError} If the result of the addition would exceed the bit size.
+   * @throws RangeError If the result of the addition would exceed the bit size.
+   * @example
+   * ```ts
+   * const a = i8(1n).checkedAdd(1n) // 2
+   * const b = i8(127n).checkedAdd(1n) // throws RangeError
+   * ```
    */
   checkedAdd (other: bigint): CheckedBigInt {
     return new CheckedBigInt(this.#bits, this.value + other, this.boundaries)
@@ -53,7 +71,7 @@ export class CheckedBigInt {
    * Subtract another integer from this integer, checking for overflow.
    * @param other The integer to subtract.
    * @returns A new CheckedBigInt with the result of the subtraction.
-   * @throws {RangeError} If the result of the subtraction would exceed the bit size.
+   * @throws RangeError If the result of the subtraction would exceed the bit size.
    */
   checkedSub (other: bigint): CheckedBigInt {
     return new CheckedBigInt(this.#bits, this.value - other, this.boundaries)
@@ -63,7 +81,7 @@ export class CheckedBigInt {
    * Multiply this integer by another integer, checking for overflow.
    * @param other The integer to multiply by.
    * @returns A new CheckedBigInt with the result of the multiplication.
-   * @throws {RangeError} If the result of the multiplication would exceed the bit size.
+   * @throws RangeError If the result of the multiplication would exceed the bit size.
    */
   checkedMul (other: bigint): CheckedBigInt {
     return new CheckedBigInt(this.#bits, this.value * other, this.boundaries)
@@ -73,8 +91,8 @@ export class CheckedBigInt {
    * Divide this integer by another integer, checking for overflow.
    * @param other The integer to divide by.
    * @returns A new CheckedBigInt with the result of the division.
-   * @throws {RangeError} If the result of the division would exceed the bit size.
-   * @throws {RangeError} If the divisor is zero.
+   * @throws RangeError If the result of the division would exceed the bit size.
+   * @throws RangeError If the divisor is zero.
    */
   checkedDiv (other: bigint): CheckedBigInt {
     if (other === 0n) {
@@ -90,8 +108,8 @@ export class CheckedBigInt {
    * Remainder of the division of this integer by another integer, checking for overflow.
    * @param other The integer to divide by.
    * @returns A new CheckedBigInt with the result of the remainder.
-   * @throws {RangeError} If the result of the remainder would exceed the bit size.
-   * @throws {RangeError} If the divisor is zero.
+   * @throws RangeError If the result of the remainder would exceed the bit size.
+   * @throws RangeError If the divisor is zero.
    */
   checkedRem (other: bigint): CheckedBigInt {
     if (other === 0n) {
@@ -107,7 +125,7 @@ export class CheckedBigInt {
    * Power this integer to another integer, checking for overflow.
    * @param exponent The integer to power by.
    * @returns A new CheckedBigInt with the result of the power.
-   * @throws {RangeError} If the result of the power would exceed the bit size.
+   * @throws RangeError If the result of the power would exceed the bit size.
    */
   checkedPow (exponent: bigint): CheckedBigInt {
     return new CheckedBigInt(this.#bits, this.value ** exponent, this.boundaries)
@@ -115,10 +133,10 @@ export class CheckedBigInt {
 
   /**
    * Bitwise shift left this integer by another integer, checking for overflow.
-   * @param other The integer to shift by.
+   * @param bits The integer to shift by.
    * @returns A new CheckedBigInt with the result of the shift.
-   * @throws {RangeError} If the number of bits is negative.
-   * @throws {RangeError} If the resulting number would exceed the bit size.
+   * @throws RangeError If the number of bits is negative.
+   * @throws RangeError If the resulting number would exceed the bit size.
    */
   checkedShl (bits: number | bigint): CheckedBigInt {
     if (bits < 0n) {
@@ -129,10 +147,10 @@ export class CheckedBigInt {
 
   /**
    * Bitwise shift right this integer by another integer, checking for overflow.
-   * @param other The integer to shift by.
+   * @param bits The integer to shift by.
    * @returns A new CheckedBigInt with the result of the shift.
-   * @throws {RangeError} If the number of bits is negative.
-   * @throws {RangeError} If bits is greater than the bit size.
+   * @throws RangeError If the number of bits is negative.
+   * @throws RangeError If bits is greater than the bit size.
    */
   checkedShr (bits: number | bigint): CheckedBigInt {
     if (bits < 0n) {

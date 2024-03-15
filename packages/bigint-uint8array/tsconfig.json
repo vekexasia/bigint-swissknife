@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "dist",
     "moduleResolution": "bundler",
     "paths": {
       "@/*": ["src/*"]
@@ -10,6 +9,7 @@
     "rootDir": "./"
   },
   "include": [
+    "../../build/types/globals.d.ts",
     "src/**/*",
     "test/**/*"
   ],

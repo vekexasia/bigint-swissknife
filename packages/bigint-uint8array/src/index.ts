@@ -3,7 +3,7 @@ import {
   converter as defaultConverter
 } from './converter/index.js'
 import { type IConverter } from './converter/type.js'
-
+export { type IConverter } from './converter/type.js'
 export interface BigIntConverter {
   /**
    * Unsigned operations
@@ -35,13 +35,20 @@ export interface BigIntConverter {
 }
 export interface Convert {
   /**
-   * Converts number into Uint8Array
+   * Converts number into new Uint8Array
    * @param num - number to convert
    * @param bytes - number of bytes the result should have
    * @throws RangeError if bytes is less than 1 or number does not fit into bytes
    * @returns Uint8Array
    */
-  readonly toUint8Array: (num: bigint, bytes: number) => Uint8Array
+  readonly toNewArray: (num: bigint, bytes: number) => Uint8Array
+  /**
+   * Converts number into Uint8Array
+   * @param num - number to convert
+   * @param dest - destination array
+   * @throws RangeError if bigint does not fit into dest
+   */
+  readonly toArray: (num: bigint, dest: Uint8Array) => void
   /**
    * Converts Uint8Array into number
    * @param arr - Uint8Array to convert
@@ -55,24 +62,30 @@ export function create (converter: IConverter): BigIntConverter {
     unsigned: {
       be: {
         toBigInt (arr: Uint8Array): bigint {
-          return converter.toBigUIntBE(arr)
+          return converter.arrayToBigEndian(arr)
         },
-        toUint8Array (num: bigint, bytes: number): Uint8Array {
+        toNewArray (num: bigint, bytes: number): Uint8Array {
           if (num < 0 || bytes <= 0) {
             throw new RangeError('requested bigint is negative or space bytes is')
           }
-          return converter.toUint8ArrayBE(num, bytes)
+          return converter.bigEndianToNewArray(num, bytes)
+        },
+        toArray (num: bigint, dest: Uint8Array): void {
+          converter.bigEndianToArray(num, dest)
         }
       },
       le: {
         toBigInt (arr: Uint8Array): bigint {
-          return converter.toBigUIntLE(arr)
+          return converter.arrayToLittleEndian(arr)
         },
-        toUint8Array (num: bigint, bytes: number): Uint8Array {
+        toNewArray (num: bigint, bytes: number): Uint8Array {
           if (num < 0 || bytes <= 0) {
             throw new RangeError('requested bigint is negative or space bytes is')
           }
-          return converter.toUint8ArrayLE(num, bytes)
+          return converter.littleEndianToNewArray(num, bytes)
+        },
+        toArray (num: bigint, dest: Uint8Array): void {
+          converter.littleEndianToArray(num, dest)
         }
       }
     },
@@ -82,22 +95,37 @@ export function create (converter: IConverter): BigIntConverter {
         toBigInt (arr: Uint8Array): bigint {
           return fromIntBuf(
             arr,
-            converter.toBigUIntBE
+            converter.arrayToBigEndian
           )
         },
-        toUint8Array (num: bigint, bytes: number): Uint8Array {
-          return toIntBuf(num, bytes, converter.toUint8ArrayBE)
+        toNewArray (num: bigint, bytes: number): Uint8Array {
+          return toIntBuf(num, bytes, converter.bigEndianToNewArray)
+        },
+        toArray (num: bigint, dest: Uint8Array): void {
+          let newNum = num
+          if (newNum < 0) {
+            newNum = 2n ** BigInt(dest.length * 8) + num
+          }
+          converter.bigEndianToArray(newNum, dest)
         }
       },
       le: {
         toBigInt (arr: Uint8Array): bigint {
           return fromIntBuf(
             arr,
-            converter.toBigUIntLE
+            converter.arrayToLittleEndian
           )
         },
-        toUint8Array (num: bigint, bytes: number): Uint8Array {
-          return toIntBuf(num, bytes, converter.toUint8ArrayLE)
+        toNewArray (num: bigint, bytes: number): Uint8Array {
+          return toIntBuf(num, bytes, converter.littleEndianToNewArray)
+        },
+        toArray (num: bigint, dest: Uint8Array): void {
+          let newNum = num
+          if (newNum < 0) {
+            newNum = 2n ** BigInt(dest.length * 8) + num
+          }
+
+          converter.littleEndianToArray(newNum, dest)
         }
       }
     }

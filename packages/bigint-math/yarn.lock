@@ -48,17 +48,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vekexasia/bigint-constrained@workspace:.":
+"@vekexasia/bigint-math@workspace:.":
   version: 0.0.0-use.local
-  resolution: "@vekexasia/bigint-constrained@workspace:."
+  resolution: "@vekexasia/bigint-math@workspace:."
   dependencies:
     "@vekexasia/bigint-uint8array": "npm:*"
   languageName: unknown
   linkType: soft
 
-"@vekexasia/bigint-uint8array@portal:../bigint-uint8array::locator=%40vekexasia%2Fbigint-constrained%40workspace%3A.":
+"@vekexasia/bigint-uint8array@portal:../bigint-uint8array::locator=%40vekexasia%2Fbigint-math%40workspace%3A.":
   version: 0.0.0-use.local
-  resolution: "@vekexasia/bigint-uint8array@portal:../bigint-uint8array::locator=%40vekexasia%2Fbigint-constrained%40workspace%3A."
+  resolution: "@vekexasia/bigint-uint8array@portal:../bigint-uint8array::locator=%40vekexasia%2Fbigint-math%40workspace%3A."
   dependencies:
     bigint-buffer: "npm:^1.1.5"
   languageName: node

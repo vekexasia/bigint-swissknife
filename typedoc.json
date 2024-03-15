@@ -1,5 +1,5 @@
 {
-  "entryPoints": ["packages/bigint-uint8array", "packages/bigint-math"],
+  "entryPoints": ["packages/bigint-uint8array", "packages/bigint-math", "packages/bigint-buffer-polyfill", "packages/bigint-constrained"],
   "name": "Packages Example",
   "entryPointStrategy": "packages",
   "includeVersion": true

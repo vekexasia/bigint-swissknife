@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDirs": ["./", "../bigint-uint8array"],
+    "rootDir": "..",
     "preserveSymlinks": false,
     "moduleResolution": "bundler",
     "paths": {

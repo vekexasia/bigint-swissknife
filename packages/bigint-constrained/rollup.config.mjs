@@ -1,40 +1,43 @@
 import typescript from '@rollup/plugin-typescript'
 import replace from '@rollup/plugin-replace'
-import nodeResolve from "@rollup/plugin-node-resolve";
+import alias from '@rollup/plugin-alias';
+import {rollupStandardCreate} from "../../build/rollupconfigcreator.mjs";
+import commonjs from "@rollup/plugin-commonjs";
 
+const conf = [{name: 'node', browser: false}, {name: 'browser', browser: true}]
 /**
  * @type {import('rollup').RollupOptions[]}
  */
 const b = [
+  ... rollupStandardCreate(),
+// IIFE AND UMD
   {
-    input: 'src/index.ts',
-    output: [{
-      format: 'cjs',
-      file: 'dist/cjs.js'
-    }, {
-      format: 'esm',
-      file: 'dist/esm.mjs'
-    },{
-      format: 'iife',
-      name: 'BigIntConstrained',
-      file: 'dist/iife.js'
-    },{
-      format: 'umd',
-      name: 'BigIntConstrained',
-      file: 'dist/umd.js'
-    }],
+    input: './src/index.ts',
+    output: [
+      {
+        format: 'iife',
+        name: 'CheckedBigInt',
+        file: 'dist/browser.iife.js',
+      },
+      {
+        format: 'umd',
+        name: 'CheckedBigInt',
+        file: 'dist/browser.umd.js',
+      }
+    ],
+
     plugins: [
       typescript({
         tsconfig: './tsconfig.json',
         compilerOptions: {
-          rootDir: "./src",
-          outDir: 'dist/types',
-          declaration: true,
-        }
+          esModuleInterop: true,
+        },
+        include: ['../../build/types/globals.d.ts', 'src/**/*.ts'],
       }),
 
+
     ]
-  }
+  },
 
 ]
 
