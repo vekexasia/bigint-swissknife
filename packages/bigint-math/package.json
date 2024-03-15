@@ -1,7 +1,7 @@
 {
-  "name": "@vekexasia/bigint-constrained",
+  "name": "@vekexasia/bigint-math",
   "version": "2.0.0",
-  "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
+  "description": "Math utilities to work with BigInt",
   "scripts": {
     "lint": "eslint \"**/*.ts\"",
     "build": "rm -rf dist/; rollup --config rollup.config.mjs",

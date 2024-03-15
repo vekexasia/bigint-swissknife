@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
-
+    "moduleResolution": "Bundler",
     /* Projects */
     "incremental": false,
     /* Save .tsbuildinfo files to allow for incremental compilation of projects. */
@@ -35,7 +35,7 @@
     /* Ensure that casing is correct in imports. */
     "strict": true,
     /* Enable all strict type-checking options. */
-    "skipLibCheck": true,
+    "skipLibCheck": true
     /* Skip type checking all .d.ts files. */
 
   },
