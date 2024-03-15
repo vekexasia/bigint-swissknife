@@ -7,7 +7,7 @@ import commonjs from "@rollup/plugin-commonjs";
  *
  * @param conf {{isBrowser: boolean, isEsm: boolean}}
  * @param typescriptOptions {import('@rollup/plugin-typescript').RollupTypescriptOptions} eventual override of typescript options
- * @returns {{output: [{file: string, format: string}], input: string, plugins: *[]}}
+ * @returns {import('rollup').RollupOptions}
  */
 export const rollupCreate = (conf, typescriptOptions= null) => {
   const { isBrowser, isEsm } = conf
@@ -16,8 +16,11 @@ export const rollupCreate = (conf, typescriptOptions= null) => {
     output: [{
       format: `${isEsm ? 'esm' : 'cjs'}`,
       file: `dist/${isBrowser ? 'browser' : 'node'}.${isEsm ? 'esm' : 'cjs'}.${isEsm ? 'm' : ''}js`,
-      inlineDynamicImports: true
-
+      // dir : 'dist',
+      // entryFileNames: `${isBrowser ? 'browser' : 'node'}.${isEsm ? 'esm' : 'cjs'}.${isEsm ? 'm' : ''}js`,
+      // chunkFileNames: `includes/${isBrowser ? 'browser' : 'node'}.${isEsm ? 'esm' : 'cjs'}[hash].js`,
+      // compact: true,
+      // inlineDynamicImports: true
     }],
     plugins: [
       replace({
@@ -37,6 +40,7 @@ export const rollupCreate = (conf, typescriptOptions= null) => {
         },
         preventAssignment: true
       }),
+
       ...(() => {
         if (!isEsm) {
           return [replace({
@@ -54,6 +58,7 @@ export const rollupCreate = (conf, typescriptOptions= null) => {
         include: ['../../build/types/globals.d.ts', 'src/**/*.ts'],
         ...(typescriptOptions || {})
       }),
+
       commonjs(),
       nodeResolve()
     ]
@@ -90,8 +95,8 @@ export const rollupStandardCreate = (typescriptOptions= {}, externals= []) => {
   return [
     {... rollupCreate({isBrowser: true, isEsm: true}, typescriptOptions), external: externals ?? []},
     {... rollupCreate({isBrowser: true, isEsm: false}, typescriptOptions), external: externals ?? []},
-    {... rollupCreate({isBrowser: false, isEsm: true}, typescriptOptions), external: externals ?? []},
     {... rollupCreate({isBrowser: false, isEsm: false}, typescriptOptions), external: externals ?? []},
+    {... rollupCreate({isBrowser: false, isEsm: true}, typescriptOptions), external: externals ?? []},
     {... rollupTypes(), external: externals},
   ]
 }

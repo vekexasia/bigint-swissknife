@@ -71,6 +71,9 @@ export function create (converter: IConverter): BigIntConverter {
           return converter.bigEndianToNewArray(num, bytes)
         },
         toArray (num: bigint, dest: Uint8Array): void {
+          if (num < 0) {
+            throw new RangeError('requested bigint is negative')
+          }
           converter.bigEndianToArray(num, dest)
         }
       },
@@ -85,6 +88,9 @@ export function create (converter: IConverter): BigIntConverter {
           return converter.littleEndianToNewArray(num, bytes)
         },
         toArray (num: bigint, dest: Uint8Array): void {
+          if (num < 0) {
+            throw new RangeError('requested bigint is negative')
+          }
           converter.littleEndianToArray(num, dest)
         }
       }

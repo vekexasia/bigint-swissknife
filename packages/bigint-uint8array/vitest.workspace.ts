@@ -7,7 +7,10 @@ export default defineWorkspace([
     test: {
       include: ['test/*.test.ts', 'test/node-only/**/*.test.ts'],
       environment: 'node',
-      name: 'node-uint8array'
+      name: 'node-uint8array',
+      alias: {
+        './browser.js': './native.js'
+      }
     },
     define: {
       IS_BROWSER: false
