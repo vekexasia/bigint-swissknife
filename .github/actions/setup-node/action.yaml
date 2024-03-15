@@ -1,0 +1,28 @@
+name: Setup Node.js
+description: Sets the project up with node.js
+
+outputs:
+  node-version:
+    description: Node.js version
+    value: ${{ steps.setup-node.outputs.node-version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up node
+      id: setup-node
+      uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+        cache: 'yarn'
+        cache-dependency-path: '**/yarn.lock'
+
+    - id: outputs
+      shell: bash
+      run: |
+        node_version="${{ steps.setup-node.outputs.node-version }}"
+        echo "node-version=${node_version#v}" >> "$GITHUB_OUTPUT"
+
+    - name: Install node dependencies
+      shell: bash
+      run: ./build/reinstalldeps.sh

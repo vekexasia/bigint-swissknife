@@ -24,6 +24,7 @@ export default defineWorkspace([
       name: 'browser-math',
       browser: {
         name: 'chrome',
+        headless: true,
         enabled: true
       }
     }

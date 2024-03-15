@@ -18,6 +18,7 @@ export default defineWorkspace([
       name: 'browser-constrained',
       browser: {
         name: 'chrome',
+        headless: true,
         enabled: true
       }
     }

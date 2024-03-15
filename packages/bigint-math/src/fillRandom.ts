@@ -1,4 +1,5 @@
 if (IS_BROWSER) {
+  // eslint-disable-next-line
   var _fillRandom = function (buffer: Uint8Array): void {
     crypto.getRandomValues(buffer)
   }

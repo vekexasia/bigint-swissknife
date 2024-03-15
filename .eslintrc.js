@@ -6,7 +6,10 @@ module.exports = {
     "node": true
   },
   "ignorePatterns": ["**/dist/**/*"],
-  "extends": "standard-with-typescript",
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "overrides": [
     {
       "env": {

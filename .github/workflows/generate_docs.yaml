@@ -1,0 +1,39 @@
+name: Branch deploy to S3
+on:
+  push:
+    branches:
+      - 'main'
+jobs:
+  ci-checks:
+    name: CI checks
+    uses: ./.github/workflows/ci-checks.yaml
+  build:
+    needs: ci-checks
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Install Node
+        uses: ./.github/actions/setup-node
+      - name: Install dependencies
+        run: |
+          ./build/reinstalldeps.sh
+      - name: Build Docs
+        run: yarn typedoc
+      - uses: actions/upload-pages-artifact@v2
+        with:
+          path: ./docs  # This should be your TypeDoc "out" path.
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        # https://github.com/actions/deploy-pages
+        uses: actions/deploy-pages@v2

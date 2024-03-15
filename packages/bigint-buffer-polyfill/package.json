@@ -7,7 +7,6 @@
     "lint": "npx eslint --ext .ts src test",
     "test": "vitest",
     "coverage": "vitest run --coverage"
-
   },
   "exports": {
     ".": {

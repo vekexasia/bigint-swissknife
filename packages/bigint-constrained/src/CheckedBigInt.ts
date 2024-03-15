@@ -54,7 +54,7 @@ export class CheckedBigInt {
 
   /**
    * Add another integer to this integer, checking for overflow.
-   * @param other The integer to add.
+   * @param other - The integer to add.
    * @returns A new CheckedBigInt with the result of the addition.
    * @throws RangeError If the result of the addition would exceed the bit size.
    * @example
@@ -69,7 +69,7 @@ export class CheckedBigInt {
 
   /**
    * Subtract another integer from this integer, checking for overflow.
-   * @param other The integer to subtract.
+   * @param other - The integer to subtract.
    * @returns A new CheckedBigInt with the result of the subtraction.
    * @throws RangeError If the result of the subtraction would exceed the bit size.
    */
@@ -79,7 +79,7 @@ export class CheckedBigInt {
 
   /**
    * Multiply this integer by another integer, checking for overflow.
-   * @param other The integer to multiply by.
+   * @param other - The integer to multiply by.
    * @returns A new CheckedBigInt with the result of the multiplication.
    * @throws RangeError If the result of the multiplication would exceed the bit size.
    */
@@ -89,7 +89,7 @@ export class CheckedBigInt {
 
   /**
    * Divide this integer by another integer, checking for overflow.
-   * @param other The integer to divide by.
+   * @param other - The integer to divide by.
    * @returns A new CheckedBigInt with the result of the division.
    * @throws RangeError If the result of the division would exceed the bit size.
    * @throws RangeError If the divisor is zero.
@@ -106,7 +106,7 @@ export class CheckedBigInt {
 
   /**
    * Remainder of the division of this integer by another integer, checking for overflow.
-   * @param other The integer to divide by.
+   * @param other - The integer to divide by.
    * @returns A new CheckedBigInt with the result of the remainder.
    * @throws RangeError If the result of the remainder would exceed the bit size.
    * @throws RangeError If the divisor is zero.
@@ -123,7 +123,7 @@ export class CheckedBigInt {
 
   /**
    * Power this integer to another integer, checking for overflow.
-   * @param exponent The integer to power by.
+   * @param exponent - The integer to power by.
    * @returns A new CheckedBigInt with the result of the power.
    * @throws RangeError If the result of the power would exceed the bit size.
    */
@@ -133,7 +133,7 @@ export class CheckedBigInt {
 
   /**
    * Bitwise shift left this integer by another integer, checking for overflow.
-   * @param bits The integer to shift by.
+   * @param bits - The integer to shift by.
    * @returns A new CheckedBigInt with the result of the shift.
    * @throws RangeError If the number of bits is negative.
    * @throws RangeError If the resulting number would exceed the bit size.
@@ -147,7 +147,7 @@ export class CheckedBigInt {
 
   /**
    * Bitwise shift right this integer by another integer, checking for overflow.
-   * @param bits The integer to shift by.
+   * @param bits - The integer to shift by.
    * @returns A new CheckedBigInt with the result of the shift.
    * @throws RangeError If the number of bits is negative.
    * @throws RangeError If bits is greater than the bit size.

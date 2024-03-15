@@ -11,9 +11,6 @@ export default defineWorkspace([
       alias: {
         './browser.js': './native.js'
       }
-    },
-    define: {
-      IS_BROWSER: false
     }
   },
   {
@@ -24,13 +21,10 @@ export default defineWorkspace([
       name: 'browser-uint8array',
       browser: {
         name: 'chrome',
-        enabled: true
+        enabled: true,
+        headless: true
       }
 
-    },
-
-    define: {
-      IS_BROWSER: true
     }
   }
 ])
