@@ -3,11 +3,11 @@ import {
 } from '@vekexasia/bigint-uint8array'
 // impl start
 Buffer.prototype.writeBigIntBE = function (value: bigint, width: number, offset = 0) {
-  converter.signed.be.toArray(value, (this as Buffer).subarray(offset, width))
+  converter.signed.be.toArray(value, (this as Buffer).subarray(offset, width + offset))
   return width
 }
 Buffer.prototype.writeBigIntLE = function (value: bigint, width: number, offset = 0) {
-  converter.signed.le.toArray(value, (this as Buffer).subarray(offset, width))
+  converter.signed.le.toArray(value, (this as Buffer).subarray(offset, width + offset))
   return width
 }
 Buffer.prototype.readBigIntBE = function (width: number, offset = 0): bigint {
@@ -19,11 +19,11 @@ Buffer.prototype.readBigIntLE = function (width: number, offset = 0): bigint {
     (this as Buffer).subarray(offset, offset + width))
 }
 Buffer.prototype.writeBigUIntBE = function (value: bigint, width: number, offset = 0) {
-  converter.unsigned.be.toArray(value, (this as Buffer).subarray(offset, width))
+  converter.unsigned.be.toArray(value, (this as Buffer).subarray(offset, width + offset))
   return width
 }
 Buffer.prototype.writeBigUIntLE = function (value: bigint, width: number, offset = 0) {
-  converter.unsigned.le.toArray(value, (this as Buffer).subarray(offset, width))
+  converter.unsigned.le.toArray(value, (this as Buffer).subarray(offset, width + offset))
   return width
 }
 Buffer.prototype.readBigUIntBE = function (width: number, offset = 0): bigint {
