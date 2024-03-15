@@ -4,20 +4,15 @@ on:
     branches:
       - 'main'
 jobs:
-  ci-checks:
-    name: CI checks
-    uses: ./.github/workflows/ci-checks.yaml
-  build:
-    needs: ci-checks
 
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Install Node
         uses: ./.github/actions/setup-node
-      - name: Install dependencies
-        run: |
-          ./build/reinstalldeps.sh
+      - name: Build
+        run: yarn build
       - name: Build Docs
         run: yarn typedoc
       - uses: actions/upload-pages-artifact@v2
