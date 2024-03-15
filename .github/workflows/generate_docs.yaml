@@ -1,4 +1,4 @@
-name: Branch deploy to S3
+name: Generate Docs
 on:
   push:
     branches:
