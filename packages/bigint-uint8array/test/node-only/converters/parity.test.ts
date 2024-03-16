@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { converter as browserConverter } from '@/converter/browser.js'
-import { converter as nativeConverter } from '@/converter/native.js'
+import { uncheckedConverter as browserConverter } from '@/converter/browser.js'
+import { uncheckedConverter as nativeConverter } from '@/converter/native.js'
 
 describe('parity', () => {
   for (let i = 8; i < 255; i++) {

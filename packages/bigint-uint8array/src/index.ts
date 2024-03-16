@@ -1,10 +1,19 @@
 import {
-
-  converter as defaultConverter
+  uncheckedConverter
 } from './converter/index.js'
-import { type IConverter } from './converter/type.js'
+import { type UncheckedConverter } from './converter/type.js'
 import {assertIntBoundaries, assertUIntBoundaries} from "@/utils.js";
-export { type IConverter } from './converter/type.js'
+export { type UncheckedConverter } from './converter/type.js'
+
+/**
+ * BigIntConverter is a set of functions to convert between BigInt and Uint8Array
+ * in both big-endian and little-endian formats.
+ *
+ * The implementation performs bounds checking to ensure that the number fits into the
+ * provided number of bytes.
+ *
+ * A default instance is provided as {@link converter}. A utility to create a new instance is provided as {@link create}.
+ */
 export interface BigIntConverter {
   /**
    * Unsigned operations
@@ -34,6 +43,10 @@ export interface BigIntConverter {
   }
 
 }
+
+/**
+ * Base interface for all conversion operations
+ */
 export interface Convert {
   /**
    * Converts number into new Uint8Array
@@ -50,23 +63,29 @@ export interface Convert {
    *
    * ```
    */
-  readonly toNewArray: (num: bigint, bytes: number) => Uint8Array
+  toNewArray(num: bigint, bytes: number): Uint8Array
   /**
    * Converts number into Uint8Array
    * @param num - number to convert
    * @param dest - destination array
    * @throws RangeError if bigint does not fit into dest
    */
-  readonly toArray: (num: bigint, dest: Uint8Array) => void
+  toArray(num: bigint, dest: Uint8Array): void
   /**
    * Converts Uint8Array into number
    * @param arr - Uint8Array to convert
    * @returns number
    */
-  readonly toBigInt: (arr: Uint8Array) => bigint
+  toBigInt(arr: Uint8Array): bigint
 }
 
-export function create (converter: IConverter): BigIntConverter {
+/**
+ * Creates a new BigIntConverter
+ * @param converter - the unchecked converter to use
+ * @returns BigIntConverter
+ *
+ */
+export function create (converter: UncheckedConverter): BigIntConverter {
   return {
     unsigned: {
       be: {
@@ -142,8 +161,11 @@ export function create (converter: IConverter): BigIntConverter {
   }
 }
 
-export const converter = create(defaultConverter)
-
+/**
+ * Default {@link BigIntConverter} instance.
+ */
+export const converter = create(uncheckedConverter)
+export {uncheckedConverter};
 // private functions
 
 function toIntBuf (num: bigint, bytes: number, a: (x: bigint, width: number) => Uint8Array): Uint8Array {
