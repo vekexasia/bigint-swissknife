@@ -1,6 +1,6 @@
 {
   "name": "@vekexasia/bigint-math",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "Math utilities to work with BigInt",
   "scripts": {
     "lint": "eslint \"**/*.ts\"",
