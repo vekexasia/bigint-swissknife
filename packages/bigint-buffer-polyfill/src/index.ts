@@ -38,6 +38,21 @@ Buffer.prototype.readBigUIntLE = function (width: number, offset = 0): bigint {
 
 // declaration for polyfill
 declare global {
+  /**
+   * Polyfill for BigInt support in Buffer
+   * @example
+   *
+   * ```ts
+   * import '@vekexasia/bigint-buffer-polyfill';
+   *
+   * const buf = Buffer.alloc(16);
+   * buf.writeBigIntBE(-42n, 8);
+   * buf.writeBigUIntLE(69n, 8, 8);
+   *
+   * console.log(buf.readBigIntBE(8)); // -42n
+   * console.log(buf.readBigUIntLE(8, 8)); // 69n
+   * ```
+   */
   interface Buffer {
     /**
      * Write a signed BigInt to a buffer in Big Endian format
@@ -46,7 +61,7 @@ declare global {
      * @param offset - the offset to write at
      * @returns the number of bytes written
      */
-    writeBigIntBE: (value: bigint, width: number, offset?: number) => number
+    writeBigIntBE(value: bigint, width: number, offset?: number): number
     /**
      * Write a signed BigInt to a buffer in Little Endian format
      * @param value - the value to write
@@ -54,21 +69,21 @@ declare global {
      * @param offset - the offset to write at
      * @returns the number of bytes written
      */
-    writeBigIntLE: (value: bigint, width: number, offset?: number) => number
+    writeBigIntLE(value: bigint, width: number, offset?: number): number
     /**
      * Read a signed BigInt from a buffer in Big Endian format
      * @param width - the number of bytes to read
      * @param offset - the offset to read from
      * @returns the value read
      */
-    readBigIntBE: (width: number, offset?: number) => bigint
+    readBigIntBE(width: number, offset?: number): bigint
     /**
      * Read a signed BigInt from a buffer in Little Endian format
      * @param width - the number of bytes to read
      * @param offset - the offset to read from
      * @returns the value read
      */
-    readBigIntLE: (width: number, offset?: number) => bigint
+    readBigIntLE(width: number, offset?: number): bigint
 
     /**
      * Write an unsigned BigInt to a buffer in Big Endian format
@@ -77,7 +92,7 @@ declare global {
      * @param offset - the offset to write at
      * @returns the number of bytes written
      */
-    writeBigUIntBE: (value: bigint, width: number, offset?: number) => number
+    writeBigUIntBE(value: bigint, width: number, offset?: number): number
     /**
      * Write an unsigned BigInt to a buffer in Little Endian format
      * @param value - the value to write
@@ -85,20 +100,20 @@ declare global {
      * @param offset - the offset to write at
      * @returns the number of bytes written
      */
-    writeBigUIntLE: (value: bigint, width: number, offset?: number) => number
+    writeBigUIntLE(value: bigint, width: number, offset?: number): number
     /**
      * Read an unsigned BigInt from a buffer in Big Endian format
      * @param width - the number of bytes to read
      * @param offset - the offset to read from
      * @returns the value read
      */
-    readBigUIntBE: (width: number, offset?: number) => bigint
+    readBigUIntBE(width: number, offset?: number): bigint
     /**
      * Read an unsigned BigInt from a buffer in Little Endian format
      * @param width - the number of bytes to read
      * @param offset - the offset to read from
      * @returns the value read
      */
-    readBigUIntLE: (width: number, offset?: number) => bigint
+    readBigUIntLE(width: number, offset?: number): bigint
   }
 }

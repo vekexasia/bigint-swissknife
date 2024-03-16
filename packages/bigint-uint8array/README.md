@@ -53,7 +53,7 @@ The library is entirely written in TypeScript and comes with its own type defini
 
 ## Documentation
 
-You can find typedoc documentation [here](https://vekexasia.github.io/bigint-uint8array/).
+You can find typedoc documentation [here](https://vekexasia.github.io/bigint-swissknife/modules/_vekexasia_bigint_uint8array.html).
 
 ## Usage
 
