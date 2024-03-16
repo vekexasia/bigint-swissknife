@@ -3,6 +3,7 @@ import {
   converter as defaultConverter
 } from './converter/index.js'
 import { type IConverter } from './converter/type.js'
+import {assertIntBoundaries, assertUIntBoundaries} from "@/utils.js";
 export { type IConverter } from './converter/type.js'
 export interface BigIntConverter {
   /**
@@ -40,6 +41,14 @@ export interface Convert {
    * @param bytes - number of bytes the result should have
    * @throws RangeError if bytes is less than 1 or number does not fit into bytes
    * @returns Uint8Array
+   * @example
+   * ```ts
+   * converter.unsigned.be.toNewArray(1n, 2) // Uint8Array [ 0x00, 0x01 ]
+   * converter.unsigned.be.toNewArray(-1n, 2) // RangeError: requested bigint is negative
+   * converter.signed.be.toNewArray(-1n, 2) // Uint8Array [ 0xff, 0xff ]
+   *
+   *
+   * ```
    */
   readonly toNewArray: (num: bigint, bytes: number) => Uint8Array
   /**
@@ -65,15 +74,11 @@ export function create (converter: IConverter): BigIntConverter {
           return converter.arrayToBigEndian(arr)
         },
         toNewArray (num: bigint, bytes: number): Uint8Array {
-          if (num < 0 || bytes <= 0) {
-            throw new RangeError('requested bigint is negative or space bytes is')
-          }
+          assertUIntBoundaries(num, bytes);
           return converter.bigEndianToNewArray(num, bytes)
         },
         toArray (num: bigint, dest: Uint8Array): void {
-          if (num < 0) {
-            throw new RangeError('requested bigint is negative')
-          }
+          assertUIntBoundaries(num, dest.length);
           converter.bigEndianToArray(num, dest)
         }
       },
@@ -82,15 +87,11 @@ export function create (converter: IConverter): BigIntConverter {
           return converter.arrayToLittleEndian(arr)
         },
         toNewArray (num: bigint, bytes: number): Uint8Array {
-          if (num < 0 || bytes <= 0) {
-            throw new RangeError('requested bigint is negative or space bytes is')
-          }
+          assertUIntBoundaries(num, bytes);
           return converter.littleEndianToNewArray(num, bytes)
         },
         toArray (num: bigint, dest: Uint8Array): void {
-          if (num < 0) {
-            throw new RangeError('requested bigint is negative')
-          }
+          assertUIntBoundaries(num, dest.length);
           converter.littleEndianToArray(num, dest)
         }
       }
@@ -105,9 +106,11 @@ export function create (converter: IConverter): BigIntConverter {
           )
         },
         toNewArray (num: bigint, bytes: number): Uint8Array {
+          assertIntBoundaries(num, bytes);
           return toIntBuf(num, bytes, converter.bigEndianToNewArray)
         },
         toArray (num: bigint, dest: Uint8Array): void {
+          assertIntBoundaries(num, dest.length);
           let newNum = num
           if (newNum < 0) {
             newNum = 2n ** BigInt(dest.length * 8) + num
@@ -123,14 +126,15 @@ export function create (converter: IConverter): BigIntConverter {
           )
         },
         toNewArray (num: bigint, bytes: number): Uint8Array {
+          assertIntBoundaries(num, bytes);
           return toIntBuf(num, bytes, converter.littleEndianToNewArray)
         },
         toArray (num: bigint, dest: Uint8Array): void {
+          assertIntBoundaries(num, dest.length);
           let newNum = num
           if (newNum < 0) {
             newNum = 2n ** BigInt(dest.length * 8) + num
           }
-
           converter.littleEndianToArray(newNum, dest)
         }
       }
