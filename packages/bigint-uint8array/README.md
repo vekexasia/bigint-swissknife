@@ -86,6 +86,16 @@ This means that the `toArray` method is actually slower in node.js (for now).
    · uncheckedConverter.bigEndianToArray  4,881,600.69 ops/sec ±0.28% (2440801 samples) fastest
 ```
 
+Also be aware that native implementation is between 3-5x faster than the pure JS implementation.
+```
+✓ newArray (2)
+  · native   4,239,630.32 ops/sec ±0.69% (2119816 samples) fastest
+  · browser  1,103,549.21 ops/sec ±0.37% ( 551775 samples)
+✓ reuseArray (2) 
+  · native   3,395,706.54 ops/sec ±0.40% (1697854 samples) fastest
+  · browser  1,113,350.88 ops/sec ±0.31% ( 556676 samples)
+```
+
 
 ## License
 
