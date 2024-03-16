@@ -1,0 +1,9 @@
+test/
+node_modules/
+coverage/
+.yarn/
+docs/
+typedoc.json
+vitest.config.mts
+vitest.workspace.ts
+rollup.config.mjs
