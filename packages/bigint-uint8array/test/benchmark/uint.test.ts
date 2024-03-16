@@ -1,16 +1,22 @@
-import { bench } from 'vitest'
-import { converter } from '../../src/index.js'
+import { bench, describe } from 'vitest'
+import { converter, uncheckedConverter } from '../../src/index.js'
+describe('arr', () => {
+  describe('newArray', () => {
+    bench('converter.be.toNewArray', () => {
+      converter.unsigned.be.toNewArray(4611686018427387903n, 8)
+    })
+    bench('uncheckedConverter.bigEndianToNewArray', () => {
+      uncheckedConverter.bigEndianToNewArray(4611686018427387903n, 8)
+    })
+  })
+  describe('reuseArray', () => {
+    const a = new Uint8Array(8);
+    bench('converter.be.toArray', () => {
+      converter.unsigned.be.toArray(4611686018427387903n, a);
+    });
+    bench('uncheckedConverter.bigEndianToArray', () => {
+      uncheckedConverter.bigEndianToArray(4611686018427387903n, a);
+    });
+  })
 
-bench('.be.toNewArray', () => {
-  converter.unsigned.be.toNewArray(4611686018427387903n, 8)
-})
-bench('.le.toUint8Array', () => {
-  converter.unsigned.le.toNewArray(9223372036854775807n, 5)
-})
-
-bench('.be.toBigInt', () => {
-  converter.unsigned.be.toBigInt(Uint8Array.from([0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]))
-})
-bench('.be.toBigInt', () => {
-  converter.unsigned.le.toBigInt(Uint8Array.from([0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]))
-})
+});

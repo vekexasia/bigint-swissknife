@@ -1,4 +1,4 @@
-# @vekexasia/bigint-uint8array: Enhanced Buffer Utilities for BigInt Handling
+# @vekexasia/bigint-uint8array: Enhanced Buffer/Uint8Array Conversion for BigInt
 <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white"/> <img 
 src="https://img.shields.io/badge/rollup-323330?style=for-the-badge&logo=rollup.js&logoColor=Brown"/> <img 
 src="https://img.shields.io/badge/eslint-3A33D1?style=for-the-badge&logo=eslint&logoColor=white"/> <img 
@@ -23,11 +23,34 @@ By extending its capabilities to include support for signed integers, this proje
 
 ## Installation
 
-Add the extended bigint-buffer to your project:
+Add the library to your project:
 
 ```bash
-npm install @vekexasia/bigint-buffer
+npm install @vekexasia/bigint-uint8array
 ```
+
+or
+
+```bash
+yarn add @vekexasia/bigint-uint8array
+```
+
+When using the library in a browser environment, you can **also** include it directly in your HTML file using the [iife](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) build or the [umd](https://github.com/umdjs/umd). Both will expose the `BigIntUint8Array` global variable.
+
+If you wish to use iife or umd even with your preferred builder, remember you can always use the `browser` field in your `package.json` to override the default `module` or `main` fields.
+
+```json
+{
+  "browser": {
+    "@vekexasia/bigint-uint8array": "dist/bigint-uint8array.iife.js"
+  }
+}
+```
+
+## Typescript
+
+The library is entirely written in TypeScript and comes with its own type definitions.
+
 ## Documentation
 
 You can find typedoc documentation [here](https://vekexasia.github.io/bigint-uint8array/).
@@ -50,8 +73,23 @@ let bigint = converter.unsigned.be.toBigInt(arr); // 42n
 
 ## Performance
 
-The library uses the NAPI bindings when available. Besides the default `converter` there is also the [`uncheckedConverter`](https://vekexasia.github.io/bigint-swissknife/variables/_vekexasia_bigint_uint8array.uncheckedConverter.html)
-which is faster but does not check for overflows.
+The library uses the NAPI bindings when available. Besides the default `converter` there is also the [`uncheckedConverter`](https://vekexasia.github.io/bigint-swissknife/variables/_vekexasia_bigint_uint8array.uncheckedConverter-1.html)
+which is roughly 1.5x faster but does not check for overflows.
 
 Furthermore, the library allows to reuse the same buffer for multiple operations, which can be useful in performance-critical scenarios.
-**NOTE**: the bigint-buffer implementation will always create a new buffer even in 
+**NOTE**: the bigint-buffer implementation will always create a new buffer.
+
+This means that the `toArray` method is actually slower in node.js (for now).
+```
+✓ newArray (2) 3574ms
+   · converter.be.toNewArray                 3,900,104.52 ops/sec ±0.62% (1950053 samples)
+   · uncheckedConverter.bigEndianToNewArray  5,570,941.24 ops/sec ±0.42% (2785471 samples) fastest
+✓ reuseArray (2) 4788ms
+   · converter.be.toArray                 3,358,796.16 ops/sec ±0.27% (1679399 samples)
+   · uncheckedConverter.bigEndianToArray  4,881,600.69 ops/sec ±0.28% (2440801 samples) fastest
+```
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.

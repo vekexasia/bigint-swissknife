@@ -8,6 +8,7 @@ export default defineConfig({
   test: {
     benchmark: {
       include: ['test/benchmark/**/*.test.ts'],
+      reporters: ['default', 'verbose'],
     },
     coverage: {
       provider: 'istanbul',
