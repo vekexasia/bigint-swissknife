@@ -6,7 +6,8 @@
     "build": "rm -rf dist/; rollup --config rollup.config.mjs",
     "lint": "npx eslint --ext .ts src test",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "prepublishOnly": "npm run build && vitest run"
   },
   "exports": {
     ".": {

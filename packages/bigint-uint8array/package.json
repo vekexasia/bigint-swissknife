@@ -10,7 +10,7 @@
     "coverage": "vitest run --coverage",
     "pretest": "npm run build",
     "posttest": "npm run lint",
-    "prepublishOnly": "npm run test"
+    "prepublishOnly": "npm run build && vitest run"
   },
   "exports": {
     ".": {
