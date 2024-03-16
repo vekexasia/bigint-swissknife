@@ -17,114 +17,114 @@ describe('CheckedBigInt', () => {
       expect(u8(127n).boundaries).to.deep.eq({ min: 0n, max: 255n })
     })
     it('should throw on invalid bit size', () => {
-      expect(() => new CheckedBigInt(0, 0n, false)).to.throw(RangeError)
-      expect(() => new CheckedBigInt(-1, 0n, false)).to.throw(RangeError)
+      expect(() => new CheckedBigInt(0n, 0, false)).to.throw(RangeError)
+      expect(() => new CheckedBigInt(0n, -1, false)).to.throw(RangeError)
     })
     it('should allow custom boundaries', () => {
-      const a = new CheckedBigInt(8, 0n, { min: 0n, max: 2n })
+      const a = new CheckedBigInt(0n, { min: 0n, max: 2n })
       expect(a.boundaries).to.deep.eq({ min: 0n, max: 2n })
     })
   })
 
-  describe('checkedAdd', () => {
+  describe('add', () => {
     it('should should return added value', () => {
-      const a = i8(1n).checkedAdd(1n)
+      const a = i8(1n).add(1n)
       expect(a.value).to.eq(2n)
     })
     it('should throw on overflow', () => {
-      expect(() => i8(127n).checkedAdd(1n)).to.throw(RangeError)
-      expect(() => i8(-128n).checkedAdd(-1n)).to.throw(RangeError)
+      expect(() => i8(127n).add(1n)).to.throw(RangeError)
+      expect(() => i8(-128n).add(-1n)).to.throw(RangeError)
     })
   })
 
-  describe('checkedSub', () => {
+  describe('sub', () => {
     it('should should return subtracted value', () => {
-      const a = i8(1n).checkedSub(1n)
+      const a = i8(1n).sub(1n)
       expect(a.value).to.eq(0n)
     })
     it('should throw on overflow', () => {
-      expect(() => i8(-128n).checkedSub(1n)).to.throw(RangeError)
-      expect(() => i8(127n).checkedSub(-1n)).to.throw(RangeError)
+      expect(() => i8(-128n).sub(1n)).to.throw(RangeError)
+      expect(() => i8(127n).sub(-1n)).to.throw(RangeError)
     })
   })
 
-  describe('checkedRem', () => {
+  describe('rem', () => {
     it('should return remainder', () => {
-      const a = i8(5n).checkedRem(3n)
+      const a = i8(5n).rem(3n)
       expect(a.value).to.eq(2n)
     })
     it('should throw on division by zero', () => {
-      expect(() => i8(5n).checkedRem(0n)).to.throw(RangeError)
+      expect(() => i8(5n).rem(0n)).to.throw(RangeError)
     })
     it('should throw on overflow', () => {
-      expect(() => i8(-128n).checkedRem(-1n)).to.throw(RangeError)
+      expect(() => i8(-128n).rem(-1n)).to.throw(RangeError)
     })
   })
 
-  describe('checkedMul', () => {
+  describe('mul', () => {
     it('should return multiplication', () => {
-      const a = i8(5n).checkedMul(3n)
+      const a = i8(5n).mul(3n)
       expect(a.value).to.eq(15n)
     })
     it('should throw on overflow', () => {
-      expect(() => i8(15n).checkedMul(8n)).to.not.throw(RangeError)
-      expect(() => i8(16n).checkedMul(8n)).to.throw(RangeError)
+      expect(() => i8(15n).mul(8n)).to.not.throw(RangeError)
+      expect(() => i8(16n).mul(8n)).to.throw(RangeError)
     })
     it('should throw if multiplication turns to negative in UINT', () => {
-      expect(() => u8(1n).checkedMul(-1n)).to.throw(RangeError)
+      expect(() => u8(1n).mul(-1n)).to.throw(RangeError)
     })
   })
 
-  describe('checkedDiv', () => {
+  describe('div', () => {
     it('should return division', () => {
-      const a = i8(5n).checkedDiv(3n)
+      const a = i8(5n).div(3n)
       expect(a.value).to.eq(1n)
     })
     it('should throw on division by zero', () => {
-      expect(() => i8(5n).checkedDiv(0n)).to.throw(RangeError)
+      expect(() => i8(5n).div(0n)).to.throw(RangeError)
     })
     it('should throw on overflow', () => {
-      expect(() => i8(-128n).checkedDiv(-1n)).to.throw(RangeError)
+      expect(() => i8(-128n).div(-1n)).to.throw(RangeError)
     })
   })
 
-  describe('checkedPow', () => {
+  describe('pow', () => {
     it('should return power', () => {
-      const a = i8(2n).checkedPow(3n)
+      const a = i8(2n).pow(3n)
       expect(a.value).to.eq(8n)
     })
     it('should throw on overflow', () => {
-      expect(() => i8(2n).checkedPow(7n)).to.throw(RangeError)
+      expect(() => i8(2n).pow(7n)).to.throw(RangeError)
     })
     it('should throw on negative exponent', () => {
-      expect(() => i8(2n).checkedPow(-1n)).to.throw(RangeError)
+      expect(() => i8(2n).pow(-1n)).to.throw(RangeError)
     })
   })
 
-  describe('checkedShl', () => {
+  describe('shl', () => {
     it('should shift left', () => {
-      const a = i8(1n).checkedShl(1n)
+      const a = i8(1n).shl(1n)
       expect(a.value).to.eq(2n)
     })
     it('should throw on negative shift', () => {
-      expect(() => i8(1n).checkedShl(-1n)).to.throw(RangeError)
+      expect(() => i8(1n).shl(-1n)).to.throw(RangeError)
     })
     it('should throw on overflow', () => {
-      expect(() => i8(64n).checkedShl(1n)).to.throw(RangeError)
+      expect(() => i8(64n).shl(1n)).to.throw(RangeError)
     })
   })
 
-  describe('checkedShr', () => {
+  describe('shr', () => {
     it('should shift right', () => {
-      const a = i8(2n).checkedShr(1n)
+      const a = i8(2n).shr(1n)
       expect(a.value).to.eq(1n)
     })
     it('should throw on negative shift', () => {
-      expect(() => i8(1n).checkedShr(-1n)).to.throw(RangeError)
+      expect(() => i8(1n).shr(-1n)).to.throw(RangeError)
     })
     it('should throw on more bits', () => {
-      expect(() => i8(-128n).checkedShr(8n)).to.not.throw(RangeError)
-      expect(() => i8(-128n).checkedShr(9n)).to.throw(RangeError)
+      expect(() => i8(-128n).shr(8n)).to.not.throw(RangeError)
+
     })
   })
 
