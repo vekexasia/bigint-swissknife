@@ -20,7 +20,7 @@ export const rollupCreate = (conf, typescriptOptions= null) => {
       // entryFileNames: `${isBrowser ? 'browser' : 'node'}.${isEsm ? 'esm' : 'cjs'}.${isEsm ? 'm' : ''}js`,
       // chunkFileNames: `includes/${isBrowser ? 'browser' : 'node'}.${isEsm ? 'esm' : 'cjs'}[hash].js`,
       // compact: true,
-      // inlineDynamicImports: true
+      inlineDynamicImports: false
     }],
     plugins: [
       replace({
@@ -31,11 +31,8 @@ export const rollupCreate = (conf, typescriptOptions= null) => {
               return {
                 'native.js': 'browser.js'
               }
-            } else {
-              return {
-                'browser.js': 'native.js'
-              }
             }
+            return {}
           })()
         },
         preventAssignment: true
@@ -45,7 +42,7 @@ export const rollupCreate = (conf, typescriptOptions= null) => {
         if (!isEsm) {
           return [replace({
             values: {
-              'await import(': 'import('
+              'await import(': 'require('
             },
             delimiters: ['', ''],
             preventAssignment: true

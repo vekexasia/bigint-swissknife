@@ -25,7 +25,8 @@ export default [
     plugins: [
       replace({
         values: {
-          'IS_BROWSER': 'true',
+          IS_BROWSER: 'true',
+          'native.js': 'browser.js'
         },
         preventAssignment: true
       }),
