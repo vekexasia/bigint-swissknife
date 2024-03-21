@@ -1,6 +1,6 @@
 {
   "name": "@vekexasia/bigint-uint8array",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
   "scripts": {
     "build": "rm -rf dist/;rollup --config rollup.config.mjs",
