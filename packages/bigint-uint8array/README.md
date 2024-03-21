@@ -21,6 +21,11 @@ This project builds upon the original [`bigint-buffer`](https://github.com/no2ch
 The original `bigint-buffer` library provided a solid foundation for working with BigInts, offering efficient conversion to and from buffers without the need for intermediate hexadecimal string conversion. 
 By extending its capabilities to include support for signed integers, this project aims to address a broader spectrum of use cases, making it a more versatile tool for developers working with large or complex numerical data.
 
+Be aware that `bigint-buffer` is a **peer dependency** of this library and is used internally. When not installed the library will use a pure JS implementation.
+
+For those who are not in need for extreme performance it is recommended to not install `bigint-buffer` and use the pure JS implementation to keep the dependency chain as small as possible.
+
+
 ## Installation
 
 Add the library to your project:
@@ -70,7 +75,7 @@ let bigint = converter.unsigned.be.toBigInt(arr); // 42n
 
 ## Performance
 
-The library uses the NAPI bindings when available. Besides the default `converter` there is also the [`uncheckedConverter`](https://vekexasia.github.io/bigint-swissknife/variables/_vekexasia_bigint_uint8array.uncheckedConverter-1.html)
+The library uses the NAPI bindings when available (when bigint-buffer is installed as peer dependency). Besides the default `converter` there is also the [`uncheckedConverter`](https://vekexasia.github.io/bigint-swissknife/variables/_vekexasia_bigint_uint8array.uncheckedConverter-1.html)
 which is roughly 1.5x faster but does not check for overflows.
 
 Furthermore, the library allows to reuse the same buffer for multiple operations, which can be useful in performance-critical scenarios.
