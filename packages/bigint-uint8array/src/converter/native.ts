@@ -24,7 +24,6 @@ try {
   }
 } catch (e) {
   // bigint-buffer not available as peer-dependency
-  console.log('not found');
 }
 export const uncheckedConverter = _uncheckedConverter
 
