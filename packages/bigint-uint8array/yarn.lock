@@ -53,6 +53,8 @@ __metadata:
   resolution: "@vekexasia/bigint-uint8array@workspace:."
   dependencies:
     bigint-buffer: "npm:^1.1.5"
+  peerDependencies:
+    bigint-buffer: "*"
   languageName: unknown
   linkType: soft
 

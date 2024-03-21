@@ -35,7 +35,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "bigint-buffer": "^1.1.5"
+    "bigint-buffer": "*"
   },
   "devDependencies": {
     "bigint-buffer": "^1.1.5"
