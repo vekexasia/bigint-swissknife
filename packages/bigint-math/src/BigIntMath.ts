@@ -3,7 +3,6 @@ import { fillRandom } from './fillRandom.js'
 import {
   converter
 } from '@vekexasia/bigint-uint8array'
-// import x = require('@vekexasia/bigint-uint8array');
 
 /**
  * A collection of functions to perform mathematical operations on BigInts
