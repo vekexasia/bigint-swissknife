@@ -1,9 +1,8 @@
-import {defineWorkspace} from 'vitest/config'
-import path from 'path'
+import { defineWorkspace } from 'vitest/config'
 
 export default defineWorkspace([
   {
-    extends: path.join(__dirname, 'vitest.config.mts'),
+    extends: './vitest.config.mts',
     test: {
       include: ['test/*.test.ts', 'test/node-only/**/*.test.ts'],
       environment: 'node',
@@ -11,7 +10,7 @@ export default defineWorkspace([
     }
   },
   process.env.MODE !== 'benchmark' ? {
-    extends: path.join(__dirname, 'vitest.config.mts'),
+    extends: './vitest.config.mts',
     test: {
       include: ['test/*.test.ts', 'test/node-only/**/*.test.ts'],
       environment: 'node',
@@ -22,7 +21,7 @@ export default defineWorkspace([
     }
   } : {},
   process.env.MODE !== 'benchmark' ? {
-    extends: path.join(__dirname, 'vitest.config.mts'),
+    extends: './vitest.config.mts',
     test: {
       include: ['test/*.test.ts'],
       environment: 'jsdom',
@@ -31,11 +30,11 @@ export default defineWorkspace([
         './native.js': './browser.js'
       },
       browser: {
-        name: 'chrome',
         enabled: true,
+        provider: 'webdriverio',
+        name: 'chrome',
         headless: true
       }
-
     }
   } : {},
 ])

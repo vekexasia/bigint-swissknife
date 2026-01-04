@@ -4,7 +4,7 @@
   "description": "Math utilities to work with BigInt",
   "scripts": {
     "lint": "eslint \"**/*.ts\"",
-    "build": "rm -rf dist/; rollup --config rollup.config.mjs",
+    "build": "node esbuild.config.mjs",
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "prepublishOnly": "npm run build && vitest run"

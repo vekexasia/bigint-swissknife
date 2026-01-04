@@ -3,7 +3,7 @@ import {uncheckedConverter as fallback} from './browser.js';
 let _uncheckedConverter: UncheckedConverter = fallback;
 
 try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+   
   const module = await import('bigint-buffer');
 
   if (module) {

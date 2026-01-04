@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
   "scripts": {
-    "build": "rm -rf dist/; rollup --config rollup.config.mjs",
+    "build": "node esbuild.config.mjs",
     "lint": "npx eslint --ext .ts src test",
     "test": "vitest",
     "benchmark": "vitest bench",
