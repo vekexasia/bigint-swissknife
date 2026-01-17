@@ -48,12 +48,11 @@ pub fn to_buffer_be_fast(num: BigInt, buffer: &[u8]) {
 
     let dest_ptr = buffer.as_ptr() as *mut u8;
 
-    // Zero with volatile writes
-    for i in 0..width {
-        unsafe { std::ptr::write_volatile(dest_ptr.add(i), 0); }
-    }
-
     if num.words.is_empty() {
+        // Zero the entire buffer for value 0
+        for i in 0..width {
+            unsafe { std::ptr::write_volatile(dest_ptr.add(i), 0); }
+        }
         return;
     }
 
@@ -63,17 +62,23 @@ pub fn to_buffer_be_fast(num: BigInt, buffer: &[u8]) {
         std::borrow::Cow::Borrowed(&num.words)
     };
 
-    // Write words byte by byte with volatile
+    // Write words byte by byte with volatile (BE: start from end)
     let mut pos = width;
     for &word in words.iter() {
         let word_bytes = word.to_le_bytes();
         for &byte in word_bytes.iter() {
             if pos == 0 {
+                // Zero remaining leading bytes (already at start)
                 return;
             }
             pos -= 1;
             unsafe { std::ptr::write_volatile(dest_ptr.add(pos), byte); }
         }
+    }
+
+    // Zero remaining leading bytes (high-order padding)
+    for i in 0..pos {
+        unsafe { std::ptr::write_volatile(dest_ptr.add(i), 0); }
     }
 }
 
@@ -87,12 +92,11 @@ pub fn to_buffer_le_fast(num: BigInt, buffer: &[u8]) {
 
     let dest_ptr = buffer.as_ptr() as *mut u8;
 
-    // Zero with volatile writes
-    for i in 0..width {
-        unsafe { std::ptr::write_volatile(dest_ptr.add(i), 0); }
-    }
-
     if num.words.is_empty() {
+        // Zero the entire buffer for value 0
+        for i in 0..width {
+            unsafe { std::ptr::write_volatile(dest_ptr.add(i), 0); }
+        }
         return;
     }
 
@@ -113,6 +117,12 @@ pub fn to_buffer_le_fast(num: BigInt, buffer: &[u8]) {
             unsafe { std::ptr::write_volatile(dest_ptr.add(pos), byte); }
             pos += 1;
         }
+    }
+
+    // Zero remaining high bytes
+    while pos < width {
+        unsafe { std::ptr::write_volatile(dest_ptr.add(pos), 0); }
+        pos += 1;
     }
 }
 
