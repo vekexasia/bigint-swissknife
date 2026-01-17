@@ -1,12 +1,14 @@
 /**
  * Parity tests for bigint-buffer2.
  *
- * Tests that verify all implementations (native, wasm, fallback) produce identical results.
+ * Tests that verify all implementations (native, wasm, fallback) produce identical results,
+ * and that results match the original bigint-buffer library.
  */
 
 import { describe, it, expect } from 'vitest';
 import { fallback } from '../src/fallback.js';
 import { toBigIntBE, toBigIntLE, toBufferBE, toBufferLE, getImplementation } from '../src/index.js';
+import * as bigintBuffer from 'bigint-buffer';
 
 /**
  * Generate a random BigInt with specified bit length.
@@ -88,7 +90,8 @@ describe('Implementation parity', () => {
 });
 
 describe('Random value parity', () => {
-  const sizes = [1, 2, 4, 8, 16, 32, 64];
+  // Include non-power-of-2 sizes like 12 bytes (96 bits) to test edge cases
+  const sizes = [1, 2, 4, 8, 12, 16, 24, 32, 48, 64];
 
   for (const size of sizes) {
     describe(`${size}-byte values`, () => {
@@ -165,5 +168,94 @@ describe('Cross-endianness consistency', () => {
     const leValue = toBigIntLE(reversed);
 
     expect(beValue).toBe(leValue);
+  });
+});
+
+describe('bigint-buffer library parity', () => {
+  // Test that bigint-buffer2 produces identical results to the original bigint-buffer library
+  // Include non-power-of-2 sizes to catch edge cases in word boundary handling
+  const sizes = [1, 2, 4, 8, 12, 16, 24, 32, 48, 64];
+
+  for (const size of sizes) {
+    describe(`${size}-byte values`, () => {
+      it('toBufferBE should match bigint-buffer', () => {
+        for (let i = 0; i < 20; i++) {
+          const value = randomBigInt(size * 8);
+          const ours = toBufferBE(value, size);
+          const theirs = bigintBuffer.toBufferBE(value, size);
+
+          expect(Array.from(ours)).toEqual(Array.from(theirs));
+        }
+      });
+
+      it('toBufferLE should match bigint-buffer', () => {
+        for (let i = 0; i < 20; i++) {
+          const value = randomBigInt(size * 8);
+          const ours = toBufferLE(value, size);
+          const theirs = bigintBuffer.toBufferLE(value, size);
+
+          expect(Array.from(ours)).toEqual(Array.from(theirs));
+        }
+      });
+
+      it('toBigIntBE should match bigint-buffer', () => {
+        for (let i = 0; i < 20; i++) {
+          const buffer = Buffer.from(randomBuffer(size));
+          const ours = toBigIntBE(buffer);
+          const theirs = bigintBuffer.toBigIntBE(buffer);
+
+          expect(ours).toBe(theirs);
+        }
+      });
+
+      it('toBigIntLE should match bigint-buffer', () => {
+        for (let i = 0; i < 20; i++) {
+          const buffer = Buffer.from(randomBuffer(size));
+          const ours = toBigIntLE(buffer);
+          const theirs = bigintBuffer.toBigIntLE(buffer);
+
+          expect(ours).toBe(theirs);
+        }
+      });
+    });
+  }
+
+  describe('specific 12-byte edge cases', () => {
+    it('should handle max 12-byte value', () => {
+      const maxValue = (1n << 96n) - 1n;
+      expect(Array.from(toBufferBE(maxValue, 12))).toEqual(
+        Array.from(bigintBuffer.toBufferBE(maxValue, 12))
+      );
+      expect(Array.from(toBufferLE(maxValue, 12))).toEqual(
+        Array.from(bigintBuffer.toBufferLE(maxValue, 12))
+      );
+    });
+
+    it('should handle value spanning word boundaries', () => {
+      // Value that spans the 8-byte word boundary: high nibble in word 2, rest in word 1
+      const value = 0x123456789abcdef012345678n; // 96 bits
+      expect(Array.from(toBufferBE(value, 12))).toEqual(
+        Array.from(bigintBuffer.toBufferBE(value, 12))
+      );
+      expect(Array.from(toBufferLE(value, 12))).toEqual(
+        Array.from(bigintBuffer.toBufferLE(value, 12))
+      );
+    });
+
+    it('should round-trip 12-byte buffers correctly', () => {
+      const buffer = Buffer.from([
+        0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0, 0x11, 0x22, 0x33, 0x44,
+      ]);
+
+      const beBigInt = toBigIntBE(buffer);
+      const leBigInt = toBigIntLE(buffer);
+
+      expect(beBigInt).toBe(bigintBuffer.toBigIntBE(buffer));
+      expect(leBigInt).toBe(bigintBuffer.toBigIntLE(buffer));
+
+      // Round-trip
+      expect(Array.from(toBufferBE(beBigInt, 12))).toEqual(Array.from(buffer));
+      expect(Array.from(toBufferLE(leBigInt, 12))).toEqual(Array.from(buffer));
+    });
   });
 });
