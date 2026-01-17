@@ -1,0 +1,16 @@
+# Root Cargo.toml for napi-rs CLI
+# Points to the actual napi crate in rust/napi
+
+[workspace]
+members = ["rust/core", "rust/napi", "rust/wasm"]
+resolver = "2"
+
+[workspace.package]
+version = "1.0.0"
+edition = "2021"
+license = "MIT"
+authors = ["Andrea Baccega <vekexasia@gmail.com>"]
+repository = "https://github.com/vekexasia/bigint-swissknife"
+
+[workspace.dependencies]
+bigint-buffer2-core = { path = "rust/core" }

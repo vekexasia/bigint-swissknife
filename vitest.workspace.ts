@@ -1,6 +1,36 @@
 import { defineWorkspace } from 'vitest/config'
 
 export default defineWorkspace([
+  // bigint-buffer2 - node (uses fallback implementation)
+  {
+    extends: './packages/bigint-buffer2/vitest.config.mts',
+    test: {
+      root: './packages/bigint-buffer2',
+      include: ['test/*.test.ts'],
+      exclude: ['**/benchmark/**'],
+      environment: 'node',
+      name: 'node-buffer2',
+    }
+  },
+  // bigint-buffer2 - browser (uses fallback, WASM would need async init)
+  {
+    extends: './packages/bigint-buffer2/vitest.config.mts',
+    test: {
+      root: './packages/bigint-buffer2',
+      include: ['test/*.test.ts'],
+      exclude: ['**/benchmark/**'],
+      name: 'browser-buffer2',
+      alias: {
+        './native/index.js': './fallback.js'
+      },
+      browser: {
+        enabled: true,
+        provider: 'webdriverio',
+        name: 'chrome',
+        headless: true
+      }
+    }
+  },
   // bigint-uint8array - node with bigint-buffer
   {
     extends: './packages/bigint-uint8array/vitest.config.mts',

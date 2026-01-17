@@ -990,6 +990,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@napi-rs/cli@npm:^2.18.0":
+  version: 2.18.4
+  resolution: "@napi-rs/cli@npm:2.18.4"
+  bin:
+    napi: scripts/index.js
+  checksum: 10c0/cb80bc86687ba01077a0faa8d38198bc632b7caacf3a42ec42c3ec04700084ca26be9eec13bf7ac7da90e6afb46c65a39de8a86825a53b74dec2f2f459c0a7ea
+  languageName: node
+  linkType: hard
+
 "@npmcli/agent@npm:^2.0.0":
   version: 2.2.1
   resolution: "@npmcli/agent@npm:2.2.1"
@@ -1479,6 +1488,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@vekexasia/bigint-buffer2@workspace:packages/bigint-buffer2":
+  version: 0.0.0-use.local
+  resolution: "@vekexasia/bigint-buffer2@workspace:packages/bigint-buffer2"
+  dependencies:
+    "@napi-rs/cli": "npm:^2.18.0"
+    bigint-buffer: "npm:^1.1.5"
+  peerDependencies:
+    "@vekexasia/bigint-uint8array": "*"
+  peerDependenciesMeta:
+    "@vekexasia/bigint-uint8array":
+      optional: true
+  languageName: unknown
+  linkType: soft
+
 "@vekexasia/bigint-constrained@workspace:packages/bigint-constrained":
   version: 0.0.0-use.local
   resolution: "@vekexasia/bigint-constrained@workspace:packages/bigint-constrained"
@@ -1499,7 +1522,13 @@ __metadata:
   dependencies:
     bigint-buffer: "npm:^1.1.5"
   peerDependencies:
+    "@vekexasia/bigint-buffer2": "*"
     bigint-buffer: "*"
+  peerDependenciesMeta:
+    "@vekexasia/bigint-buffer2":
+      optional: true
+    bigint-buffer:
+      optional: true
   languageName: unknown
   linkType: soft
 

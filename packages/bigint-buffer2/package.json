@@ -1,0 +1,89 @@
+{
+  "name": "@vekexasia/bigint-buffer2",
+  "version": "1.0.0",
+  "description": "Fast BigInt/Buffer conversion with Rust native bindings, WASM, and JS fallback",
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "build:rust": "npm run build:native && npm run build:wasm",
+    "build:native": "napi build --platform --release --cargo-cwd rust/napi .",
+    "build:wasm": "cd rust/wasm && wasm-pack build --target web --out-dir ../../wasm",
+    "lint": "npx eslint --ext .ts src test",
+    "test": "vitest",
+    "benchmark": "vitest bench",
+    "coverage": "vitest run --coverage",
+    "pretest": "npm run build",
+    "posttest": "npm run lint",
+    "prepublishOnly": "npm run build && vitest run"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "node": {
+        "import": "./dist/node.esm.mjs",
+        "default": "./dist/node.cjs.js"
+      },
+      "default": "./dist/browser.esm.mjs"
+    },
+    "./adapter": {
+      "types": "./dist/types/adapter.d.ts",
+      "node": {
+        "import": "./dist/node.esm.mjs",
+        "default": "./dist/node.cjs.js"
+      },
+      "default": "./dist/browser.esm.mjs"
+    },
+    "./fallback": {
+      "types": "./dist/types/fallback.d.ts",
+      "import": "./dist/browser.esm.mjs",
+      "default": "./dist/browser.cjs.js"
+    }
+  },
+  "main": "./dist/node.cjs.js",
+  "module": "./dist/node.esm.mjs",
+  "types": "./dist/types/index.d.ts",
+  "engines": {
+    "node": ">= 14.0.0"
+  },
+  "author": {
+    "url": "https://www.andreabaccega.com/",
+    "email": "vekexasia@gmail.com",
+    "name": "Andrea Baccega"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vekexasia/bigint-swissknife.git",
+    "directory": "packages/bigint-buffer2"
+  },
+  "keywords": [
+    "bigint",
+    "buffer",
+    "uint8array",
+    "conversion",
+    "rust",
+    "wasm",
+    "napi"
+  ],
+  "peerDependencies": {
+    "@vekexasia/bigint-uint8array": "*"
+  },
+  "peerDependenciesMeta": {
+    "@vekexasia/bigint-uint8array": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^2.18.0",
+    "bigint-buffer": "^1.1.5"
+  },
+  "napi": {
+    "binaryName": "bigint-buffer2",
+    "targets": [
+      "x86_64-apple-darwin",
+      "aarch64-apple-darwin",
+      "x86_64-unknown-linux-gnu",
+      "x86_64-pc-windows-msvc",
+      "aarch64-unknown-linux-gnu"
+    ]
+  }
+}

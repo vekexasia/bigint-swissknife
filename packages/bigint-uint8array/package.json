@@ -35,7 +35,16 @@
   },
   "license": "MIT",
   "peerDependencies": {
+    "@vekexasia/bigint-buffer2": "*",
     "bigint-buffer": "*"
+  },
+  "peerDependenciesMeta": {
+    "@vekexasia/bigint-buffer2": {
+      "optional": true
+    },
+    "bigint-buffer": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "bigint-buffer": "^1.1.5"

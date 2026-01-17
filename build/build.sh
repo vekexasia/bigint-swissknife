@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
-ordered_packages=("bigint-uint8array" "bigint-constrained" "bigint-math" "bigint-buffer-polyfill")
+ordered_packages=("bigint-buffer2" "bigint-uint8array" "bigint-constrained" "bigint-math" "bigint-buffer-polyfill")
 
 for package in "${ordered_packages[@]}"; do
   echo "Building $package..."

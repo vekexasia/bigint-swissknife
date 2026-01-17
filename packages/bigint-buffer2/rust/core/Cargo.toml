@@ -1,0 +1,13 @@
+[package]
+name = "bigint-buffer2-core"
+version = "1.0.0"
+edition = "2021"
+license = "MIT"
+authors = ["Andrea Baccega <vekexasia@gmail.com>"]
+description = "Core BigInt/buffer conversion algorithms"
+
+[features]
+default = ["std"]
+std = []
+
+[dependencies]

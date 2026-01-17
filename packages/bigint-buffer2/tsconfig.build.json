@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist/types"
+  },
+  "include": ["src/**/*", "../../build/types/globals.d.ts"],
+  "exclude": ["dist/**/*", "test/**/*", "rust/**/*", "wasm/**/*"]
+}

@@ -1,0 +1,22 @@
+# Source files
+src/
+test/
+rust/
+
+# Build configs
+tsconfig.json
+tsconfig.build.json
+esbuild.config.mjs
+vitest.config.mts
+typedoc.json
+Cargo.toml
+.cargo/
+
+# Development files
+*.log
+.DS_Store
+coverage/
+
+# Keep dist and wasm
+!dist/
+!wasm/

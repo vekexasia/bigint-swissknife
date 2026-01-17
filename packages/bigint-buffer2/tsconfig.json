@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "outDir": "dist"
+  },
+  "include": [
+    "src/**/*",
+    "../../build/types/globals.d.ts"
+  ],
+  "exclude": [
+    "dist/**/*",
+    "test/**/*",
+    "rust/**/*",
+    "wasm/**/*"
+  ]
+}
