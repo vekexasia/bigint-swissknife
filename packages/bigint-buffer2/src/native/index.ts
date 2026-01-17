@@ -60,12 +60,20 @@ function createWrapper(binding: NativeBinding): BigIntBuffer2Extended {
       return binding.toBigintLe(buffer as Buffer);
     },
     toBufferBE: (num: bigint, width: number) => {
+      // Handle width <= 0 consistently with fallback (return empty buffer)
+      if (width <= 0) {
+        return Buffer.alloc(0);
+      }
       // Allocate in JS, let Rust fill it via fast path
       const buffer = Buffer.allocUnsafe(width);
       binding.toBufferBeFast(num, buffer);
       return buffer;
     },
     toBufferLE: (num: bigint, width: number) => {
+      // Handle width <= 0 consistently with fallback (return empty buffer)
+      if (width <= 0) {
+        return Buffer.alloc(0);
+      }
       // Allocate in JS, let Rust fill it via fast path
       const buffer = Buffer.allocUnsafe(width);
       binding.toBufferLeFast(num, buffer);
