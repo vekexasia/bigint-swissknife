@@ -133,7 +133,7 @@ export const fallback: BigIntBuffer2Extended = {
    * Convert BigInt to big-endian bytes, writing directly into a provided buffer.
    */
   toBufferBEInto(num: bigint, buffer: Buffer | Uint8Array): void {
-    const result = this.toBufferBE(num, buffer.length);
+    const result = fallback.toBufferBE(num, buffer.length);
     (buffer as Uint8Array).set(new Uint8Array(result));
   },
 
@@ -141,7 +141,7 @@ export const fallback: BigIntBuffer2Extended = {
    * Convert BigInt to little-endian bytes, writing directly into a provided buffer.
    */
   toBufferLEInto(num: bigint, buffer: Buffer | Uint8Array): void {
-    const result = this.toBufferLE(num, buffer.length);
+    const result = fallback.toBufferLE(num, buffer.length);
     (buffer as Uint8Array).set(new Uint8Array(result));
   },
 };

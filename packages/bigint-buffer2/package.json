@@ -32,10 +32,25 @@
       },
       "default": "./dist/browser.esm.mjs"
     },
+    "./js": {
+      "types": "./dist/types/fallback.d.ts",
+      "import": "./dist/js.esm.mjs",
+      "default": "./dist/js.cjs.js"
+    },
+    "./native": {
+      "types": "./dist/types/native/index.d.ts",
+      "import": "./dist/native.esm.mjs",
+      "default": "./dist/native.cjs.js"
+    },
+    "./wasm": {
+      "types": "./dist/types/wasm/index.d.ts",
+      "import": "./dist/wasm.esm.mjs",
+      "default": "./dist/wasm.cjs.js"
+    },
     "./fallback": {
       "types": "./dist/types/fallback.d.ts",
-      "import": "./dist/browser.esm.mjs",
-      "default": "./dist/browser.cjs.js"
+      "import": "./dist/js.esm.mjs",
+      "default": "./dist/js.cjs.js"
     }
   },
   "main": "./dist/node.cjs.js",
