@@ -1,7 +1,7 @@
 /**
  * Pure JavaScript fallback implementation.
  *
- * This implementation is used when native bindings or WASM are not available.
+ * This implementation is used when native bindings are not available (e.g., browsers).
  * It's based on the browser.ts implementation from bigint-uint8array but with
  * fixes for known bigint-buffer issues (#40, #59, #12, #22).
  */

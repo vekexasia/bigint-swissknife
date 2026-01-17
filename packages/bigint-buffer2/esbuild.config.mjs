@@ -12,11 +12,10 @@ async function build() {
   ]);
 
   // Native bindings should be external for node builds
-  // WASM files are loaded dynamically
 
   await runBuild(__dirname, config);
 
-  // Build separate entry points for /js, /native, /wasm
+  // Build separate entry points for /js, /native
   console.log('  Building dist/js.esm.mjs...');
   await buildBundle({
     entryPoint: 'src/fallback.ts',

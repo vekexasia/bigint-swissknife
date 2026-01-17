@@ -14,7 +14,6 @@
   "exclude": [
     "dist/**/*",
     "test/**/*",
-    "rust/**/*",
-    "wasm/**/*"
+    "rust/**/*"
   ]
 }

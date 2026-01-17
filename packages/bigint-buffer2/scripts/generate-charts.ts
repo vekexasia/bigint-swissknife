@@ -60,7 +60,6 @@ interface ChartData {
 interface ImplementationData {
   sizes: string[];
   native: number[];
-  wasm: number[];
   fallback: number[];
 }
 
@@ -155,7 +154,6 @@ function extractImplementationData(results: VitestBenchOutput, operation: Operat
   const data: ImplementationData = {
     sizes: [],
     native: [],
-    wasm: [],
     fallback: [],
   };
 
@@ -170,7 +168,6 @@ function extractImplementationData(results: VitestBenchOutput, operation: Operat
         if (!data.sizes.includes(size)) {
           data.sizes.push(size);
           data.native.push(0);
-          data.wasm.push(0);
           data.fallback.push(0);
         }
 
@@ -181,8 +178,6 @@ function extractImplementationData(results: VitestBenchOutput, operation: Operat
 
           if (bench.name === 'bigint-buffer2 native') {
             data.native[idx] = kOps;
-          } else if (bench.name === 'bigint-buffer2 wasm') {
-            data.wasm[idx] = kOps;
           } else if (bench.name === 'bigint-buffer2 fallback') {
             data.fallback[idx] = kOps;
           }
@@ -200,7 +195,6 @@ function extractImplementationData(results: VitestBenchOutput, operation: Operat
 
   data.sizes = sortedIndices.map(i => data.sizes[i]);
   data.native = sortedIndices.map(i => data.native[i] || 0);
-  data.wasm = sortedIndices.map(i => data.wasm[i] || 0);
   data.fallback = sortedIndices.map(i => data.fallback[i] || 0);
 
   return data;
@@ -478,13 +472,6 @@ async function generateImplementationComparisonChart(
           borderWidth: 2,
         },
         {
-          label: 'WASM',
-          data: implData.wasm,
-          backgroundColor: 'rgba(52, 152, 219, 0.85)',  // Blue
-          borderColor: '#2980b9',
-          borderWidth: 2,
-        },
-        {
           label: 'JS Fallback',
           data: implData.fallback,
           backgroundColor: 'rgba(231, 76, 60, 0.85)',   // Red
@@ -501,12 +488,6 @@ async function generateImplementationComparisonChart(
           text: 'bigint-buffer2 Implementation Comparison (toBufferBE)',
           font: { size: 20, weight: 'bold' },
           padding: 20,
-        },
-        subtitle: {
-          display: true,
-          text: 'WASM only available for sizes ≥ 64B',
-          font: { size: 12, style: 'italic' },
-          padding: { bottom: 10 },
         },
         legend: {
           position: 'bottom',

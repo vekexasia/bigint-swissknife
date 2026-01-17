@@ -2,7 +2,7 @@
 # Points to the actual napi crate in rust/napi
 
 [workspace]
-members = ["rust/core", "rust/napi", "rust/wasm"]
+members = ["rust/core", "rust/napi"]
 resolver = "2"
 
 [workspace.package]

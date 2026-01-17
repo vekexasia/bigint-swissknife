@@ -6,5 +6,5 @@
     "outDir": "dist/types"
   },
   "include": ["src/**/*", "../../build/types/globals.d.ts"],
-  "exclude": ["dist/**/*", "test/**/*", "rust/**/*", "wasm/**/*"]
+  "exclude": ["dist/**/*", "test/**/*", "rust/**/*"]
 }
