@@ -26,7 +26,7 @@ pub fn to_buffer_be_fast(num: BigInt, buffer: &[u8]) {
     }
 
     let words: std::borrow::Cow<[u64]> = if num.sign_bit && !num.words.is_empty() {
-        std::borrow::Cow::Owned(twos_complement(&num.words, width))
+        std::borrow::Cow::Owned(core::twos_complement(&num.words, width))
     } else {
         std::borrow::Cow::Borrowed(&num.words)
     };
@@ -70,7 +70,7 @@ pub fn to_buffer_le_fast(num: BigInt, buffer: &[u8]) {
     }
 
     let words: std::borrow::Cow<[u64]> = if num.sign_bit && !num.words.is_empty() {
-        std::borrow::Cow::Owned(twos_complement(&num.words, width))
+        std::borrow::Cow::Owned(core::twos_complement(&num.words, width))
     } else {
         std::borrow::Cow::Borrowed(&num.words)
     };
@@ -142,50 +142,6 @@ pub fn to_bigint_le(buffer: &[u8]) -> BigInt {
         sign_bit: false,
         words,
     }
-}
-
-/// Calculate two's complement for negative numbers.
-/// This converts a negative BigInt to its unsigned representation
-/// for a given byte width.
-fn twos_complement(words: &[u64], width: usize) -> Vec<u64> {
-    if words.is_empty() || width == 0 {
-        return Vec::new();
-    }
-
-    let num_words = (width + 7) / 8;
-    let mut result = vec![0u64; num_words];
-
-    // Copy original words
-    for (i, &word) in words.iter().enumerate() {
-        if i < num_words {
-            result[i] = word;
-        }
-    }
-
-    // Invert all bits
-    for word in &mut result {
-        *word = !*word;
-    }
-
-    // Add 1 (with carry propagation)
-    let mut carry = 1u64;
-    for word in &mut result {
-        let (sum, overflow) = word.overflowing_add(carry);
-        *word = sum;
-        carry = if overflow { 1 } else { 0 };
-        if carry == 0 {
-            break;
-        }
-    }
-
-    // Mask the last word if width is not a multiple of 8
-    let extra_bits = (width * 8) % 64;
-    if extra_bits != 0 && !result.is_empty() {
-        let last_idx = result.len() - 1;
-        result[last_idx] &= (1u64 << extra_bits) - 1;
-    }
-
-    result
 }
 
 #[cfg(test)]

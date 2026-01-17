@@ -12,7 +12,7 @@
 extern crate alloc;
 
 #[cfg(not(feature = "std"))]
-use alloc::vec::Vec;
+use alloc::{vec, vec::Vec};
 
 /// Convert big-endian bytes to BigInt words (u64 little-endian word order).
 ///
@@ -143,7 +143,7 @@ pub fn words_to_be_bytes(words: &[u64], width: usize) -> Vec<u8> {
     // We need to map word index + byte position to output position
     let mut output_pos = width;
 
-    for (word_idx, &word) in words.iter().enumerate() {
+    for (_word_idx, &word) in words.iter().enumerate() {
         for byte_idx in 0..8 {
             if output_pos == 0 {
                 break;
@@ -292,6 +292,50 @@ pub fn words_to_le_bytes_into(words: &[u64], dest: &mut [u8]) {
         let dest_start = words_to_write * 8;
         dest[dest_start..dest_start + partial_bytes].copy_from_slice(&word_bytes[..partial_bytes]);
     }
+}
+
+/// Calculate two's complement for negative numbers.
+/// This converts a negative BigInt to its unsigned representation
+/// for a given byte width.
+pub fn twos_complement(words: &[u64], width: usize) -> Vec<u64> {
+    if words.is_empty() || width == 0 {
+        return Vec::new();
+    }
+
+    let num_words = (width + 7) / 8;
+    let mut result = vec![0u64; num_words];
+
+    // Copy original words
+    for (i, &word) in words.iter().enumerate() {
+        if i < num_words {
+            result[i] = word;
+        }
+    }
+
+    // Invert all bits
+    for word in &mut result {
+        *word = !*word;
+    }
+
+    // Add 1 (with carry propagation)
+    let mut carry = 1u64;
+    for word in &mut result {
+        let (sum, overflow) = word.overflowing_add(carry);
+        *word = sum;
+        carry = if overflow { 1 } else { 0 };
+        if carry == 0 {
+            break;
+        }
+    }
+
+    // Mask the last word if width is not a multiple of 8
+    let extra_bits = (width * 8) % 64;
+    if extra_bits != 0 && !result.is_empty() {
+        let last_idx = result.len() - 1;
+        result[last_idx] &= (1u64 << extra_bits) - 1;
+    }
+
+    result
 }
 
 /// Calculate the minimum number of bytes needed to represent the value.
