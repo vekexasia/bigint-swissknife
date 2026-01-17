@@ -10,6 +10,41 @@ use bigint_buffer2_core as core;
 extern crate alloc;
 use alloc::vec::Vec;
 
+// Import JavaScript BigInt operations for efficient conversion
+#[wasm_bindgen(inline_js = r#"
+// Convert u64 words array (little-endian order) to BigInt
+export function wordsToJsBigint(words) {
+    if (!words || words.length === 0) return 0n;
+    let result = 0n;
+    for (let i = words.length - 1; i >= 0; i--) {
+        result = (result << 64n) | words[i];
+    }
+    return result;
+}
+
+// Convert BigInt to u64 words array (little-endian order)
+// Returns [words_array, is_negative]
+export function jsBigintToWords(num) {
+    if (num === 0n) return [new BigUint64Array(0), false];
+    const isNegative = num < 0n;
+    let abs = isNegative ? -num : num;
+    const words = [];
+    const mask = 0xffffffffffffffffn;
+    while (abs > 0n) {
+        words.push(abs & mask);
+        abs >>= 64n;
+    }
+    return [new BigUint64Array(words), isNegative];
+}
+"#)]
+extern "C" {
+    #[wasm_bindgen(js_name = wordsToJsBigint)]
+    fn words_to_js_bigint_js(words: &[u64]) -> JsBigInt;
+
+    #[wasm_bindgen(js_name = jsBigintToWords)]
+    fn js_bigint_to_words_js(num: &JsBigInt) -> JsValue;
+}
+
 /// Convert a big-endian Uint8Array to BigInt.
 ///
 /// # Arguments
@@ -158,79 +193,40 @@ pub fn to_buffer_le_into(num: &JsBigInt, buffer: &Uint8Array) {
     buffer.copy_from(&bytes);
 }
 
-/// Convert u64 words to JavaScript BigInt.
+/// Convert u64 words to JavaScript BigInt using native BigInt operations.
 ///
-/// We construct the BigInt by building it from hex string representation,
-/// which is more reliable than trying to use BigInt operations directly.
+/// Uses direct BigInt shift/OR operations instead of hex string intermediary.
+#[inline]
 fn words_to_js_bigint(words: &[u64]) -> JsBigInt {
     if words.is_empty() {
         return JsBigInt::from(0i64);
     }
-
-    // Build hex string from most significant to least significant
-    let mut hex = String::with_capacity(words.len() * 16 + 2);
-    hex.push_str("0x");
-
-    let mut leading = true;
-    for &word in words.iter().rev() {
-        if leading {
-            if word == 0 {
-                continue;
-            }
-            // First non-zero word - don't pad with zeros
-            hex.push_str(&format!("{:x}", word));
-            leading = false;
-        } else {
-            // Subsequent words - pad to 16 hex digits
-            hex.push_str(&format!("{:016x}", word));
-        }
-    }
-
-    if leading {
-        // All zeros
-        return JsBigInt::from(0i64);
-    }
-
-    // Parse the hex string as BigInt
-    JsBigInt::new(&JsValue::from_str(&hex)).unwrap_or_else(|_| JsBigInt::from(0i64))
+    words_to_js_bigint_js(words)
 }
 
-/// Convert JavaScript BigInt to u64 words.
+/// Convert JavaScript BigInt to u64 words using native BigInt operations.
 ///
 /// Returns (words, is_negative) tuple.
+#[inline]
 fn js_bigint_to_words(num: &JsBigInt) -> (Vec<u64>, bool) {
-    // Convert to string and parse
-    // This is the most reliable way to extract the value
-    let s = num.to_string(16)
-        .map(|v| v.as_string().unwrap_or_default())
-        .unwrap_or_default();
+    use js_sys::{Array, BigUint64Array};
 
-    if s.is_empty() || s == "0" {
+    let result = js_bigint_to_words_js(num);
+
+    // Result is [BigUint64Array, boolean]
+    let arr = Array::from(&result);
+    if arr.length() < 2 {
         return (Vec::new(), false);
     }
 
-    let is_negative = s.starts_with('-');
-    let hex_str = if is_negative {
-        &s[1..] // Skip the minus sign
-    } else {
-        &s[..]
-    };
+    let words_arr = arr.get(0);
+    let is_negative = arr.get(1).as_bool().unwrap_or(false);
 
-    // Parse hex string into words
-    let mut words = Vec::new();
-
-    // Process from right to left, 16 hex chars (64 bits) at a time
-    let chars: Vec<char> = hex_str.chars().collect();
-    let len = chars.len();
-
-    let mut pos = len;
-    while pos > 0 {
-        let start = if pos >= 16 { pos - 16 } else { 0 };
-        let chunk: String = chars[start..pos].iter().collect();
-        let word = u64::from_str_radix(&chunk, 16).unwrap_or(0);
-        words.push(word);
-        pos = start;
-    }
+    // Convert BigUint64Array to Vec<u64>
+    let typed_arr = BigUint64Array::from(words_arr);
+    let len = typed_arr.length() as usize;
+    let mut words = vec![0u64; len];
+    typed_arr.copy_to(&mut words);
 
     (words, is_negative)
 }
