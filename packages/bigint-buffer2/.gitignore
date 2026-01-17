@@ -1,0 +1,9 @@
+# Rust build artifacts
+target/
+
+# Node build artifacts
+dist/
+node_modules/
+
+# Generated native bindings (committed separately per platform)
+# index.*.node files are built per-platform and committed for distribution
