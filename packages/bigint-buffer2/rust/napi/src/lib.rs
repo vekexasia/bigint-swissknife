@@ -25,28 +25,56 @@ pub fn to_buffer_be_fast(num: BigInt, buffer: &[u8]) {
         return;
     }
 
-    let words: std::borrow::Cow<[u64]> = if num.sign_bit && !num.words.is_empty() {
-        std::borrow::Cow::Owned(core::twos_complement(&num.words, width))
+    // Get words (with two's complement for negative)
+    let words: Vec<u64>;
+    let words_ref: &[u64] = if num.sign_bit {
+        words = core::twos_complement(&num.words, width);
+        &words
     } else {
-        std::borrow::Cow::Borrowed(&num.words)
+        &num.words
     };
 
-    // Write words byte by byte with volatile (BE: start from end)
-    let mut pos = width;
-    for &word in words.iter() {
-        let word_bytes = word.to_le_bytes();
-        for &byte in word_bytes.iter() {
-            if pos == 0 {
-                // Zero remaining leading bytes (already at start)
-                return;
-            }
-            pos -= 1;
-            unsafe { std::ptr::write_volatile(dest_ptr.add(pos), byte); }
+    // Calculate positions for word-sized writes
+    let full_words = width / 8;
+    let words_to_write = full_words.min(words_ref.len());
+
+    // Write full 8-byte words using a single volatile u64 write each
+    // Words are LSW-first, output is BE (so LSW goes at highest address)
+    for i in 0..words_to_write {
+        let word = words_ref[i];
+        let dest_offset = width - (i + 1) * 8;
+        // Convert to BE bytes and write as u64 (single 8-byte volatile write)
+        let be_word = word.swap_bytes();  // Convert to big-endian word
+        unsafe {
+            std::ptr::write_volatile(dest_ptr.add(dest_offset) as *mut u64, be_word);
         }
     }
 
-    // Zero remaining leading bytes (high-order padding)
-    for i in 0..pos {
+    // Handle partial bytes at the beginning (high-order padding and partial word)
+    let remaining_start = width - words_to_write * 8;
+
+    // Zero high-order padding
+    let padding_end = if words_to_write < words_ref.len() {
+        // There's a partial word to write
+        let word = words_ref[words_to_write];
+        let word_bytes = word.to_be_bytes();
+        let bytes_to_write = remaining_start.min(8);
+        let src_start = 8 - bytes_to_write;
+        for i in 0..bytes_to_write {
+            unsafe {
+                std::ptr::write_volatile(
+                    dest_ptr.add(remaining_start - bytes_to_write + i),
+                    word_bytes[src_start + i]
+                );
+            }
+        }
+        remaining_start - bytes_to_write
+    } else {
+        remaining_start
+    };
+
+    // Zero any remaining padding at the beginning
+    for i in 0..padding_end {
         unsafe { std::ptr::write_volatile(dest_ptr.add(i), 0); }
     }
 }
@@ -69,29 +97,51 @@ pub fn to_buffer_le_fast(num: BigInt, buffer: &[u8]) {
         return;
     }
 
-    let words: std::borrow::Cow<[u64]> = if num.sign_bit && !num.words.is_empty() {
-        std::borrow::Cow::Owned(core::twos_complement(&num.words, width))
+    // Get words (with two's complement for negative)
+    let words: Vec<u64>;
+    let words_ref: &[u64] = if num.sign_bit {
+        words = core::twos_complement(&num.words, width);
+        &words
     } else {
-        std::borrow::Cow::Borrowed(&num.words)
+        &num.words
     };
 
-    // Write words byte by byte with volatile (LE: start from position 0)
-    let mut pos = 0;
-    for &word in words.iter() {
+    // Calculate positions for word-sized writes
+    let full_words = width / 8;
+    let words_to_write = full_words.min(words_ref.len());
+
+    // Write full 8-byte words using a single volatile u64 write each
+    // Words are LSW-first, output is LE (so word[i] goes to position i*8)
+    for i in 0..words_to_write {
+        let word = words_ref[i];
+        let dest_offset = i * 8;
+        // Write as u64 directly (already in LE format on x86/ARM)
+        unsafe {
+            std::ptr::write_volatile(dest_ptr.add(dest_offset) as *mut u64, word);
+        }
+    }
+
+    // Handle partial word at the end
+    let partial_start = words_to_write * 8;
+    if partial_start < width && words_to_write < words_ref.len() {
+        let word = words_ref[words_to_write];
         let word_bytes = word.to_le_bytes();
-        for &byte in word_bytes.iter() {
-            if pos >= width {
-                return;
+        let bytes_to_write = (width - partial_start).min(8);
+        for i in 0..bytes_to_write {
+            unsafe {
+                std::ptr::write_volatile(dest_ptr.add(partial_start + i), word_bytes[i]);
             }
-            unsafe { std::ptr::write_volatile(dest_ptr.add(pos), byte); }
-            pos += 1;
         }
     }
 
     // Zero remaining high bytes
-    while pos < width {
-        unsafe { std::ptr::write_volatile(dest_ptr.add(pos), 0); }
-        pos += 1;
+    let written = partial_start + if words_to_write < words_ref.len() {
+        (width - partial_start).min(8)
+    } else {
+        0
+    };
+    for i in written..width {
+        unsafe { std::ptr::write_volatile(dest_ptr.add(i), 0); }
     }
 }
 
@@ -110,6 +160,7 @@ pub fn to_buffer_le_fast(num: BigInt, buffer: &[u8]) {
 /// const num = toBigIntBe(buf); // 16909060n
 /// ```
 #[napi]
+#[inline(always)]
 pub fn to_bigint_be(buffer: &[u8]) -> BigInt {
     let words = core::be_bytes_to_words(buffer);
 
@@ -131,6 +182,7 @@ pub fn to_bigint_be(buffer: &[u8]) -> BigInt {
 /// # Returns
 /// BigInt value
 #[napi]
+#[inline(always)]
 pub fn to_bigint_le(buffer: &[u8]) -> BigInt {
     let words = core::le_bytes_to_words(buffer);
 
@@ -154,7 +206,7 @@ mod tests {
             sign_bit: false,
             words: vec![0x0102030405060708u64],
         };
-        let mut buffer = vec![0u8; 8];
+        let buffer = vec![0u8; 8];
         to_buffer_be_fast(num.clone(), &buffer);
         let recovered = to_bigint_be(&buffer);
         assert_eq!(recovered.words, num.words);
@@ -166,9 +218,37 @@ mod tests {
             sign_bit: false,
             words: vec![0x0102030405060708u64],
         };
-        let mut buffer = vec![0u8; 8];
+        let buffer = vec![0u8; 8];
         to_buffer_le_fast(num.clone(), &buffer);
         let recovered = to_bigint_le(&buffer);
         assert_eq!(recovered.words, num.words);
+    }
+
+    #[test]
+    fn test_roundtrip_be_large() {
+        // 16 words for 128 bytes
+        let words: Vec<u64> = (1..=16).map(|i| i * 0x0102030405060708u64).collect();
+        let num = BigInt {
+            sign_bit: false,
+            words: words.clone(),
+        };
+        let buffer = vec![0u8; 128];
+        to_buffer_be_fast(num, &buffer);
+        let recovered = to_bigint_be(&buffer);
+        assert_eq!(recovered.words, words);
+    }
+
+    #[test]
+    fn test_roundtrip_le_large() {
+        // 16 words for 128 bytes
+        let words: Vec<u64> = (1..=16).map(|i| i * 0x0102030405060708u64).collect();
+        let num = BigInt {
+            sign_bit: false,
+            words: words.clone(),
+        };
+        let buffer = vec![0u8; 128];
+        to_buffer_le_fast(num, &buffer);
+        let recovered = to_bigint_le(&buffer);
+        assert_eq!(recovered.words, words);
     }
 }
