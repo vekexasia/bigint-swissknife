@@ -103,6 +103,61 @@ export function getImplementation(): Implementation {
 }
 
 /**
+ * Explicitly set which implementation to use.
+ *
+ * Use this to force a specific implementation regardless of environment.
+ * Useful for benchmarking or when you know which implementation is best for your use case.
+ *
+ * Note: 'native' only works in Node.js, 'wasm' requires initialization first.
+ *
+ * @param impl - Implementation to use: 'js', 'wasm', or 'native'
+ * @returns Promise that resolves when the implementation is ready
+ *
+ * @example
+ * ```typescript
+ * // Force JS fallback (fastest for small values < 32 bytes)
+ * await setImplementation('js');
+ *
+ * // Force WASM (fastest for large values >= 32 bytes in browsers)
+ * await setImplementation('wasm');
+ * ```
+ */
+export async function setImplementation(impl: Implementation): Promise<void> {
+  if (impl === 'js') {
+    _impl = fallback;
+    _implType = 'js';
+  } else if (impl === 'wasm') {
+    if (isBrowser) {
+      const wasm = await import('./wasm/index.js');
+      const wasmImpl = await wasm.getWasm();
+      if (wasm.isWasmAvailable()) {
+        _impl = wasmImpl;
+        _implType = 'wasm';
+      } else {
+        throw new Error('WASM implementation not available');
+      }
+    } else {
+      throw new Error('WASM implementation only available in browser environments');
+    }
+  } else if (impl === 'native') {
+    if (!isBrowser) {
+      const native = await import('./native/index.js');
+      const isAvailable = await native.isNativeAvailable();
+      if (isAvailable) {
+        _impl = await native.getNative();
+        _implType = 'native';
+      } else {
+        throw new Error('Native implementation not available');
+      }
+    } else {
+      throw new Error('Native implementation only available in Node.js environments');
+    }
+  } else {
+    throw new Error(`Unknown implementation: ${impl}`);
+  }
+}
+
+/**
  * Convert a big-endian buffer to BigInt.
  *
  * @param buffer - Big-endian byte buffer
@@ -225,4 +280,5 @@ export default {
   initNative,
   initWasm,
   getImplementation,
+  setImplementation,
 };
