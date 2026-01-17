@@ -1,12 +1,11 @@
 {
   "name": "@vekexasia/bigint-buffer2",
   "version": "1.0.0",
-  "description": "Fast BigInt/Buffer conversion with Rust native bindings, WASM, and JS fallback",
+  "description": "Fast BigInt/Buffer conversion with Rust native bindings and JS fallback",
   "scripts": {
     "build": "node esbuild.config.mjs",
-    "build:rust": "npm run build:native && npm run build:wasm",
+    "build:rust": "npm run build:native",
     "build:native": "napi build --platform --release --cargo-cwd rust/napi .",
-    "build:wasm": "cd rust/wasm && wasm-pack build --target web --out-dir ../../wasm",
     "lint": "npx eslint --ext .ts src test",
     "test": "vitest",
     "benchmark": "vitest bench --run",
@@ -33,11 +32,6 @@
       "types": "./dist/types/native/index.d.ts",
       "import": "./dist/native.esm.mjs",
       "default": "./dist/native.cjs.js"
-    },
-    "./wasm": {
-      "types": "./dist/types/wasm/index.d.ts",
-      "import": "./dist/wasm.esm.mjs",
-      "default": "./dist/wasm.cjs.js"
     },
     "./fallback": {
       "types": "./dist/types/fallback.d.ts",
@@ -68,7 +62,6 @@
     "uint8array",
     "conversion",
     "rust",
-    "wasm",
     "napi"
   ],
   "peerDependencies": {

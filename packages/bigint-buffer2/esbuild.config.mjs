@@ -57,26 +57,6 @@ async function build() {
     packageDir: __dirname,
   });
 
-  console.log('  Building dist/wasm.esm.mjs...');
-  await buildBundle({
-    entryPoint: 'src/wasm/index.ts',
-    outfile: 'dist/wasm.esm.mjs',
-    format: 'esm',
-    isBrowser: true,
-    external: [],
-    packageDir: __dirname,
-  });
-
-  console.log('  Building dist/wasm.cjs.js...');
-  await buildBundle({
-    entryPoint: 'src/wasm/index.ts',
-    outfile: 'dist/wasm.cjs.js',
-    format: 'cjs',
-    isBrowser: true,
-    external: [],
-    packageDir: __dirname,
-  });
-
   console.log('bigint-buffer2 built successfully!');
 }
 

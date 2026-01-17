@@ -56,4 +56,4 @@ export interface BigIntBuffer2Extended extends BigIntBuffer2 {
 /**
  * Implementation type for identifying which backend is in use.
  */
-export type Implementation = 'native' | 'wasm' | 'js';
+export type Implementation = 'native' | 'js';

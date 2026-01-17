@@ -1,7 +1,7 @@
 /**
  * Parity tests for bigint-buffer2.
  *
- * Tests that verify all implementations (native, wasm, fallback) produce identical results,
+ * Tests that verify all implementations (native, fallback) produce identical results,
  * and that results match the original bigint-buffer library.
  */
 
@@ -145,7 +145,7 @@ describe('Random value parity', () => {
 describe('Implementation detection', () => {
   it('should return a valid implementation type', () => {
     const impl = getImplementation();
-    expect(['native', 'wasm', 'js']).toContain(impl);
+    expect(['native', 'js']).toContain(impl);
   });
 });
 

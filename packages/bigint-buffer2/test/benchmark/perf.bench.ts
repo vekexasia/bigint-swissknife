@@ -19,9 +19,6 @@ import {
   initNative,
 } from '../../src/index.js';
 
-// Import WASM implementation for large value benchmarks
-import * as wasmImpl from '../../src/wasm/index.js';
-
 // Try to import original bigint-buffer for comparison
 let bigintBuffer: typeof import('bigint-buffer') | null = null;
 try {
@@ -32,15 +29,6 @@ try {
 
 // Initialize native before running benchmarks
 await initNative();
-
-// Initialize WASM for large value benchmarks
-let wasmAvailable = false;
-try {
-  await wasmImpl.getWasm();
-  wasmAvailable = wasmImpl.isWasmAvailable();
-} catch {
-  console.log('WASM not available for benchmarks');
-}
 
 // Verify we're using native
 const impl = getImplementation();
@@ -82,7 +70,6 @@ const testData: Record<number, {
 
 beforeAll(() => {
   console.log(`\n✓ Using implementation: ${getImplementation()}`);
-  console.log(`✓ WASM available: ${wasmAvailable}`);
   console.log('Generating test data...\n');
 
   for (const size of sizes) {
@@ -117,14 +104,6 @@ for (const size of sizes) {
       }
     });
 
-    if (size >= 64 && wasmAvailable) {
-      bench('bigint-buffer2 wasm', () => {
-        for (const buf of testData[size].buffers) {
-          wasmImpl.toBigIntBE(buf);
-        }
-      });
-    }
-
     bench('bigint-buffer2 fallback', () => {
       for (const buf of testData[size].buffers) {
         bigintBuffer2Fallback.toBigIntBE(buf);
@@ -147,14 +126,6 @@ for (const size of sizes) {
         toBigIntLE(buf);
       }
     });
-
-    if (size >= 64 && wasmAvailable) {
-      bench('bigint-buffer2 wasm', () => {
-        for (const buf of testData[size].buffers) {
-          wasmImpl.toBigIntLE(buf);
-        }
-      });
-    }
 
     bench('bigint-buffer2 fallback', () => {
       for (const buf of testData[size].buffers) {
@@ -179,14 +150,6 @@ for (const size of sizes) {
       }
     });
 
-    if (size >= 64 && wasmAvailable) {
-      bench('bigint-buffer2 wasm', () => {
-        for (const value of testData[size].values) {
-          wasmImpl.toBufferBE(value, size);
-        }
-      });
-    }
-
     bench('bigint-buffer2 fallback', () => {
       for (const value of testData[size].values) {
         bigintBuffer2Fallback.toBufferBE(value, size);
@@ -210,14 +173,6 @@ for (const size of sizes) {
       }
     });
 
-    if (size >= 64 && wasmAvailable) {
-      bench('bigint-buffer2 wasm', () => {
-        for (const value of testData[size].values) {
-          wasmImpl.toBufferLE(value, size);
-        }
-      });
-    }
-
     bench('bigint-buffer2 fallback', () => {
       for (const value of testData[size].values) {
         bigintBuffer2Fallback.toBufferLE(value, size);
@@ -240,14 +195,6 @@ for (const size of sizes) {
         toBufferBEInto(testData[size].values[i], testData[size].preallocatedBuffers[i]);
       }
     });
-
-    if (size >= 64 && wasmAvailable) {
-      bench('bigint-buffer2 wasm (into)', () => {
-        for (let i = 0; i < testData[size].values.length; i++) {
-          wasmImpl.toBufferBEInto(testData[size].values[i], testData[size].preallocatedBuffers[i]);
-        }
-      });
-    }
   });
 
   // ==================== toBufferLEInto ====================
@@ -265,13 +212,5 @@ for (const size of sizes) {
         toBufferLEInto(testData[size].values[i], testData[size].preallocatedBuffers[i]);
       }
     });
-
-    if (size >= 64 && wasmAvailable) {
-      bench('bigint-buffer2 wasm (into)', () => {
-        for (let i = 0; i < testData[size].values.length; i++) {
-          wasmImpl.toBufferLEInto(testData[size].values[i], testData[size].preallocatedBuffers[i]);
-        }
-      });
-    }
   });
 }
