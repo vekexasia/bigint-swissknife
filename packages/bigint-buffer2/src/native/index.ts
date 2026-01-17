@@ -11,14 +11,14 @@ import { fallback } from '../fallback.js';
 /**
  * Native binding interface matching the napi-rs exports.
  * Note: napi-rs uses camelCase with lowercase 'i' in Bigint.
- * Runtime accepts both Buffer and Uint8Array via &[u8] slices.
+ * Rust accepts &[u8] slices which work with both Buffer and Uint8Array (zero-copy).
  */
 interface NativeBinding {
-  toBigintBe(buffer: Buffer): bigint;
-  toBigintLe(buffer: Buffer): bigint;
+  toBigintBe(buffer: Buffer | Uint8Array): bigint;
+  toBigintLe(buffer: Buffer | Uint8Array): bigint;
   // Fast versions using &[u8] slice (avoids Uint8Array overhead)
-  toBufferBeFast(num: bigint, buffer: Buffer): void;
-  toBufferLeFast(num: bigint, buffer: Buffer): void;
+  toBufferBeFast(num: bigint, buffer: Buffer | Uint8Array): void;
+  toBufferLeFast(num: bigint, buffer: Buffer | Uint8Array): void;
 }
 
 let nativeBinding: BigIntBuffer2Extended | null = null;
@@ -52,12 +52,10 @@ function getNativeModuleName(): string {
 function createWrapper(binding: NativeBinding): BigIntBuffer2Extended {
   return {
     toBigIntBE: (buffer: Buffer | Uint8Array) => {
-      // Rust accepts &[u8] directly - zero-copy for both Buffer and Uint8Array
-      return binding.toBigintBe(buffer as Buffer);
+      return binding.toBigintBe(buffer);
     },
     toBigIntLE: (buffer: Buffer | Uint8Array) => {
-      // Rust accepts &[u8] directly - zero-copy for both Buffer and Uint8Array
-      return binding.toBigintLe(buffer as Buffer);
+      return binding.toBigintLe(buffer);
     },
     toBufferBE: (num: bigint, width: number) => {
       // Handle width <= 0 consistently with fallback (return empty buffer)
@@ -80,10 +78,10 @@ function createWrapper(binding: NativeBinding): BigIntBuffer2Extended {
       return buffer;
     },
     toBufferBEInto: (num: bigint, buffer: Buffer | Uint8Array) => {
-      binding.toBufferBeFast(num, buffer as Buffer);
+      binding.toBufferBeFast(num, buffer);
     },
     toBufferLEInto: (num: bigint, buffer: Buffer | Uint8Array) => {
-      binding.toBufferLeFast(num, buffer as Buffer);
+      binding.toBufferLeFast(num, buffer);
     },
   };
 }
