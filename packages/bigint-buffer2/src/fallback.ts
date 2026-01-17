@@ -6,7 +6,7 @@
  * fixes for known bigint-buffer issues (#40, #59, #12, #22).
  */
 
-import type { BigIntBuffer2 } from './types.js';
+import type { BigIntBuffer2Extended } from './types.js';
 
 /**
  * Convert a Uint8Array to hex string.
@@ -18,7 +18,7 @@ const toHex = (buf: Uint8Array): string => {
 /**
  * Pure JavaScript implementation of BigInt/buffer conversion.
  */
-export const fallback: BigIntBuffer2 = {
+export const fallback: BigIntBuffer2Extended = {
   /**
    * Convert a big-endian buffer to BigInt.
    */
@@ -128,7 +128,23 @@ export const fallback: BigIntBuffer2 = {
 
     return result;
   },
+
+  /**
+   * Convert BigInt to big-endian bytes, writing directly into a provided buffer.
+   */
+  toBufferBEInto(num: bigint, buffer: Buffer | Uint8Array): void {
+    const result = this.toBufferBE(num, buffer.length);
+    (buffer as Uint8Array).set(new Uint8Array(result));
+  },
+
+  /**
+   * Convert BigInt to little-endian bytes, writing directly into a provided buffer.
+   */
+  toBufferLEInto(num: bigint, buffer: Buffer | Uint8Array): void {
+    const result = this.toBufferLE(num, buffer.length);
+    (buffer as Uint8Array).set(new Uint8Array(result));
+  },
 };
 
 // Export individual functions for direct import
-export const { toBigIntBE, toBigIntLE, toBufferBE, toBufferLE } = fallback;
+export const { toBigIntBE, toBigIntLE, toBufferBE, toBufferLE, toBufferBEInto, toBufferLEInto } = fallback;

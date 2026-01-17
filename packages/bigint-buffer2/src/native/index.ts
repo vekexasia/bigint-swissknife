@@ -5,7 +5,7 @@
  * If loading fails, it provides the fallback implementation.
  */
 
-import type { BigIntBuffer2, BigIntBuffer2Extended } from '../types.js';
+import type { BigIntBuffer2Extended } from '../types.js';
 import { fallback } from '../fallback.js';
 
 /**
@@ -153,12 +153,17 @@ export async function getNative(): Promise<BigIntBuffer2Extended> {
 }
 
 /**
- * Get the native implementation synchronously (returns fallback if not loaded).
+ * Get the native implementation synchronously.
+ * Throws if native bindings are not yet loaded.
  *
- * @returns BigIntBuffer2 implementation (extended if native is loaded)
+ * @returns BigIntBuffer2Extended native implementation
+ * @throws Error if native bindings are not loaded
  */
-export function getNativeSync(): BigIntBuffer2 {
-  return nativeBinding ?? fallback;
+export function getNativeSync(): BigIntBuffer2Extended {
+  if (!nativeBinding) {
+    throw new Error('Native bindings not loaded. Await initNative() first or use the main module exports.');
+  }
+  return nativeBinding;
 }
 
 /**
@@ -181,7 +186,7 @@ export function isNativeLoaded(): boolean {
 // Initialize loading immediately (fire and forget)
 loadNative();
 
-// Export synchronous API that uses fallback until native is loaded
+// Export synchronous API - throws if native not loaded, no fallback
 export const toBigIntBE = (buffer: Buffer | Uint8Array): bigint =>
   getNativeSync().toBigIntBE(buffer);
 
@@ -193,6 +198,12 @@ export const toBufferBE = (num: bigint, width: number): Buffer | Uint8Array =>
 
 export const toBufferLE = (num: bigint, width: number): Buffer | Uint8Array =>
   getNativeSync().toBufferLE(num, width);
+
+export const toBufferBEInto = (num: bigint, buffer: Buffer | Uint8Array): void =>
+  getNativeSync().toBufferBEInto(num, buffer);
+
+export const toBufferLEInto = (num: bigint, buffer: Buffer | Uint8Array): void =>
+  getNativeSync().toBufferLEInto(num, buffer);
 
 // Export the loading promise for those who want to wait
 export { loadingPromise };

@@ -239,31 +239,18 @@ export function toBufferLE(num: bigint, width: number): Buffer | Uint8Array {
  * ```
  */
 export function toBufferBEInto(num: bigint, buffer: Buffer | Uint8Array): void {
-  if (_impl.toBufferBEInto) {
-    _impl.toBufferBEInto(num, buffer);
-  } else {
-    // Fallback: use allocating version and copy
-    const result = _impl.toBufferBE(num, buffer.length);
-    buffer.set(new Uint8Array(result));
-  }
+  _impl.toBufferBEInto(num, buffer);
 }
 
 /**
  * Convert BigInt to little-endian bytes, writing directly into a provided buffer.
  * This is an optimized version that avoids buffer allocation.
- * Only available when native bindings are loaded.
  *
  * @param num - BigInt value to convert
  * @param buffer - Pre-allocated buffer to write into (width is inferred from length)
  */
 export function toBufferLEInto(num: bigint, buffer: Buffer | Uint8Array): void {
-  if (_impl.toBufferLEInto) {
-    _impl.toBufferLEInto(num, buffer);
-  } else {
-    // Fallback: use allocating version and copy
-    const result = _impl.toBufferLE(num, buffer.length);
-    buffer.set(new Uint8Array(result));
-  }
+  _impl.toBufferLEInto(num, buffer);
 }
 
 // Re-export fallback for direct access

@@ -110,6 +110,54 @@ pub fn to_buffer_le(num: &JsBigInt, width: u32) -> Uint8Array {
     Uint8Array::from(&bytes[..])
 }
 
+/// Convert a BigInt to big-endian bytes, writing into a provided Uint8Array.
+///
+/// # Arguments
+/// * `num` - BigInt value
+/// * `buffer` - Pre-allocated Uint8Array to write into
+#[wasm_bindgen]
+pub fn to_buffer_be_into(num: &JsBigInt, buffer: &Uint8Array) {
+    let width = buffer.length() as usize;
+    if width == 0 {
+        return;
+    }
+
+    let (words, is_negative) = js_bigint_to_words(num);
+
+    let final_words = if is_negative && !words.is_empty() {
+        core::twos_complement(&words, width)
+    } else {
+        words
+    };
+
+    let bytes = core::words_to_be_bytes(&final_words, width);
+    buffer.copy_from(&bytes);
+}
+
+/// Convert a BigInt to little-endian bytes, writing into a provided Uint8Array.
+///
+/// # Arguments
+/// * `num` - BigInt value
+/// * `buffer` - Pre-allocated Uint8Array to write into
+#[wasm_bindgen]
+pub fn to_buffer_le_into(num: &JsBigInt, buffer: &Uint8Array) {
+    let width = buffer.length() as usize;
+    if width == 0 {
+        return;
+    }
+
+    let (words, is_negative) = js_bigint_to_words(num);
+
+    let final_words = if is_negative && !words.is_empty() {
+        core::twos_complement(&words, width)
+    } else {
+        words
+    };
+
+    let bytes = core::words_to_le_bytes(&final_words, width);
+    buffer.copy_from(&bytes);
+}
+
 /// Convert u64 words to JavaScript BigInt.
 ///
 /// We construct the BigInt by building it from hex string representation,

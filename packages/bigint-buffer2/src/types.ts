@@ -43,14 +43,14 @@ export interface BigIntBuffer2Extended extends BigIntBuffer2 {
    * @param num - BigInt value to convert
    * @param buffer - Pre-allocated buffer to write into (width is inferred from length)
    */
-  toBufferBEInto?(num: bigint, buffer: Buffer | Uint8Array): void;
+  toBufferBEInto(num: bigint, buffer: Buffer | Uint8Array): void;
 
   /**
    * Convert BigInt to little-endian bytes, writing directly into a provided buffer.
    * @param num - BigInt value to convert
    * @param buffer - Pre-allocated buffer to write into (width is inferred from length)
    */
-  toBufferLEInto?(num: bigint, buffer: Buffer | Uint8Array): void;
+  toBufferLEInto(num: bigint, buffer: Buffer | Uint8Array): void;
 }
 
 /**
