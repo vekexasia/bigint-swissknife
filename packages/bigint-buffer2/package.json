@@ -9,7 +9,7 @@
     "build:wasm": "cd rust/wasm && wasm-pack build --target web --out-dir ../../wasm",
     "lint": "npx eslint --ext .ts src test",
     "test": "vitest",
-    "benchmark": "vitest bench",
+    "benchmark": "vitest bench --run",
     "coverage": "vitest run --coverage",
     "pretest": "npm run build",
     "posttest": "npm run lint",

@@ -141,48 +141,10 @@ pub fn le_bytes_to_words(bytes: &[u8]) -> Vec<u64> {
 /// # Notes
 /// - If `width` is 0, returns empty vector (fixes issue #40)
 /// - If the value is too large for `width`, it will be truncated (high bytes removed)
+#[inline]
 pub fn words_to_be_bytes(words: &[u64], width: usize) -> Vec<u8> {
-    // Handle width 0 - return empty (fixes issue #40 - core dump)
-    if width == 0 {
-        return Vec::new();
-    }
-
-    // Handle empty words (value is 0)
-    if words.is_empty() {
-        return vec![0u8; width];
-    }
-
-    // Calculate the actual byte size of the value
-    let value_bytes = words_byte_length(words);
-
-    // Create output buffer
     let mut result = vec![0u8; width];
-
-    // Copy bytes from words to result (big-endian output)
-    // We need to map word index + byte position to output position
-    let mut output_pos = width;
-
-    for (_word_idx, &word) in words.iter().enumerate() {
-        for byte_idx in 0..8 {
-            if output_pos == 0 {
-                break;
-            }
-            output_pos -= 1;
-
-            let byte_value = ((word >> (byte_idx * 8)) & 0xFF) as u8;
-            result[output_pos] = byte_value;
-
-            // Check if we've written all significant bytes
-            let total_bytes_written = width - output_pos;
-            if total_bytes_written >= value_bytes && total_bytes_written >= width {
-                break;
-            }
-        }
-        if output_pos == 0 {
-            break;
-        }
-    }
-
+    words_to_be_bytes_into(words, &mut result);
     result
 }
 
@@ -194,33 +156,10 @@ pub fn words_to_be_bytes(words: &[u64], width: usize) -> Vec<u8> {
 ///
 /// # Returns
 /// Little-endian byte array of exactly `width` bytes
+#[inline]
 pub fn words_to_le_bytes(words: &[u64], width: usize) -> Vec<u8> {
-    // Handle width 0 - return empty (fixes issue #40)
-    if width == 0 {
-        return Vec::new();
-    }
-
-    // Handle empty words (value is 0)
-    if words.is_empty() {
-        return vec![0u8; width];
-    }
-
     let mut result = vec![0u8; width];
-    let mut output_pos = 0;
-
-    for &word in words.iter() {
-        for byte_idx in 0..8 {
-            if output_pos >= width {
-                break;
-            }
-            result[output_pos] = ((word >> (byte_idx * 8)) & 0xFF) as u8;
-            output_pos += 1;
-        }
-        if output_pos >= width {
-            break;
-        }
-    }
-
+    words_to_le_bytes_into(words, &mut result);
     result
 }
 
@@ -355,27 +294,6 @@ pub fn twos_complement(words: &[u64], width: usize) -> Vec<u64> {
     }
 
     result
-}
-
-/// Calculate the minimum number of bytes needed to represent the value.
-fn words_byte_length(words: &[u64]) -> usize {
-    if words.is_empty() {
-        return 0;
-    }
-
-    // Find the most significant non-zero word
-    let msw_idx = words.iter().rposition(|&w| w != 0).unwrap_or(0);
-    let msw = words[msw_idx];
-
-    if msw == 0 {
-        return 0;
-    }
-
-    // Count bytes in the most significant word
-    let msw_bytes = 8 - (msw.leading_zeros() / 8) as usize;
-
-    // Total bytes = full words before MSW + bytes in MSW
-    msw_idx * 8 + msw_bytes
 }
 
 #[cfg(test)]

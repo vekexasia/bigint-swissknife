@@ -6,6 +6,9 @@ license = "MIT"
 authors = ["Andrea Baccega <vekexasia@gmail.com>"]
 description = "WASM bindings for BigInt/buffer conversion"
 
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-O3", "--enable-bulk-memory"]
+
 [lib]
 crate-type = ["cdylib", "rlib"]
 
@@ -15,5 +18,7 @@ wasm-bindgen = "0.2"
 js-sys = "0.3"
 
 [profile.release]
-opt-level = "s"
+opt-level = 3
 lto = true
+codegen-units = 1
+panic = "abort"
