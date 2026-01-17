@@ -16,10 +16,6 @@ import { fallback } from '../fallback.js';
 interface NativeBinding {
   toBigintBe(buffer: Buffer): bigint;
   toBigintLe(buffer: Buffer): bigint;
-  toBufferBe(num: bigint, width: number): Buffer;
-  toBufferLe(num: bigint, width: number): Buffer;
-  toBufferBeInto(num: bigint, buffer: Buffer): void;
-  toBufferLeInto(num: bigint, buffer: Buffer): void;
   // Fast versions using &[u8] slice (avoids Uint8Array overhead)
   toBufferBeFast(num: bigint, buffer: Buffer): void;
   toBufferLeFast(num: bigint, buffer: Buffer): void;
@@ -64,17 +60,21 @@ function createWrapper(binding: NativeBinding): BigIntBuffer2Extended {
       return binding.toBigintLe(buffer as Buffer);
     },
     toBufferBE: (num: bigint, width: number) => {
-      return binding.toBufferBe(num, width);
+      // Allocate in JS, let Rust fill it via fast path
+      const buffer = Buffer.allocUnsafe(width);
+      binding.toBufferBeFast(num, buffer);
+      return buffer;
     },
     toBufferLE: (num: bigint, width: number) => {
-      return binding.toBufferLe(num, width);
+      // Allocate in JS, let Rust fill it via fast path
+      const buffer = Buffer.allocUnsafe(width);
+      binding.toBufferLeFast(num, buffer);
+      return buffer;
     },
     toBufferBEInto: (num: bigint, buffer: Buffer | Uint8Array) => {
-      // Use fast version with &[u8] slice - avoids Uint8Array parameter overhead
       binding.toBufferBeFast(num, buffer as Buffer);
     },
     toBufferLEInto: (num: bigint, buffer: Buffer | Uint8Array) => {
-      // Use fast version with &[u8] slice - avoids Uint8Array parameter overhead
       binding.toBufferLeFast(num, buffer as Buffer);
     },
   };

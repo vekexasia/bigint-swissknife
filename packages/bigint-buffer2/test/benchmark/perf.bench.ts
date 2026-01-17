@@ -10,18 +10,6 @@ import { bench, describe, beforeAll } from 'vitest';
 import { fallback as bigintBuffer2Fallback } from '../../src/fallback.js';
 import { toBigIntBE, toBufferBE, toBufferBEInto, getImplementation, initNative } from '../../src/index.js';
 
-// Import native bindings directly for overhead testing
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const native = require('../../index.linux-x64-gnu.node') as {
-  bigintNoop(num: bigint): void;
-  bufferNoop(buffer: Buffer): void;
-  uint8ArrayNoop(buffer: Buffer): void;
-  bothNoop(num: bigint, buffer: Buffer): void;
-  bothSliceNoop(num: bigint, buffer: Buffer): void;
-  toBufferBeFast(num: bigint, buffer: Buffer): void;
-};
-
 // Try to import original bigint-buffer for comparison
 let bigintBuffer: typeof import('bigint-buffer') | null = null;
 try {
@@ -113,7 +101,7 @@ describe('toBufferBE (32B)', () => {
     });
   }
 
-  bench('bigint-buffer2 native (alloc)', () => {
+  bench('bigint-buffer2 native', () => {
     for (const value of values) {
       toBufferBE(value, size);
     }
@@ -125,47 +113,9 @@ describe('toBufferBE (32B)', () => {
     }
   });
 
-  bench('bigint-buffer2 native (fast)', () => {
-    for (let i = 0; i < values.length; i++) {
-      native.toBufferBeFast(values[i], preallocatedBuffers[i]);
-    }
-  });
-
   bench('bigint-buffer2 fallback', () => {
     for (const value of values) {
       bigintBuffer2Fallback.toBufferBE(value, size);
-    }
-  });
-});
-
-describe('napi overhead (32B)', () => {
-  bench('BigInt param (noop)', () => {
-    for (const value of values) {
-      native.bigintNoop(value);
-    }
-  });
-
-  bench('&[u8] slice param (noop)', () => {
-    for (const buf of buffers) {
-      native.bufferNoop(buf);
-    }
-  });
-
-  bench('Uint8Array param (noop)', () => {
-    for (const buf of preallocatedBuffers) {
-      native.uint8ArrayNoop(buf);
-    }
-  });
-
-  bench('BigInt + Uint8Array (noop)', () => {
-    for (let i = 0; i < values.length; i++) {
-      native.bothNoop(values[i], preallocatedBuffers[i]);
-    }
-  });
-
-  bench('BigInt + &[u8] slice (noop)', () => {
-    for (let i = 0; i < values.length; i++) {
-      native.bothSliceNoop(values[i], preallocatedBuffers[i]);
     }
   });
 });

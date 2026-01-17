@@ -310,19 +310,9 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { bigintNoop, bufferNoop, uint8ArrayNoop, bothNoop, bothSliceNoop, testZero, toBufferBeFast, toBufferLeFast, toBigintBe, toBigintLe, toBufferBe, toBufferLe, toBufferBeInto, toBufferLeInto } = nativeBinding
+const { toBufferBeFast, toBufferLeFast, toBigintBe, toBigintLe } = nativeBinding
 
-module.exports.bigintNoop = bigintNoop
-module.exports.bufferNoop = bufferNoop
-module.exports.uint8ArrayNoop = uint8ArrayNoop
-module.exports.bothNoop = bothNoop
-module.exports.bothSliceNoop = bothSliceNoop
-module.exports.testZero = testZero
 module.exports.toBufferBeFast = toBufferBeFast
 module.exports.toBufferLeFast = toBufferLeFast
 module.exports.toBigintBe = toBigintBe
 module.exports.toBigintLe = toBigintLe
-module.exports.toBufferBe = toBufferBe
-module.exports.toBufferLe = toBufferLe
-module.exports.toBufferBeInto = toBufferBeInto
-module.exports.toBufferLeInto = toBufferLeInto

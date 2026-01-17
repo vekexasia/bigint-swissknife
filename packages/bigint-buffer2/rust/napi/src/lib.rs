@@ -7,38 +7,7 @@ use napi::bindgen_prelude::*;
 use napi_derive::napi;
 use bigint_buffer2_core as core;
 
-/// No-op function to measure BigInt parameter overhead
-#[napi]
-pub fn bigint_noop(_num: BigInt) {}
-
-/// No-op function to measure buffer parameter overhead (slice)
-#[napi]
-pub fn buffer_noop(_buffer: &[u8]) {}
-
-/// No-op function to measure Uint8Array parameter overhead
-#[napi]
-pub fn uint8array_noop(_buffer: Uint8Array) {}
-
-/// No-op with both params to measure combined overhead
-#[napi]
-pub fn both_noop(_num: BigInt, _buffer: Uint8Array) {}
-
-/// No-op with BigInt and slice params
-#[napi]
-pub fn both_slice_noop(_num: BigInt, _buffer: &[u8]) {}
-
-/// Simple test - just zero the buffer
-#[napi]
-pub fn test_zero(buffer: &[u8]) {
-    let ptr = buffer.as_ptr() as *mut u8;
-    for i in 0..buffer.len() {
-        unsafe {
-            std::ptr::write_volatile(ptr.add(i), 0);
-        }
-    }
-}
-
-/// Fast BigInt to BE buffer using slice (avoids Uint8Array overhead)
+/// Convert BigInt to BE buffer using slice (avoids Uint8Array overhead)
 #[napi]
 pub fn to_buffer_be_fast(num: BigInt, buffer: &[u8]) {
     let width = buffer.len();
@@ -175,112 +144,6 @@ pub fn to_bigint_le(buffer: &[u8]) -> BigInt {
     }
 }
 
-/// Convert a BigInt to big-endian buffer with specified width.
-///
-/// # Arguments
-/// * `num` - BigInt value to convert
-/// * `width` - Desired buffer width in bytes
-///
-/// # Returns
-/// Big-endian buffer of exactly `width` bytes
-///
-/// # Example
-/// ```javascript
-/// const { toBufferBe } = require('@vekexasia/bigint-buffer2');
-/// const buf = toBufferBe(16909060n, 4); // Buffer [0x01, 0x02, 0x03, 0x04]
-/// ```
-#[napi]
-pub fn to_buffer_be(num: BigInt, width: u32) -> Buffer {
-    // Handle negative numbers - convert to unsigned representation
-    // (matching bigint-buffer behavior)
-    let words = if num.sign_bit && !num.words.is_empty() {
-        // For negative numbers, we need two's complement
-        // This matches the JS behavior of treating the BigInt as unsigned
-        twos_complement(&num.words, width as usize)
-    } else {
-        num.words.clone()
-    };
-
-    let bytes = core::words_to_be_bytes(&words, width as usize);
-    Buffer::from(bytes)
-}
-
-/// Convert a BigInt to little-endian buffer with specified width.
-///
-/// # Arguments
-/// * `num` - BigInt value to convert
-/// * `width` - Desired buffer width in bytes
-///
-/// # Returns
-/// Little-endian buffer of exactly `width` bytes
-#[napi]
-pub fn to_buffer_le(num: BigInt, width: u32) -> Buffer {
-    let words = if num.sign_bit && !num.words.is_empty() {
-        twos_complement(&num.words, width as usize)
-    } else {
-        num.words.clone()
-    };
-
-    let bytes = core::words_to_le_bytes(&words, width as usize);
-    Buffer::from(bytes)
-}
-
-/// Convert a BigInt to big-endian bytes, writing directly into a provided buffer.
-///
-/// This is an optimized version that avoids buffer allocation by writing
-/// directly into a pre-allocated buffer from JavaScript.
-///
-/// # Arguments
-/// * `num` - BigInt value to convert
-/// * `buffer` - Pre-allocated buffer to write into (width is inferred from length)
-///
-/// # Example
-/// ```javascript
-/// const { toBufferBeInto } = require('@vekexasia/bigint-buffer2');
-/// const buf = Buffer.alloc(4);
-/// toBufferBeInto(16909060n, buf); // buf is now [0x01, 0x02, 0x03, 0x04]
-/// ```
-#[napi]
-pub fn to_buffer_be_into(num: BigInt, mut buffer: Uint8Array) {
-    let dest = buffer.as_mut();
-    let width = dest.len();
-    if width == 0 {
-        return;
-    }
-
-    // Fast path: positive numbers (most common)
-    if !num.sign_bit || num.words.is_empty() {
-        core::words_to_be_bytes_into(&num.words, dest);
-    } else {
-        // Slow path: negative numbers need two's complement
-        let words = twos_complement(&num.words, width);
-        core::words_to_be_bytes_into(&words, dest);
-    }
-}
-
-/// Convert a BigInt to little-endian bytes, writing directly into a provided buffer.
-///
-/// # Arguments
-/// * `num` - BigInt value to convert
-/// * `buffer` - Pre-allocated buffer to write into (width is inferred from length)
-#[napi]
-pub fn to_buffer_le_into(num: BigInt, mut buffer: Uint8Array) {
-    let dest = buffer.as_mut();
-    let width = dest.len();
-    if width == 0 {
-        return;
-    }
-
-    // Fast path: positive numbers (most common)
-    if !num.sign_bit || num.words.is_empty() {
-        core::words_to_le_bytes_into(&num.words, dest);
-    } else {
-        // Slow path: negative numbers need two's complement
-        let words = twos_complement(&num.words, width);
-        core::words_to_le_bytes_into(&words, dest);
-    }
-}
-
 /// Calculate two's complement for negative numbers.
 /// This converts a negative BigInt to its unsigned representation
 /// for a given byte width.
@@ -335,8 +198,9 @@ mod tests {
             sign_bit: false,
             words: vec![0x0102030405060708u64],
         };
-        let buffer = to_buffer_be(num.clone(), 8);
-        let recovered = to_bigint_be(buffer);
+        let mut buffer = vec![0u8; 8];
+        to_buffer_be_fast(num.clone(), &buffer);
+        let recovered = to_bigint_be(&buffer);
         assert_eq!(recovered.words, num.words);
     }
 
@@ -346,8 +210,9 @@ mod tests {
             sign_bit: false,
             words: vec![0x0102030405060708u64],
         };
-        let buffer = to_buffer_le(num.clone(), 8);
-        let recovered = to_bigint_le(buffer);
+        let mut buffer = vec![0u8; 8];
+        to_buffer_le_fast(num.clone(), &buffer);
+        let recovered = to_bigint_le(&buffer);
         assert_eq!(recovered.words, num.words);
     }
 }
