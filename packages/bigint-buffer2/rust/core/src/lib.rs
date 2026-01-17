@@ -35,40 +35,44 @@ use alloc::{vec, vec::Vec};
 /// let words = be_bytes_to_words(&bytes);
 /// assert_eq!(words, vec![0x0102030405060708u64]);
 /// ```
+#[inline(always)]
 pub fn be_bytes_to_words(bytes: &[u8]) -> Vec<u64> {
     // Handle empty buffer - return empty words (represents 0n)
     if bytes.is_empty() {
         return Vec::new();
     }
 
-    // Skip leading zeros for efficiency
-    let first_nonzero = bytes.iter().position(|&b| b != 0).unwrap_or(bytes.len());
-    if first_nonzero == bytes.len() {
-        // All zeros
-        return Vec::new();
-    }
+    // Fast path: if first byte is non-zero, skip the leading zero scan
+    let significant_bytes = if bytes[0] != 0 {
+        bytes
+    } else {
+        let first_nonzero = bytes.iter().position(|&b| b != 0).unwrap_or(bytes.len());
+        if first_nonzero == bytes.len() {
+            return Vec::new();
+        }
+        &bytes[first_nonzero..]
+    };
 
-    let significant_bytes = &bytes[first_nonzero..];
     let num_words = (significant_bytes.len() + 7) / 8;
     let mut words = Vec::with_capacity(num_words);
 
-    // Process from least significant to most significant word
-    // Since bytes are big-endian, we read from the end
-    let mut remaining = significant_bytes;
+    // Process full 8-byte chunks from the end using direct u64 conversion (LSW first)
+    let chunks = significant_bytes.rchunks_exact(8);
+    let remainder = chunks.remainder();
 
-    while !remaining.is_empty() {
-        let chunk_size = remaining.len().min(8);
-        let chunk_start = remaining.len() - chunk_size;
-        let chunk = &remaining[chunk_start..];
+    for chunk in chunks {
+        // SAFETY: rchunks_exact guarantees exactly 8 bytes
+        let word = u64::from_be_bytes(chunk.try_into().unwrap());
+        words.push(word);
+    }
 
-        // Convert chunk to u64 (big-endian within the chunk)
+    // Handle partial bytes at the beginning (MSW)
+    if !remainder.is_empty() {
         let mut word = 0u64;
-        for &byte in chunk {
+        for &byte in remainder {
             word = (word << 8) | (byte as u64);
         }
-
         words.push(word);
-        remaining = &remaining[..chunk_start];
     }
 
     words
@@ -81,27 +85,42 @@ pub fn be_bytes_to_words(bytes: &[u8]) -> Vec<u64> {
 ///
 /// # Returns
 /// Vector of u64 words in little-endian order (LSW first)
+#[inline(always)]
 pub fn le_bytes_to_words(bytes: &[u8]) -> Vec<u64> {
     // Handle empty buffer
     if bytes.is_empty() {
         return Vec::new();
     }
 
-    // Skip trailing zeros for efficiency (in LE, trailing = high bytes)
-    let last_nonzero = bytes.iter().rposition(|&b| b != 0).map(|i| i + 1).unwrap_or(0);
-    if last_nonzero == 0 {
-        // All zeros
-        return Vec::new();
-    }
+    // Fast path: if last byte is non-zero, skip the trailing zero scan
+    let significant_bytes = if bytes[bytes.len() - 1] != 0 {
+        bytes
+    } else {
+        // Only scan if last byte is zero
+        let last_nonzero = bytes.iter().rposition(|&b| b != 0).map(|i| i + 1).unwrap_or(0);
+        if last_nonzero == 0 {
+            return Vec::new();
+        }
+        &bytes[..last_nonzero]
+    };
 
-    let significant_bytes = &bytes[..last_nonzero];
     let num_words = (significant_bytes.len() + 7) / 8;
     let mut words = Vec::with_capacity(num_words);
 
-    // Process 8 bytes at a time from the start (little-endian)
-    for chunk in significant_bytes.chunks(8) {
+    // Process full 8-byte chunks using direct u64 conversion (single load instruction)
+    let chunks = significant_bytes.chunks_exact(8);
+    let remainder = chunks.remainder();
+
+    for chunk in chunks {
+        // SAFETY: chunks_exact guarantees exactly 8 bytes
+        let word = u64::from_le_bytes(chunk.try_into().unwrap());
+        words.push(word);
+    }
+
+    // Handle remaining bytes (< 8)
+    if !remainder.is_empty() {
         let mut word = 0u64;
-        for (i, &byte) in chunk.iter().enumerate() {
+        for (i, &byte) in remainder.iter().enumerate() {
             word |= (byte as u64) << (i * 8);
         }
         words.push(word);

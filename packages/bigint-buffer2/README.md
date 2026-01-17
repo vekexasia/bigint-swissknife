@@ -63,16 +63,6 @@ import { getImplementation } from '@vekexasia/bigint-buffer2';
 console.log(getImplementation()); // 'native', 'wasm', or 'js'
 ```
 
-### UncheckedConverter Adapter
-
-For integration with `@vekexasia/bigint-uint8array`:
-
-```typescript
-import { uncheckedConverter } from '@vekexasia/bigint-buffer2/adapter';
-
-// Use as drop-in replacement for bigint-buffer in bigint-uint8array
-```
-
 ## API
 
 ### `toBigIntBE(buffer: Buffer | Uint8Array): bigint`

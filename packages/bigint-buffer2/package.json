@@ -24,14 +24,6 @@
       },
       "default": "./dist/browser.esm.mjs"
     },
-    "./adapter": {
-      "types": "./dist/types/adapter.d.ts",
-      "node": {
-        "import": "./dist/node.esm.mjs",
-        "default": "./dist/node.cjs.js"
-      },
-      "default": "./dist/browser.esm.mjs"
-    },
     "./js": {
       "types": "./dist/types/fallback.d.ts",
       "import": "./dist/js.esm.mjs",
@@ -89,7 +81,9 @@
   },
   "devDependencies": {
     "@napi-rs/cli": "^2.18.0",
-    "bigint-buffer": "^1.1.5"
+    "bigint-buffer": "^1.1.5",
+    "chart.js": "^4.5.1",
+    "chartjs-node-canvas": "^5.0.0"
   },
   "napi": {
     "binaryName": "bigint-buffer2",

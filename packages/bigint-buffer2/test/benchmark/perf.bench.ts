@@ -8,7 +8,19 @@ import { bench, describe, beforeAll } from 'vitest';
 
 // Import bigint-buffer2 implementations
 import { fallback as bigintBuffer2Fallback } from '../../src/fallback.js';
-import { toBigIntBE, toBufferBE, toBufferBEInto, getImplementation, initNative } from '../../src/index.js';
+import {
+  toBigIntBE,
+  toBigIntLE,
+  toBufferBE,
+  toBufferLE,
+  toBufferBEInto,
+  toBufferLEInto,
+  getImplementation,
+  initNative,
+} from '../../src/index.js';
+
+// Import WASM implementation for large value benchmarks
+import * as wasmImpl from '../../src/wasm/index.js';
 
 // Try to import original bigint-buffer for comparison
 let bigintBuffer: typeof import('bigint-buffer') | null = null;
@@ -20,6 +32,15 @@ try {
 
 // Initialize native before running benchmarks
 await initNative();
+
+// Initialize WASM for large value benchmarks
+let wasmAvailable = false;
+try {
+  await wasmImpl.getWasm();
+  wasmAvailable = wasmImpl.isWasmAvailable();
+} catch {
+  console.log('WASM not available for benchmarks');
+}
 
 // Verify we're using native
 const impl = getImplementation();
@@ -49,73 +70,208 @@ function randomBuffer(length: number): Buffer {
   return arr;
 }
 
-// Only test 32 bytes for now
-const size = 32;
+// Test sizes: 8, 16, 24, 32, 48, 64, 128 bytes
+const sizes = [8, 16, 24, 32, 48, 64, 128];
 
 // Pre-generate test data for consistent benchmarks
-const buffers: Buffer[] = [];
-const values: bigint[] = [];
-
-// Pre-allocate buffers for _into tests
-const preallocatedBuffers: Buffer[] = [];
+const testData: Record<number, {
+  buffers: Buffer[];
+  values: bigint[];
+  preallocatedBuffers: Buffer[];
+}> = {};
 
 beforeAll(() => {
   console.log(`\n✓ Using implementation: ${getImplementation()}`);
+  console.log(`✓ WASM available: ${wasmAvailable}`);
   console.log('Generating test data...\n');
 
-  for (let i = 0; i < 100; i++) {
-    buffers.push(randomBuffer(size));
-    values.push(randomBigInt(size * 8));
-    preallocatedBuffers.push(Buffer.alloc(size));
+  for (const size of sizes) {
+    testData[size] = {
+      buffers: [],
+      values: [],
+      preallocatedBuffers: [],
+    };
+    for (let i = 0; i < 100; i++) {
+      testData[size].buffers.push(randomBuffer(size));
+      testData[size].values.push(randomBigInt(size * 8));
+      testData[size].preallocatedBuffers.push(Buffer.alloc(size));
+    }
   }
 });
 
-describe('toBigIntBE (32B)', () => {
-  if (bigintBuffer) {
-    bench('bigint-buffer', () => {
-      for (const buf of buffers) {
-        bigintBuffer!.toBigIntBE(buf);
+// Generate benchmarks for each size
+for (const size of sizes) {
+  // ==================== toBigIntBE ====================
+  describe(`toBigIntBE (${size}B)`, () => {
+    if (bigintBuffer) {
+      bench('bigint-buffer', () => {
+        for (const buf of testData[size].buffers) {
+          bigintBuffer!.toBigIntBE(buf);
+        }
+      });
+    }
+
+    bench('bigint-buffer2 native', () => {
+      for (const buf of testData[size].buffers) {
+        toBigIntBE(buf);
       }
     });
-  }
 
-  bench('bigint-buffer2 native', () => {
-    for (const buf of buffers) {
-      toBigIntBE(buf);
+    if (size >= 64 && wasmAvailable) {
+      bench('bigint-buffer2 wasm', () => {
+        for (const buf of testData[size].buffers) {
+          wasmImpl.toBigIntBE(buf);
+        }
+      });
     }
-  });
 
-  bench('bigint-buffer2 fallback', () => {
-    for (const buf of buffers) {
-      bigintBuffer2Fallback.toBigIntBE(buf);
-    }
-  });
-});
-
-describe('toBufferBE (32B)', () => {
-  if (bigintBuffer) {
-    bench('bigint-buffer', () => {
-      for (const value of values) {
-        bigintBuffer!.toBufferBE(value, size);
+    bench('bigint-buffer2 fallback', () => {
+      for (const buf of testData[size].buffers) {
+        bigintBuffer2Fallback.toBigIntBE(buf);
       }
     });
-  }
+  });
 
-  bench('bigint-buffer2 native', () => {
-    for (const value of values) {
-      toBufferBE(value, size);
+  // ==================== toBigIntLE ====================
+  describe(`toBigIntLE (${size}B)`, () => {
+    if (bigintBuffer) {
+      bench('bigint-buffer', () => {
+        for (const buf of testData[size].buffers) {
+          bigintBuffer!.toBigIntLE(buf);
+        }
+      });
+    }
+
+    bench('bigint-buffer2 native', () => {
+      for (const buf of testData[size].buffers) {
+        toBigIntLE(buf);
+      }
+    });
+
+    if (size >= 64 && wasmAvailable) {
+      bench('bigint-buffer2 wasm', () => {
+        for (const buf of testData[size].buffers) {
+          wasmImpl.toBigIntLE(buf);
+        }
+      });
+    }
+
+    bench('bigint-buffer2 fallback', () => {
+      for (const buf of testData[size].buffers) {
+        bigintBuffer2Fallback.toBigIntLE(buf);
+      }
+    });
+  });
+
+  // ==================== toBufferBE ====================
+  describe(`toBufferBE (${size}B)`, () => {
+    if (bigintBuffer) {
+      bench('bigint-buffer', () => {
+        for (const value of testData[size].values) {
+          bigintBuffer!.toBufferBE(value, size);
+        }
+      });
+    }
+
+    bench('bigint-buffer2 native', () => {
+      for (const value of testData[size].values) {
+        toBufferBE(value, size);
+      }
+    });
+
+    if (size >= 64 && wasmAvailable) {
+      bench('bigint-buffer2 wasm', () => {
+        for (const value of testData[size].values) {
+          wasmImpl.toBufferBE(value, size);
+        }
+      });
+    }
+
+    bench('bigint-buffer2 fallback', () => {
+      for (const value of testData[size].values) {
+        bigintBuffer2Fallback.toBufferBE(value, size);
+      }
+    });
+  });
+
+  // ==================== toBufferLE ====================
+  describe(`toBufferLE (${size}B)`, () => {
+    if (bigintBuffer) {
+      bench('bigint-buffer', () => {
+        for (const value of testData[size].values) {
+          bigintBuffer!.toBufferLE(value, size);
+        }
+      });
+    }
+
+    bench('bigint-buffer2 native', () => {
+      for (const value of testData[size].values) {
+        toBufferLE(value, size);
+      }
+    });
+
+    if (size >= 64 && wasmAvailable) {
+      bench('bigint-buffer2 wasm', () => {
+        for (const value of testData[size].values) {
+          wasmImpl.toBufferLE(value, size);
+        }
+      });
+    }
+
+    bench('bigint-buffer2 fallback', () => {
+      for (const value of testData[size].values) {
+        bigintBuffer2Fallback.toBufferLE(value, size);
+      }
+    });
+  });
+
+  // ==================== toBufferBEInto ====================
+  describe(`toBufferBEInto (${size}B) - vs bigint-buffer`, () => {
+    if (bigintBuffer) {
+      bench('bigint-buffer', () => {
+        for (const value of testData[size].values) {
+          bigintBuffer!.toBufferBE(value, size);
+        }
+      });
+    }
+
+    bench('bigint-buffer2 native (into)', () => {
+      for (let i = 0; i < testData[size].values.length; i++) {
+        toBufferBEInto(testData[size].values[i], testData[size].preallocatedBuffers[i]);
+      }
+    });
+
+    if (size >= 64 && wasmAvailable) {
+      bench('bigint-buffer2 wasm (into)', () => {
+        for (let i = 0; i < testData[size].values.length; i++) {
+          wasmImpl.toBufferBEInto(testData[size].values[i], testData[size].preallocatedBuffers[i]);
+        }
+      });
     }
   });
 
-  bench('bigint-buffer2 native (into)', () => {
-    for (let i = 0; i < values.length; i++) {
-      toBufferBEInto(values[i], preallocatedBuffers[i]);
+  // ==================== toBufferLEInto ====================
+  describe(`toBufferLEInto (${size}B) - vs bigint-buffer`, () => {
+    if (bigintBuffer) {
+      bench('bigint-buffer', () => {
+        for (const value of testData[size].values) {
+          bigintBuffer!.toBufferLE(value, size);
+        }
+      });
     }
-  });
 
-  bench('bigint-buffer2 fallback', () => {
-    for (const value of values) {
-      bigintBuffer2Fallback.toBufferBE(value, size);
+    bench('bigint-buffer2 native (into)', () => {
+      for (let i = 0; i < testData[size].values.length; i++) {
+        toBufferLEInto(testData[size].values[i], testData[size].preallocatedBuffers[i]);
+      }
+    });
+
+    if (size >= 64 && wasmAvailable) {
+      bench('bigint-buffer2 wasm (into)', () => {
+        for (let i = 0; i < testData[size].values.length; i++) {
+          wasmImpl.toBufferLEInto(testData[size].values[i], testData[size].preallocatedBuffers[i]);
+        }
+      });
     }
   });
-});
+}
