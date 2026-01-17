@@ -8,11 +8,33 @@
 
 import type { BigIntBuffer2Extended } from './types.js';
 
+// Pre-computed hex lookup table for fast byte-to-hex conversion
+const HEX_CHARS = '0123456789abcdef';
+const HEX_TABLE: string[] = new Array(256);
+for (let i = 0; i < 256; i++) {
+  HEX_TABLE[i] = HEX_CHARS[i >> 4] + HEX_CHARS[i & 0xf];
+}
+
 /**
- * Convert a Uint8Array to hex string.
+ * Convert a Uint8Array to hex string (big-endian order).
  */
-const toHex = (buf: Uint8Array): string => {
-  return Array.from(buf).map((byte) => byte.toString(16).padStart(2, '0')).join('');
+const toHexBE = (buf: Uint8Array): string => {
+  let hex = '';
+  for (let i = 0; i < buf.length; i++) {
+    hex += HEX_TABLE[buf[i]];
+  }
+  return hex;
+};
+
+/**
+ * Convert a Uint8Array to hex string (little-endian order - reads from end).
+ */
+const toHexLE = (buf: Uint8Array): string => {
+  let hex = '';
+  for (let i = buf.length - 1; i >= 0; i--) {
+    hex += HEX_TABLE[buf[i]];
+  }
+  return hex;
 };
 
 /**
@@ -27,9 +49,9 @@ export const fallback: BigIntBuffer2Extended = {
     if (buffer.length === 0) {
       return 0n;
     }
-    const hex = toHex(new Uint8Array(buffer));
+    const hex = toHexBE(buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer));
     // Handle all-zero case
-    if (/^0+$/.test(hex)) {
+    if (hex.length === 0 || /^0+$/.test(hex)) {
       return 0n;
     }
     return BigInt('0x' + hex);
@@ -43,11 +65,10 @@ export const fallback: BigIntBuffer2Extended = {
     if (buffer.length === 0) {
       return 0n;
     }
-    // Reverse a copy to convert from LE to BE
-    const reversed = new Uint8Array(buffer).slice().reverse();
-    const hex = toHex(reversed);
+    // Convert LE to BE by reading bytes in reverse order (no array allocation)
+    const hex = toHexLE(buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer));
     // Handle all-zero case
-    if (/^0+$/.test(hex)) {
+    if (hex.length === 0 || /^0+$/.test(hex)) {
       return 0n;
     }
     return BigInt('0x' + hex);
@@ -134,7 +155,8 @@ export const fallback: BigIntBuffer2Extended = {
    */
   toBufferBEInto(num: bigint, buffer: Buffer | Uint8Array): void {
     const result = fallback.toBufferBE(num, buffer.length);
-    (buffer as Uint8Array).set(new Uint8Array(result));
+    // result is already Uint8Array, no need to wrap it again
+    (buffer as Uint8Array).set(result);
   },
 
   /**
@@ -142,7 +164,8 @@ export const fallback: BigIntBuffer2Extended = {
    */
   toBufferLEInto(num: bigint, buffer: Buffer | Uint8Array): void {
     const result = fallback.toBufferLE(num, buffer.length);
-    (buffer as Uint8Array).set(new Uint8Array(result));
+    // result is already Uint8Array, no need to wrap it again
+    (buffer as Uint8Array).set(result);
   },
 };
 
