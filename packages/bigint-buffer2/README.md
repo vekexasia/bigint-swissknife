@@ -22,7 +22,7 @@ This library addresses those limitations by providing:
 
 ## Documentation
 
-You can find typedoc documentation [here](https://vekexasia.github.io/bigint-swissknife/modules/_vekexasia_bigint_buffer2.html).
+You can find typedoc documentation [here](https://vekexasia.github.io/bigint-swissknife/modules/_vekexasia_bigint-buffer2.html).
 
 ## Installation
 

@@ -1,6 +1,6 @@
 {
   "name": "@vekexasia/bigint-buffer2",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Fast BigInt/Buffer conversion with Rust native bindings and JS fallback",
   "files": [
     "dist",
