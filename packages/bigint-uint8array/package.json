@@ -20,9 +20,7 @@
         "default": "./dist/node.cjs.js"
       },
       "default": "./dist/browser.esm.mjs"
-    },
-    "./umd": "./dist/browser.umd.js",
-    "./iife": "./dist/browser.iife.js"
+    }
   },
   "engines": {
     "node": ">= 14.0.0"

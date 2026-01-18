@@ -13,7 +13,7 @@ export const BigIntMath = {
    * @param value - The value to get the absolute value of
    * @returns The absolute value of the input
    * @example
-   * ```ts
+   * ```typescript
    * BigIntMath.abs(-1n) // 1n
    * BigIntMath.abs(1n) // 1n
    * BigIntMath.abs(-1) // 1n
@@ -30,7 +30,7 @@ export const BigIntMath = {
    * @param value - The value to get the sign of
    * @returns -1 if the value is negative, 0 if the value is 0, 1 if the value is positive
    * @example
-   * ```ts
+   * ```typescript
    * BigIntMath.sign(-1n) // -1
    * BigIntMath.sign(0n) // 0
    * BigIntMath.sign(1n) // 1
@@ -46,7 +46,7 @@ export const BigIntMath = {
    * @param args - The numbers to get the maximum of
    * @returns The maximum of the input numbers **transformed to a BigInt**
    * @example
-   * ```ts
+   * ```typescript
    * BigIntMath.max(1n, 2n, 3n) // 3n
    * BigIntMath.max(1, 2n, "3") // 3n
    * ```
@@ -60,7 +60,7 @@ export const BigIntMath = {
    * @param args - The numbers to get the minimum of
    * @returns The minimum of the input numbers **transformed to a BigInt**
    * @example
-   * ```ts
+   * ```typescript
    * BigIntMath.min(1n, 2n, 3n) // 1n
    * BigIntMath.min(1, 2n, "3") // 1n
    * ```
@@ -108,7 +108,7 @@ export const BigIntMath = {
    * @param divisor - The number to divide by
    * @returns The quotient of the division, rounded up
    * @example
-   * ```ts
+   * ```typescript
    * BigIntMath.ceilDivide(5n, 2n) // 3n
    * BigIntMath.ceilDivide(4n, 2n) // 2n
    * ```
@@ -124,7 +124,7 @@ export const BigIntMath = {
    * @param divisor - The number to divide by
    * @returns The quotient of the division, rounded to the nearest integer
    * @example
-   * ```ts
+   * ```typescript
    * BigIntMath.roundDivide(7n, 3n) // 2n
    * BigIntMath.roundDivide(7n, 2n) // 4n (3.5 rounded to the nearest integer)
    * ```
@@ -144,7 +144,7 @@ export const BigIntMath = {
    * In browsers, it uses `crypto.getRandomValues`
    *
    * @example
-   * ```ts
+   * ```typescript
    * BigIntMath.rand(10n) // A random number between 0 and 10
    * ```
    */

@@ -12,7 +12,7 @@ export class CheckedBigInt {
    * @param value - initial value
    * @param bounds - the set boundaries for the instance
    * @example
-   * ```ts
+   * ```typescript
    * const a = new CheckedBigInt(1n, {min: 1n, max: 10n})
    * ```
    */
@@ -23,7 +23,7 @@ export class CheckedBigInt {
    * @param bits - the bit size of the integer
    * @param signed - whether the integer is signed or not
    * @example
-   * ```ts
+   * ```typescript
    * const a = new CheckedBigInt(1n /* value *\/, 8 /*bits*\/, false/*unsigned*\/)
    * ```
    */
@@ -65,7 +65,7 @@ export class CheckedBigInt {
    * @returns A new CheckedBigInt with the result of the addition.
    * @throws RangeError If the result of the addition would exceed the bit size.
    * @example
-   * ```ts
+   * ```typescript
    * const a = i8(1n).add(1n) // 2
    * const b = i8(127n).add(1n) // throws RangeError
    * ```

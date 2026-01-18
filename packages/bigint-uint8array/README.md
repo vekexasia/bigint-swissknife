@@ -40,15 +40,6 @@ or
 yarn add @vekexasia/bigint-uint8array
 ```
 
-When using the library in a browser environment, you can **also** include it directly in your HTML file using the [iife](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) build or the [umd](https://github.com/umdjs/umd). Both will expose the `BigIntUint8Array` global variable.
-
-If you wish to use iife or umd even with your preferred builder, remember to import the library like so
-
-```typescript
-import '@vekexasia/bigint-math/iife';
-// or import '@vekexasia/bigint-math/umd'; 
-```
-
 ## Typescript
 
 The library is entirely written in TypeScript and comes with its own type definitions.

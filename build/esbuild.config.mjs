@@ -92,41 +92,6 @@ export async function buildBundle(options) {
   await esbuild.build(buildOptions);
 }
 
-/**
- * Build UMD format (esbuild doesn't support UMD natively)
- * We build IIFE and wrap it with UMD boilerplate
- */
-export async function buildUMD(options) {
-  const { packageDir, outfile, globalName } = options;
-  const tempFile = path.join(packageDir, outfile + '.temp');
-
-  // Build IIFE first
-  await buildBundle({
-    ...options,
-    format: 'iife',
-    outfile: outfile + '.temp',
-  });
-
-  // Read IIFE content and wrap with UMD
-  const iifeContent = fs.readFileSync(tempFile, 'utf-8');
-
-  // Extract the content inside the IIFE
-  const umdWrapper = `(function(root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define([], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    module.exports = factory();
-  } else {
-    root.${globalName} = factory();
-  }
-}(typeof self !== 'undefined' ? self : this, function() {
-${iifeContent}
-return ${globalName};
-}));`;
-
-  fs.writeFileSync(path.join(packageDir, outfile), umdWrapper);
-  fs.unlinkSync(tempFile);
-}
 
 /**
  * Generate TypeScript declarations using tsc
@@ -150,28 +115,24 @@ export async function generateDeclarations(packageDir) {
  * Standard build configurations
  */
 export const buildConfigs = {
-  // For packages like bigint-uint8array and bigint-math
-  // Output: browser.esm.mjs, browser.cjs.js, node.cjs.js, node.esm.mjs, browser.iife.js, browser.umd.js
-  browserAndNode: (globalName, external = []) => ({
+  // For packages like bigint-uint8array, bigint-math, bigint-buffer2
+  // Output: browser.esm.mjs, browser.cjs.js, node.cjs.js, node.esm.mjs
+  browserAndNode: (external = []) => ({
     configs: [
       { format: 'esm', isBrowser: true, outfile: 'dist/browser.esm.mjs', external },
       { format: 'cjs', isBrowser: true, outfile: 'dist/browser.cjs.js', external },
       { format: 'esm', isBrowser: false, outfile: 'dist/node.esm.mjs', external },
       { format: 'cjs', isBrowser: false, outfile: 'dist/node.cjs.js', external },
     ],
-    iife: { format: 'iife', isBrowser: true, outfile: 'dist/browser.iife.js', globalName, external: [] },
-    umd: { format: 'umd', isBrowser: true, outfile: 'dist/browser.umd.js', globalName, external: [] },
   }),
 
   // For bigint-constrained
-  // Output: esm.js, cjs.js, browser.iife.js, browser.umd.js
-  simpleWithIIFE: (globalName, external = []) => ({
+  // Output: esm.js, cjs.js
+  simple: (external = []) => ({
     configs: [
       { format: 'esm', isBrowser: true, outfile: 'dist/esm.js', external },
       { format: 'cjs', isBrowser: true, outfile: 'dist/cjs.js', external },
     ],
-    iife: { format: 'iife', isBrowser: true, outfile: 'dist/iife.js', globalName, external: [] },
-    umd: { format: 'umd', isBrowser: true, outfile: 'dist/umd.js', globalName, external: [] },
   }),
 
   // For bigint-buffer-polyfill
@@ -205,28 +166,6 @@ export async function runBuild(packageDir, buildConfig, extraOptions = {}) {
       entryPoint: 'src/index.ts',
       packageDir,
       ...config,
-      ...extraOptions,
-    });
-  }
-
-  // Build IIFE if specified
-  if (buildConfig.iife) {
-    console.log(`  Building ${buildConfig.iife.outfile}...`);
-    await buildBundle({
-      entryPoint: 'src/index.ts',
-      packageDir,
-      ...buildConfig.iife,
-      ...extraOptions,
-    });
-  }
-
-  // Build UMD if specified
-  if (buildConfig.umd) {
-    console.log(`  Building ${buildConfig.umd.outfile}...`);
-    await buildUMD({
-      entryPoint: 'src/index.ts',
-      packageDir,
-      ...buildConfig.umd,
       ...extraOptions,
     });
   }

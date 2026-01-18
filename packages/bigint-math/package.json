@@ -11,6 +11,7 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "node": {
         "import": "./dist/node.esm.mjs",
         "require": "./dist/node.cjs.js",
@@ -19,11 +20,8 @@
       "default": {
         "import": "./dist/browser.esm.mjs",
         "default": "./dist/browser.cjs.js"
-      },
-      "types": "./dist/types/index.d.ts"
-    },
-    "./umd": "./dist/browser.umd.js",
-    "./iife": "./dist/browser.iife.js"
+      }
+    }
   },
   "engines": {
     "node": ">= 14.0.0"

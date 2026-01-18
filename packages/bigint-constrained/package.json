@@ -15,9 +15,7 @@
       "types": "./dist/types/index.d.ts",
       "import": "./dist/esm.js",
       "require": "./dist/cjs.js"
-    },
-    "./iife": "./dist/iife.js",
-    "./umd": "./dist/umd.js"
+    }
   },
   "engines": {
     "node": ">= 14.0.0"

@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 async function build() {
   console.log('Building bigint-constrained...');
 
-  const config = buildConfigs.simpleWithIIFE('CheckedBigInt', []);
+  const config = buildConfigs.simple([]);
 
   await runBuild(__dirname, config);
 

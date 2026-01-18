@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 async function build() {
   console.log('Building bigint-buffer2...');
 
-  const config = buildConfigs.browserAndNode('BigIntBuffer2', [
+  const config = buildConfigs.browserAndNode([
     '@vekexasia/bigint-uint8array'
   ]);
 

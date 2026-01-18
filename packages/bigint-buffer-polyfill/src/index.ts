@@ -42,7 +42,7 @@ declare global {
    * Polyfill for BigInt support in Buffer
    * @example
    *
-   * ```ts
+   * ```typescript
    * import '@vekexasia/bigint-buffer-polyfill';
    *
    * const buf = Buffer.alloc(16);

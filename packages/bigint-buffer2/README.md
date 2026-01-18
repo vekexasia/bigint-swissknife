@@ -1,27 +1,40 @@
-# @vekexasia/bigint-buffer2
+# @vekexasia/bigint-buffer2: Fast BigInt/Buffer conversion
 
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
-[![Build Tool](https://img.shields.io/badge/Build-esbuild-yellow.svg)](https://esbuild.github.io/)
-[![Rust](https://img.shields.io/badge/Rust-Native-orange.svg)](https://www.rust-lang.org/)
-[![Test Framework](https://img.shields.io/badge/Test-Vitest-green.svg)](https://vitest.dev/)
+<img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white"/> <img
+src="https://img.shields.io/badge/esbuild-FFCF00?style=for-the-badge&logo=esbuild&logoColor=black"/> <img
+src="https://img.shields.io/badge/eslint-3A33D1?style=for-the-badge&logo=eslint&logoColor=white"/> <img
+src="https://img.shields.io/badge/vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white"/> <img
+src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white"/>
 
-Fast BigInt/Buffer conversion with Rust native bindings and JS fallback.
+This project is part of the [bigint-swissknife](https://github.com/vekexasia/bigint-swissknife) project. It provides fast BigInt/Buffer conversion with Rust native bindings and a pure JS fallback for browsers.
 
-Part of the [bigint-swissknife](https://github.com/vekexasia/bigint-swissknife) monorepo.
+## Why?
 
-## Features
+The original [`bigint-buffer`](https://github.com/no2chem/bigint-buffer/) library provided a solid foundation for working with BigInts, offering efficient conversion to and from buffers. However, it has several known issues ([#40](https://github.com/no2chem/bigint-buffer/issues/40), [#59](https://github.com/no2chem/bigint-buffer/issues/59), [#22](https://github.com/no2chem/bigint-buffer/issues/22), [#12](https://github.com/no2chem/bigint-buffer/issues/12)) and lacks browser support.
+
+This library addresses those limitations by providing:
 
 - **Native performance** via Rust napi-rs bindings for Node.js
 - **Pure JS fallback** for browsers and environments without native support
-- **Drop-in replacement** for `bigint-buffer`
-- **Fixes known issues** from the original bigint-buffer (#40, #59, #22, #12)
+- **Signed BigInt support** with two's complement encoding
 - **Cross-platform** pre-built binaries (linux-x64, darwin-x64, darwin-arm64, win32-x64)
+- **Drop-in replacement** for the original bigint-buffer
+
+## Documentation
+
+You can find typedoc documentation [here](https://vekexasia.github.io/bigint-swissknife/modules/_vekexasia_bigint_buffer2.html).
 
 ## Installation
 
+Add the library to your project:
+
 ```bash
 npm install @vekexasia/bigint-buffer2
-# or
+```
+
+or
+
+```bash
 yarn add @vekexasia/bigint-buffer2
 ```
 
@@ -40,6 +53,15 @@ const be = toBufferBE(16909060n, 4);  // Uint8Array [0x01, 0x02, 0x03, 0x04]
 const le = toBufferLE(67305985n, 4);  // Uint8Array [0x01, 0x02, 0x03, 0x04]
 ```
 
+### Signed BigInt Support
+
+```typescript
+import { toBigIntBESigned, toBigIntLESigned } from '@vekexasia/bigint-buffer2';
+
+const buffer = new Uint8Array([0xff, 0xff]); // -1 in 2 bytes (two's complement)
+const signed = toBigIntBESigned(buffer); // -1n
+```
+
 ### Implementation Detection
 
 ```typescript
@@ -48,26 +70,21 @@ import { getImplementation } from '@vekexasia/bigint-buffer2';
 console.log(getImplementation()); // 'native' or 'js'
 ```
 
-## API
+### Explicit Implementation Selection
 
-### `toBigIntBE(buffer: Buffer | Uint8Array): bigint`
-Convert a big-endian buffer to BigInt.
+For benchmarking or specific use cases, you can import implementations directly:
 
-### `toBigIntLE(buffer: Buffer | Uint8Array): bigint`
-Convert a little-endian buffer to BigInt.
+```typescript
+// Force JS fallback
+import { toBigIntBE } from '@vekexasia/bigint-buffer2/js';
 
-### `toBufferBE(num: bigint, width: number): Buffer | Uint8Array`
-Convert BigInt to big-endian buffer with specified byte width.
-
-### `toBufferLE(num: bigint, width: number): Buffer | Uint8Array`
-Convert BigInt to little-endian buffer with specified byte width.
-
-### `getImplementation(): 'native' | 'js'`
-Get the current implementation type.
+// Force native (Node.js only)
+import { toBigIntBE } from '@vekexasia/bigint-buffer2/native';
+```
 
 ## TypeScript
 
-Types are included with the package.
+The library is entirely written in TypeScript and comes with its own type definitions.
 
 ## Performance
 
@@ -83,10 +100,6 @@ Run benchmarks:
 npm run benchmark
 ```
 
-## Documentation
-
-Full API documentation: https://vekexasia.github.io/bigint-swissknife/
-
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.

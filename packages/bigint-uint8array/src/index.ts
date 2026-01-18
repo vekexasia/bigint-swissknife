@@ -55,7 +55,7 @@ export interface Convert {
    * @throws RangeError if bytes is less than 1 or number does not fit into bytes
    * @returns Uint8Array
    * @example
-   * ```ts
+   * ```typescript
    * converter.unsigned.be.toNewArray(1n, 2) // Uint8Array [ 0x00, 0x01 ]
    * converter.unsigned.be.toNewArray(-1n, 2) // RangeError: requested bigint is negative
    * converter.signed.be.toNewArray(-1n, 2) // Uint8Array [ 0xff, 0xff ]

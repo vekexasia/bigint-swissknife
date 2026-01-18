@@ -38,15 +38,6 @@ or
 yarn add @vekexasia/bigint-math
 ```
 
-When using the library in a browser environment, you can **also** include it directly in your HTML file using the [iife](https://developer.mozilla.org/en-US/docs/Glossary/IIFE) build or the [umd](https://github.com/umdjs/umd). Both will expose the `BigIntUint8Array` global variable.
-
-If you wish to use iife or umd even with your preferred builder, remember to import the library like so
-
-```typescript
-import '@vekexasia/bigint-math/iife';
-// or import '@vekexasia/bigint-math/umd'; 
-```
-
 ## Usage
 
 You can find all the available methods in the [typedoc documentation](https://vekexasia.github.io/bigint-swissknife/variables/_vekexasia_bigint_math.BigIntMath.html). But here a list of some of the most missing ones:
