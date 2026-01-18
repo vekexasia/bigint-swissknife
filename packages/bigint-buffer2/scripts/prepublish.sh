@@ -72,4 +72,41 @@ for binary in "${EXPECTED_BINARIES[@]}"; do
   fi
 done
 
-echo "All native binaries ready for publishing!"
+echo "All native binaries ready!"
+
+# Verify TypeScript types exist
+EXPECTED_TYPES=(
+  "dist/types/packages/bigint-buffer2/src/index.d.ts"
+  "dist/types/packages/bigint-buffer2/src/fallback.d.ts"
+  "dist/types/packages/bigint-buffer2/src/native/index.d.ts"
+  "dist/types/packages/bigint-buffer2/src/types.d.ts"
+)
+
+echo "Checking TypeScript declarations..."
+for typefile in "${EXPECTED_TYPES[@]}"; do
+  if [ ! -f "$typefile" ]; then
+    echo "ERROR: Missing type declaration: $typefile"
+    echo "Run 'yarn build' first to generate type declarations."
+    exit 1
+  fi
+done
+
+# Verify dist JS bundles exist
+EXPECTED_BUNDLES=(
+  "dist/node.esm.mjs"
+  "dist/node.cjs.js"
+  "dist/browser.esm.mjs"
+  "dist/native.esm.mjs"
+  "dist/js.esm.mjs"
+)
+
+echo "Checking JS bundles..."
+for bundle in "${EXPECTED_BUNDLES[@]}"; do
+  if [ ! -f "$bundle" ]; then
+    echo "ERROR: Missing JS bundle: $bundle"
+    echo "Run 'yarn build' first to generate bundles."
+    exit 1
+  fi
+done
+
+echo "All checks passed! Ready for publishing."
