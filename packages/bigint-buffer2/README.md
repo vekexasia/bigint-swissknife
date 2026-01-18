@@ -17,7 +17,7 @@ This library addresses those limitations by providing:
 - **Native performance** via Rust napi-rs bindings for Node.js
 - **Pure JS fallback** for browsers and environments without native support
 - **Signed BigInt support** with two's complement encoding
-- **Cross-platform** pre-built binaries (linux-x64, darwin-x64, darwin-arm64, win32-x64)
+- **Cross-platform** native binaries built via CI (linux-x64, linux-arm64, darwin-x64, darwin-arm64, win32-x64)
 - **Drop-in replacement** for the original bigint-buffer
 
 ## Documentation

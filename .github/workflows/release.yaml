@@ -1,0 +1,170 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'bigint-buffer2@*'
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to publish'
+        required: true
+        default: 'bigint-buffer2'
+        type: choice
+        options:
+          - bigint-buffer2
+          - bigint-uint8array
+          - bigint-constrained
+          - bigint-math
+          - bigint-buffer-polyfill
+
+jobs:
+  # Build native binaries for bigint-buffer2
+  build-native:
+    if: contains(github.ref, 'bigint-buffer2') || github.event.inputs.package == 'bigint-buffer2'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: aarch64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: aarch64-apple-darwin
+            os: macos-latest
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+
+    name: Build - ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Install dependencies (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+      - name: Install cross-compilation tools (Linux ARM64)
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+
+      - name: Setup Yarn
+        run: |
+          corepack enable
+          yarn set version 4.1.0
+
+      - name: Install Node dependencies
+        run: yarn install
+
+      - name: Build native module
+        run: yarn build:native --target ${{ matrix.target }}
+        working-directory: packages/bigint-buffer2
+        env:
+          CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: aarch64-linux-gnu-gcc
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bindings-${{ matrix.target }}
+          path: packages/bigint-buffer2/*.node
+          if-no-files-found: error
+
+  # Publish bigint-buffer2 with native binaries
+  publish-bigint-buffer2:
+    if: contains(github.ref, 'bigint-buffer2') || github.event.inputs.package == 'bigint-buffer2'
+    name: Publish bigint-buffer2
+    runs-on: ubuntu-latest
+    needs: build-native
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup Yarn
+        run: |
+          corepack enable
+          yarn set version 4.1.0
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: packages/bigint-buffer2/artifacts
+
+      - name: Move binaries to package
+        run: |
+          cd packages/bigint-buffer2
+          find artifacts -name "*.node" -exec mv {} . \;
+          ls -la *.node
+
+      - name: Build TypeScript
+        run: yarn build
+        working-directory: packages/bigint-buffer2
+
+      - name: Publish to npm
+        run: npm publish --access public
+        working-directory: packages/bigint-buffer2
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # Publish other packages (no native binaries)
+  publish-other:
+    if: |
+      !contains(github.ref, 'bigint-buffer2') &&
+      github.event.inputs.package != 'bigint-buffer2' &&
+      github.event.inputs.package != ''
+    name: Publish ${{ github.event.inputs.package }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup Yarn
+        run: |
+          corepack enable
+          yarn set version 4.1.0
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build all packages
+        run: yarn build
+
+      - name: Publish to npm
+        run: npm publish --access public
+        working-directory: packages/${{ github.event.inputs.package }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

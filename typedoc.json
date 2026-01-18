@@ -1,6 +1,6 @@
 {
-  "entryPoints": ["packages/bigint-uint8array", "packages/bigint-math", "packages/bigint-buffer-polyfill", "packages/bigint-constrained"],
-  "name": "Packages Example",
+  "entryPoints": ["packages/bigint-buffer2", "packages/bigint-uint8array", "packages/bigint-constrained", "packages/bigint-math", "packages/bigint-buffer-polyfill"],
+  "name": "bigint-swissknife",
   "entryPointStrategy": "packages",
   "includeVersion": true
 
