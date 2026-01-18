@@ -1,7 +1,13 @@
 {
   "name": "@vekexasia/bigint-buffer2",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Fast BigInt/Buffer conversion with Rust native bindings and JS fallback",
+  "files": [
+    "dist",
+    "index.js",
+    "index.d.ts",
+    "*.node"
+  ],
   "scripts": {
     "build": "node esbuild.config.mjs",
     "build:rust": "npm run build:native",
