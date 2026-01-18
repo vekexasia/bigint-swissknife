@@ -31,7 +31,7 @@ Please notice:
 
 ## Documentation
 
-You can find typedoc documentation [here](https://vekexasia.github.io/bigint-swissknife/modules/_vekexasia_bigint_constrained.html).
+You can find typedoc documentation [here](https://vekexasia.github.io/bigint-swissknife/modules/_vekexasia_bigint-constrained.html).
 
 ## Installation
 

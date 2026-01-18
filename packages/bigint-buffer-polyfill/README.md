@@ -10,7 +10,7 @@ support for BigInts. This is useful when working with Node.js.
 
 ## Documentation
 
-You can find typedoc documentation [here](https://vekexasia.github.io/bigint-swissknife/interfaces/_vekexasia_bigint_buffer_polyfill.Buffer.html).
+You can find typedoc documentation [here](https://vekexasia.github.io/bigint-swissknife/interfaces/_vekexasia_bigint-buffer-polyfill.Buffer.html).
 
 ## Installation
 

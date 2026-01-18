@@ -29,9 +29,9 @@ This monorepo fills those gaps with **fast, type-safe, browser-compatible** pack
 
 `bigint-buffer2` provides native Rust bindings that outperform pure JavaScript implementations:
 
-![Speedup Chart](./packages/bigint-buffer2/docs/benchmark-speedup.png)
+![Performance Comparison](./packages/bigint-buffer2/docs/benchmark-operations-BE.png)
 
-*~30-35% faster than the original bigint-buffer library across all buffer sizes.*
+*The red bars (`toBufferBEInto`) show 30-40% speedup by writing directly into pre-allocated buffers.*
 
 ## Quick Start
 

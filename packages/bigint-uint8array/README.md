@@ -46,7 +46,7 @@ The library is entirely written in TypeScript and comes with its own type defini
 
 ## Documentation
 
-You can find typedoc documentation [here](https://vekexasia.github.io/bigint-swissknife/modules/_vekexasia_bigint_uint8array.html).
+You can find typedoc documentation [here](https://vekexasia.github.io/bigint-swissknife/modules/_vekexasia_bigint-uint8array.html).
 
 ## Usage
 
@@ -66,7 +66,7 @@ let bigint = converter.unsigned.be.toBigInt(arr); // 42n
 
 ## Performance
 
-The library uses the NAPI bindings when available (when bigint-buffer is installed as peer dependency). Besides the default `converter` there is also the [`uncheckedConverter`](https://vekexasia.github.io/bigint-swissknife/variables/_vekexasia_bigint_uint8array.uncheckedConverter-1.html)
+The library uses the NAPI bindings when available (when bigint-buffer is installed as peer dependency). Besides the default `converter` there is also the [`uncheckedConverter`](https://vekexasia.github.io/bigint-swissknife/variables/_vekexasia_bigint-uint8array.uncheckedConverter-1.html)
 which is roughly 1.5x faster but does not check for overflows.
 
 Furthermore, the library allows to reuse the same buffer for multiple operations, which can be useful in performance-critical scenarios.
