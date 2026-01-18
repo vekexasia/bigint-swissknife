@@ -1,26 +1,43 @@
 {
   "name": "@vekexasia/bigint-buffer-polyfill",
   "version": "1.0.0",
-  "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
+  "description": "Node.js Buffer prototype extensions for BigInt read/write operations",
+  "main": "./dist/node.cjs.js",
+  "module": "./dist/node.esm.mjs",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
     "build": "node esbuild.config.mjs",
     "lint": "npx eslint --ext .ts src test",
     "test": "vitest",
     "coverage": "vitest run --coverage",
+    "pretest": "npm run build",
+    "posttest": "npm run lint",
     "prepublishOnly": "npm run build && vitest run"
   },
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "node": {
         "import": "./dist/node.esm.mjs",
         "default": "./dist/node.cjs.js"
-      },
-      "types": "./dist/types/index.d.ts"
+      }
     }
   },
   "engines": {
     "node": ">= 15.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vekexasia/bigint-swissknife.git",
+    "directory": "packages/bigint-buffer-polyfill"
+  },
+  "keywords": [
+    "bigint",
+    "buffer",
+    "polyfill",
+    "nodejs",
+    "prototype"
+  ],
   "author": {
     "url": "https://www.andreabaccega.com/",
     "email": "vekexasia@gmail.com",

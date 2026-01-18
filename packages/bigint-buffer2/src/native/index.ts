@@ -148,9 +148,8 @@ function loadNative(): Promise<BigIntBuffer2Extended | null> {
       }
 
       return null;
-    } catch (e) {
+    } catch {
       // Native binding not available, will use fallback
-      console.error('Native binding load error:', e);
       return null;
     }
   })();

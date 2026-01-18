@@ -1,12 +1,17 @@
 {
   "name": "@vekexasia/bigint-math",
   "version": "1.0.0",
-  "description": "Math utilities to work with BigInt",
+  "description": "Math utilities for BigInt: abs, sign, max, min, bitLength, divide, rand",
+  "main": "./dist/node.cjs.js",
+  "module": "./dist/node.esm.mjs",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
-    "lint": "eslint \"**/*.ts\"",
     "build": "node esbuild.config.mjs",
+    "lint": "eslint \"**/*.ts\"",
     "test": "vitest",
     "coverage": "vitest run --coverage",
+    "pretest": "npm run build",
+    "posttest": "npm run lint",
     "prepublishOnly": "npm run build && vitest run"
   },
   "exports": {
@@ -26,6 +31,21 @@
   "engines": {
     "node": ">= 14.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vekexasia/bigint-swissknife.git",
+    "directory": "packages/bigint-math"
+  },
+  "keywords": [
+    "bigint",
+    "math",
+    "abs",
+    "sign",
+    "max",
+    "min",
+    "random",
+    "bitlength"
+  ],
   "author": {
     "url": "https://www.andreabaccega.com/",
     "email": "vekexasia@gmail.com",

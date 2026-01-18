@@ -1,7 +1,10 @@
 {
   "name": "@vekexasia/bigint-uint8array",
   "version": "1.1.1",
-  "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
+  "description": "Convert BigInt to/from Uint8Array with bounds checking, signed/unsigned support, and big/little endian",
+  "main": "./dist/node.cjs.js",
+  "module": "./dist/node.esm.mjs",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
     "build": "node esbuild.config.mjs",
     "lint": "npx eslint --ext .ts src test",
@@ -25,6 +28,20 @@
   "engines": {
     "node": ">= 14.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vekexasia/bigint-swissknife.git",
+    "directory": "packages/bigint-uint8array"
+  },
+  "keywords": [
+    "bigint",
+    "uint8array",
+    "buffer",
+    "conversion",
+    "signed",
+    "unsigned",
+    "endian"
+  ],
   "author": {
     "url": "https://www.andreabaccega.com/",
     "email": "vekexasia@gmail.com",

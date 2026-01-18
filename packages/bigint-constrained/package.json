@@ -1,13 +1,18 @@
 {
   "name": "@vekexasia/bigint-constrained",
   "version": "1.0.0",
-  "description": "A library to convert bigint to and from buffers with Buffer polyfills and support for uint/int",
+  "description": "BigInt wrapper with bounds checking for fixed-width integers (u8, u16, u32, u64, i8, i16, etc.)",
+  "main": "./dist/cjs.js",
+  "module": "./dist/esm.js",
+  "types": "./dist/types/index.d.ts",
   "scripts": {
     "build": "node esbuild.config.mjs",
     "lint": "npx eslint --ext .ts src test",
     "test": "vitest",
     "benchmark": "vitest bench",
     "coverage": "vitest run --coverage",
+    "pretest": "npm run build",
+    "posttest": "npm run lint",
     "prepublishOnly": "npm run build && vitest run"
   },
   "exports": {
@@ -20,6 +25,24 @@
   "engines": {
     "node": ">= 14.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vekexasia/bigint-swissknife.git",
+    "directory": "packages/bigint-constrained"
+  },
+  "keywords": [
+    "bigint",
+    "bounds",
+    "overflow",
+    "u8",
+    "u16",
+    "u32",
+    "u64",
+    "i8",
+    "i16",
+    "i32",
+    "i64"
+  ],
   "author": {
     "url": "https://www.andreabaccega.com/",
     "email": "vekexasia@gmail.com",

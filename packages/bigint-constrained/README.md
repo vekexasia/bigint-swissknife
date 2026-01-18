@@ -5,8 +5,7 @@ src="https://img.shields.io/badge/rollup-323330?style=for-the-badge&logo=rollup.
 src="https://img.shields.io/badge/eslint-3A33D1?style=for-the-badge&logo=eslint&logoColor=white"/> <img 
 src="https://img.shields.io/badge/vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white"/>
 
-This project is part of the [bigint-swissknife](https://github.com/vekexasia/bigint-swissknife) project. It aims to monkeypatch the Buffer native class adding
-support for BigInts. This is useful when working with Node.js.
+This project is part of the [bigint-swissknife](https://github.com/vekexasia/bigint-swissknife) project. It provides a BigInt wrapper class that enforces bounds checking on arithmetic operations.
 
 ## Why?
 
