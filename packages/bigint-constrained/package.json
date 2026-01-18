@@ -1,6 +1,6 @@
 {
   "name": "@vekexasia/bigint-constrained",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "BigInt wrapper with bounds checking for fixed-width integers (u8, u16, u32, u64, i8, i16, etc.)",
   "main": "./dist/cjs.js",
   "module": "./dist/esm.js",

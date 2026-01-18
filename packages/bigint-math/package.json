@@ -1,6 +1,6 @@
 {
   "name": "@vekexasia/bigint-math",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Math utilities for BigInt: abs, sign, max, min, bitLength, divide, rand",
   "main": "./dist/node.cjs.js",
   "module": "./dist/node.esm.mjs",
