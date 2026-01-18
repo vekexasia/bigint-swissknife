@@ -57,8 +57,8 @@ Right now the library exposes the following bounded BigInts:
 - `u16` (uint16)
 - `u32` (uint32)
 - `u64` (uint64)
-- `u128` (uint64)
-- `u256` (uint64)
+- `u128` (uint128)
+- `u256` (uint256)
 - `i8` (int8)
 -  ...
 - `i256` (int256)

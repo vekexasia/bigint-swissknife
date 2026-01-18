@@ -45,6 +45,7 @@ export const BigIntMath = {
    * Returns the maximum of a list of numbers
    * @param args - The numbers to get the maximum of
    * @returns The maximum of the input numbers **transformed to a BigInt**
+   * @throws RangeError If no arguments are provided
    * @example
    * ```typescript
    * BigIntMath.max(1n, 2n, 3n) // 3n
@@ -52,6 +53,9 @@ export const BigIntMath = {
    * ```
    */
   max (...args: BigIntable[]): bigint {
+    if (args.length === 0) {
+      throw new RangeError('BigIntMath.max requires at least one argument')
+    }
     return args.reduce<bigint>((max, val) => (BigInt(val) > max ? BigInt(val) : max), BigInt(args[0]))
   },
 
@@ -59,6 +63,7 @@ export const BigIntMath = {
    * Returns the minimum of a list of numbers
    * @param args - The numbers to get the minimum of
    * @returns The minimum of the input numbers **transformed to a BigInt**
+   * @throws RangeError If no arguments are provided
    * @example
    * ```typescript
    * BigIntMath.min(1n, 2n, 3n) // 1n
@@ -66,20 +71,30 @@ export const BigIntMath = {
    * ```
    */
   min (...args: BigIntable[]): bigint {
+    if (args.length === 0) {
+      throw new RangeError('BigIntMath.min requires at least one argument')
+    }
     return args.reduce<bigint>((min, val) => (BigInt(val) < min ? BigInt(val) : min), BigInt(args[0]))
   },
 
   /**
    * Returns the number of bits required to represent a given number
-   * @param bigint - The number to get the bit length of
-   * @returns The number of bits required to represent the input number
+   * @param value - The number to get the bit length of
+   * @returns The number of bits required to represent the input number (minimum 1)
+   * @example
+   * ```typescript
+   * BigIntMath.bitLength(0n)   // 1
+   * BigIntMath.bitLength(1n)   // 1
+   * BigIntMath.bitLength(255n) // 8
+   * BigIntMath.bitLength(-1n)  // 1
+   * ```
    */
-  bitLength (bigint: BigIntable): number {
-    let v = BigInt(bigint)
+  bitLength (value: BigIntable): number {
+    let v = BigInt(value)
     if (v < 0) {
       v = -v
     }
-    if (v === 1n) { return 1 }
+    if (v <= 1n) { return 1 }
     let bits = 1
     do {
       bits++
@@ -92,10 +107,14 @@ export const BigIntMath = {
    * @param dividend - The number to divide
    * @param divisor - The number to divide by
    * @returns The quotient and remainder of the division
+   * @throws RangeError If the divisor is zero
    */
   divide (dividend: BigIntable, divisor: BigIntable): { quotient: bigint, remainder: bigint } {
     const a = BigInt(dividend)
     const b = BigInt(divisor)
+    if (b === 0n) {
+      throw new RangeError('BigIntMath.divide: division by zero')
+    }
     return {
       quotient: a / b,
       remainder: a % b
@@ -135,9 +154,10 @@ export const BigIntMath = {
   },
 
   /**
-   * Returns a random number between 0 and a given maximum
-   * @param max - The maximum value of the random number
-   * @returns A random number between 0 and the input maximum
+   * Returns a random number between 0 (inclusive) and a given maximum (exclusive)
+   * @param max - The exclusive upper bound (must be positive)
+   * @returns A random number in the range [0, max)
+   * @throws RangeError If max is not positive
    * @remarks
    * This function uses a cryptographically secure random number generator
    * In Node.js, it uses `crypto.randomBytes`
@@ -145,10 +165,13 @@ export const BigIntMath = {
    *
    * @example
    * ```typescript
-   * BigIntMath.rand(10n) // A random number between 0 and 10
+   * BigIntMath.rand(10n) // A random number between 0 and 9 (inclusive)
    * ```
    */
   rand (max: bigint): bigint {
+    if (max <= 0n) {
+      throw new RangeError('BigIntMath.rand: max must be positive')
+    }
     const bufLength = Math.ceil(BigIntMath.bitLength(max) / 8)
     const buffer = Uint8Array.from(new Array(bufLength).fill(0))
     fillRandom(buffer)

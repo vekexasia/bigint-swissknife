@@ -132,10 +132,35 @@ export class CheckedBigInt {
    * Power this integer to another integer, checking for overflow.
    * @param exponent - The integer to power by.
    * @returns A new CheckedBigInt with the result of the power.
+   * @throws RangeError If the exponent is negative.
    * @throws RangeError If the result of the power would exceed the bit size.
    */
   pow (exponent: bigint): CheckedBigInt {
+    if (exponent < 0n) {
+      throw new RangeError('CheckedBigInt: exponent must be non-negative')
+    }
     return new CheckedBigInt(this.value ** exponent, this.boundaries)
+  }
+
+  /**
+   * Modulo operation (always returns non-negative result for positive divisor).
+   * Unlike rem(), mod() follows mathematical modulo semantics where the result
+   * has the same sign as the divisor.
+   * @param other - The integer to divide by.
+   * @returns A new CheckedBigInt with the modulo result.
+   * @throws RangeError If the divisor is zero.
+   * @example
+   * ```typescript
+   * i8(-5n).mod(3n)  // 1n (mathematical modulo)
+   * i8(-5n).rem(3n)  // -2n (remainder)
+   * ```
+   */
+  mod (other: bigint): CheckedBigInt {
+    if (other === 0n) {
+      throw new RangeError('CheckedBigInt: division by zero')
+    }
+    const result = ((this.value % other) + other) % other
+    return new CheckedBigInt(result, this.boundaries)
   }
 
   /**
@@ -165,5 +190,120 @@ export class CheckedBigInt {
     }
 
     return new CheckedBigInt(this.value >> BigInt(bits), this.boundaries)
+  }
+
+  /**
+   * Bitwise AND operation.
+   * @param other - The integer to AND with.
+   * @returns A new CheckedBigInt with the result.
+   */
+  and (other: bigint): CheckedBigInt {
+    return new CheckedBigInt(this.value & other, this.boundaries)
+  }
+
+  /**
+   * Bitwise OR operation.
+   * @param other - The integer to OR with.
+   * @returns A new CheckedBigInt with the result.
+   */
+  or (other: bigint): CheckedBigInt {
+    return new CheckedBigInt(this.value | other, this.boundaries)
+  }
+
+  /**
+   * Bitwise XOR operation.
+   * @param other - The integer to XOR with.
+   * @returns A new CheckedBigInt with the result.
+   */
+  xor (other: bigint): CheckedBigInt {
+    return new CheckedBigInt(this.value ^ other, this.boundaries)
+  }
+
+  /**
+   * Bitwise NOT operation (two's complement).
+   * @returns A new CheckedBigInt with the bitwise complement.
+   */
+  not (): CheckedBigInt {
+    return new CheckedBigInt(~this.value, this.boundaries)
+  }
+
+  /**
+   * Check equality with another value.
+   * @param other - The value to compare with.
+   * @returns true if equal, false otherwise.
+   */
+  eq (other: bigint): boolean {
+    return this.value === other
+  }
+
+  /**
+   * Check inequality with another value.
+   * @param other - The value to compare with.
+   * @returns true if not equal, false otherwise.
+   */
+  neq (other: bigint): boolean {
+    return this.value !== other
+  }
+
+  /**
+   * Check if this value is less than another.
+   * @param other - The value to compare with.
+   * @returns true if less than, false otherwise.
+   */
+  lt (other: bigint): boolean {
+    return this.value < other
+  }
+
+  /**
+   * Check if this value is less than or equal to another.
+   * @param other - The value to compare with.
+   * @returns true if less than or equal, false otherwise.
+   */
+  lte (other: bigint): boolean {
+    return this.value <= other
+  }
+
+  /**
+   * Check if this value is greater than another.
+   * @param other - The value to compare with.
+   * @returns true if greater than, false otherwise.
+   */
+  gt (other: bigint): boolean {
+    return this.value > other
+  }
+
+  /**
+   * Check if this value is greater than or equal to another.
+   * @param other - The value to compare with.
+   * @returns true if greater than or equal, false otherwise.
+   */
+  gte (other: bigint): boolean {
+    return this.value >= other
+  }
+
+  /**
+   * Returns the string representation of the value.
+   * @param radix - Optional radix for the string representation (default: 10).
+   * @returns The string representation of the value.
+   */
+  toString (radix?: number): string {
+    return this.value.toString(radix)
+  }
+
+  /**
+   * Returns the value for JSON serialization.
+   * Note: BigInt values are converted to strings in JSON.
+   * @returns The string representation of the value.
+   */
+  toJSON (): string {
+    return this.value.toString()
+  }
+
+  /**
+   * Returns the primitive value (for use with valueOf).
+   * @returns The bigint value.
+   */
+  valueOf (): bigint {
+    return this.value
   }
 }
