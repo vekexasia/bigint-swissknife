@@ -145,6 +145,38 @@ export function toBigIntLE(buffer: Buffer | Uint8Array): bigint {
 }
 
 /**
+ * Convert a big-endian buffer to signed BigInt using two's complement.
+ *
+ * @param buffer - Big-endian byte buffer
+ * @returns BigInt value (can be negative)
+ *
+ * @example
+ * ```typescript
+ * const buffer = new Uint8Array([0xff, 0xff]); // -1 in 2 bytes
+ * const num = toBigIntBESigned(buffer); // -1n
+ * ```
+ */
+export function toBigIntBESigned(buffer: Buffer | Uint8Array): bigint {
+  return _impl.toBigIntBESigned(buffer);
+}
+
+/**
+ * Convert a little-endian buffer to signed BigInt using two's complement.
+ *
+ * @param buffer - Little-endian byte buffer
+ * @returns BigInt value (can be negative)
+ *
+ * @example
+ * ```typescript
+ * const buffer = new Uint8Array([0xff, 0xff]); // -1 in 2 bytes
+ * const num = toBigIntLESigned(buffer); // -1n
+ * ```
+ */
+export function toBigIntLESigned(buffer: Buffer | Uint8Array): bigint {
+  return _impl.toBigIntLESigned(buffer);
+}
+
+/**
  * Convert BigInt to big-endian buffer with specified width.
  *
  * @param num - BigInt value to convert
@@ -214,6 +246,8 @@ export { fallback } from './fallback.js';
 export default {
   toBigIntBE,
   toBigIntLE,
+  toBigIntBESigned,
+  toBigIntLESigned,
   toBufferBE,
   toBufferLE,
   toBufferBEInto,

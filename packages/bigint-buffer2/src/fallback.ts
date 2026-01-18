@@ -7,6 +7,7 @@
  */
 
 import type { BigIntBuffer2Extended } from './types.js';
+import { createSignedReader } from './signed.js';
 
 // Pre-computed hex lookup table for fast byte-to-hex conversion
 const HEX_CHARS = '0123456789abcdef';
@@ -37,42 +38,46 @@ const toHexLE = (buf: Uint8Array): string => {
   return hex;
 };
 
+// Define unsigned functions first so they can be reused for signed versions
+const _toBigIntBE = (buffer: Buffer | Uint8Array): bigint => {
+  // Fix issue #40: handle empty buffer
+  if (buffer.length === 0) {
+    return 0n;
+  }
+  const hex = toHexBE(buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer));
+  // Handle all-zero case
+  if (hex.length === 0 || /^0+$/.test(hex)) {
+    return 0n;
+  }
+  return BigInt('0x' + hex);
+};
+
+const _toBigIntLE = (buffer: Buffer | Uint8Array): bigint => {
+  // Fix issue #40: handle empty buffer
+  if (buffer.length === 0) {
+    return 0n;
+  }
+  // Convert LE to BE by reading bytes in reverse order (no array allocation)
+  const hex = toHexLE(buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer));
+  // Handle all-zero case
+  if (hex.length === 0 || /^0+$/.test(hex)) {
+    return 0n;
+  }
+  return BigInt('0x' + hex);
+};
+
+// Create signed versions using shared utility
+const _toBigIntBESigned = createSignedReader(_toBigIntBE);
+const _toBigIntLESigned = createSignedReader(_toBigIntLE);
+
 /**
  * Pure JavaScript implementation of BigInt/buffer conversion.
  */
 export const fallback: BigIntBuffer2Extended = {
-  /**
-   * Convert a big-endian buffer to BigInt.
-   */
-  toBigIntBE(buffer: Buffer | Uint8Array): bigint {
-    // Fix issue #40: handle empty buffer
-    if (buffer.length === 0) {
-      return 0n;
-    }
-    const hex = toHexBE(buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer));
-    // Handle all-zero case
-    if (hex.length === 0 || /^0+$/.test(hex)) {
-      return 0n;
-    }
-    return BigInt('0x' + hex);
-  },
-
-  /**
-   * Convert a little-endian buffer to BigInt.
-   */
-  toBigIntLE(buffer: Buffer | Uint8Array): bigint {
-    // Fix issue #40: handle empty buffer
-    if (buffer.length === 0) {
-      return 0n;
-    }
-    // Convert LE to BE by reading bytes in reverse order (no array allocation)
-    const hex = toHexLE(buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer));
-    // Handle all-zero case
-    if (hex.length === 0 || /^0+$/.test(hex)) {
-      return 0n;
-    }
-    return BigInt('0x' + hex);
-  },
+  toBigIntBE: _toBigIntBE,
+  toBigIntLE: _toBigIntLE,
+  toBigIntBESigned: _toBigIntBESigned,
+  toBigIntLESigned: _toBigIntLESigned,
 
   /**
    * Convert BigInt to big-endian buffer with specified width.
@@ -170,4 +175,4 @@ export const fallback: BigIntBuffer2Extended = {
 };
 
 // Export individual functions for direct import
-export const { toBigIntBE, toBigIntLE, toBufferBE, toBufferLE, toBufferBEInto, toBufferLEInto } = fallback;
+export const { toBigIntBE, toBigIntLE, toBigIntBESigned, toBigIntLESigned, toBufferBE, toBufferLE, toBufferBEInto, toBufferLEInto } = fallback;

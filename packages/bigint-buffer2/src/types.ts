@@ -3,18 +3,32 @@
  */
 export interface BigIntBuffer2 {
   /**
-   * Convert a big-endian buffer to BigInt.
+   * Convert a big-endian buffer to BigInt (unsigned).
    * @param buffer - Big-endian byte buffer
-   * @returns BigInt value
+   * @returns BigInt value (always positive)
    */
   toBigIntBE(buffer: Buffer | Uint8Array): bigint;
 
   /**
-   * Convert a little-endian buffer to BigInt.
+   * Convert a little-endian buffer to BigInt (unsigned).
    * @param buffer - Little-endian byte buffer
-   * @returns BigInt value
+   * @returns BigInt value (always positive)
    */
   toBigIntLE(buffer: Buffer | Uint8Array): bigint;
+
+  /**
+   * Convert a big-endian buffer to signed BigInt using two's complement.
+   * @param buffer - Big-endian byte buffer
+   * @returns BigInt value (can be negative)
+   */
+  toBigIntBESigned(buffer: Buffer | Uint8Array): bigint;
+
+  /**
+   * Convert a little-endian buffer to signed BigInt using two's complement.
+   * @param buffer - Little-endian byte buffer
+   * @returns BigInt value (can be negative)
+   */
+  toBigIntLESigned(buffer: Buffer | Uint8Array): bigint;
 
   /**
    * Convert BigInt to big-endian buffer with specified width.
