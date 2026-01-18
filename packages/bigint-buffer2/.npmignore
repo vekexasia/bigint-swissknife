@@ -12,11 +12,19 @@ typedoc.json
 Cargo.toml
 .cargo/
 
+# Rust build artifacts
+target/
+artifacts/
+
 # Development files
 *.log
 .DS_Store
 coverage/
+scripts/
+docs/
+Cargo.lock
+package.tgz
 
-# Keep dist and wasm
+# Keep dist and .node binaries
 !dist/
-!wasm/
+!*.node

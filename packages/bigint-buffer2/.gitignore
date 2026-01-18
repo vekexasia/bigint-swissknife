@@ -5,5 +5,8 @@ target/
 dist/
 node_modules/
 
-# Generated native bindings (committed separately per platform)
-# index.*.node files are built per-platform and committed for distribution
+# Native binaries (downloaded from CI during prepublish)
+*.node
+
+# CI artifacts
+artifacts/
