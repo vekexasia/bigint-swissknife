@@ -20,13 +20,13 @@ describe('BigIntMath', () => {
   })
   it('rand', () => {
     const rand = BigIntMath.rand(10n)
-    expect(rand >= 0n).true
-    expect(rand <= 10n).true
+    expect(rand).toBeGreaterThanOrEqual(0n)
+    expect(rand).toBeLessThanOrEqual(10n)
 
     for (let i = 1n; i < 65536n; i++) {
-      const rand = BigIntMath.rand(i)
-      expect(rand >= 0n).true
-      expect(rand <= i).true
+      const r = BigIntMath.rand(i)
+      expect(r).toBeGreaterThanOrEqual(0n)
+      expect(r).toBeLessThanOrEqual(i)
     }
   })
   it('sign', () => {

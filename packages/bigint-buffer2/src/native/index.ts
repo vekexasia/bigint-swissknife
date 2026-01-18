@@ -115,7 +115,7 @@ function loadNative(): Promise<BigIntBuffer2Extended | null> {
       let currentDir: string;
       let esmRequire: NodeRequire;
 
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+       
       if (typeof import.meta?.url === 'string') {
         // ESM context
         const { fileURLToPath } = await import('url');

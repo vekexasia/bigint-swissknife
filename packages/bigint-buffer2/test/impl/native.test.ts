@@ -190,7 +190,7 @@ describe('Native Implementation', () => {
     });
 
     describe('toBigIntBE with fixtures (unsigned interpretation)', () => {
-      for (const { num, bytes, expect: expectedHex } of beCases) {
+      for (const { num, expect: expectedHex } of beCases) {
         // Only test positive values for unsigned conversion
         if (num >= 0n) {
           it(`should decode ${expectedHex} to ${num}n`, () => {
@@ -203,7 +203,7 @@ describe('Native Implementation', () => {
     });
 
     describe('toBigIntLE with fixtures (unsigned interpretation)', () => {
-      for (const { num, bytes, expect: expectedHex } of leCases) {
+      for (const { num, expect: expectedHex } of leCases) {
         if (num >= 0n) {
           it(`should decode ${expectedHex} to ${num}n`, () => {
             const buffer = hexToBytes(expectedHex);
