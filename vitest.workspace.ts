@@ -27,7 +27,7 @@ export default defineWorkspace([
     }
   },
 
-  // bigint-buffer2 - browser with WASM
+  // bigint-buffer2 - browser with JS fallback (includes API, edge-cases, signed tests)
   {
     extends: './packages/bigint-buffer2/vitest.config.mts',
     define: {
@@ -35,28 +35,8 @@ export default defineWorkspace([
     },
     test: {
       root: './packages/bigint-buffer2',
-      include: ['test/impl/wasm.test.ts', 'test/impl/hybrid.test.ts'],
-      exclude: ['**/benchmark/**', 'test/impl/native.test.ts'],
-      name: 'buffer2-browser-wasm',
-      browser: {
-        enabled: true,
-        provider: 'webdriverio',
-        name: 'chrome',
-        headless: true
-      }
-    }
-  },
-
-  // bigint-buffer2 - browser with JS fallback only
-  {
-    extends: './packages/bigint-buffer2/vitest.config.mts',
-    define: {
-      IS_BROWSER: true,
-    },
-    test: {
-      root: './packages/bigint-buffer2',
-      include: ['test/impl/js.test.ts'],
-      exclude: ['**/benchmark/**'],
+      include: ['test/api.test.ts', 'test/edge-cases.test.ts', 'test/signed.test.ts', 'test/impl/js.test.ts'],
+      exclude: ['**/benchmark/**', 'test/parity.test.ts', 'test/impl/native.test.ts'],
       name: 'buffer2-browser-js',
       browser: {
         enabled: true,
