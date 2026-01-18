@@ -1,4 +1,4 @@
-# <img src=".github/swissknife.svg" height="40"/> bigint-swissknife
+# <img src="https://raw.githubusercontent.com/vekexasia/bigint-swissknife/main/.github/swissknife.svg" height="40"/> bigint-swissknife
 
 **The missing BigInt toolkit for JavaScript/TypeScript** — Fast buffer conversions, math utilities, bounded integers, and more.
 
@@ -19,17 +19,17 @@ This monorepo fills those gaps with **fast, type-safe, browser-compatible** pack
 
 | Package | Description | Highlights |
 |---------|-------------|------------|
-| **[@vekexasia/bigint-buffer2](./packages/bigint-buffer2)** | BigInt ↔ Buffer conversion | 🦀 Rust native bindings, ~30% faster than alternatives |
-| **[@vekexasia/bigint-uint8array](./packages/bigint-uint8array)** | BigInt ↔ Uint8Array with bounds checking | Signed/unsigned, big/little endian |
-| **[@vekexasia/bigint-constrained](./packages/bigint-constrained)** | Bounded BigInts (u8, i32, u256, etc.) | Overflow protection on all operations |
-| **[@vekexasia/bigint-math](./packages/bigint-math)** | Math utilities for BigInt | abs, sign, max, min, rand, bitLength |
-| **[@vekexasia/bigint-buffer-polyfill](./packages/bigint-buffer-polyfill)** | Buffer prototype extensions | `buf.writeBigIntBE()`, `buf.readBigUIntLE()` |
+| **[@vekexasia/bigint-buffer2](https://www.npmjs.com/package/@vekexasia/bigint-buffer2)** | BigInt ↔ Buffer conversion | 🦀 Rust native bindings, ~30% faster than alternatives |
+| **[@vekexasia/bigint-uint8array](https://www.npmjs.com/package/@vekexasia/bigint-uint8array)** | BigInt ↔ Uint8Array with bounds checking | Signed/unsigned, big/little endian |
+| **[@vekexasia/bigint-constrained](https://www.npmjs.com/package/@vekexasia/bigint-constrained)** | Bounded BigInts (u8, i32, u256, etc.) | Overflow protection on all operations |
+| **[@vekexasia/bigint-math](https://www.npmjs.com/package/@vekexasia/bigint-math)** | Math utilities for BigInt | abs, sign, max, min, rand, bitLength |
+| **[@vekexasia/bigint-buffer-polyfill](https://www.npmjs.com/package/@vekexasia/bigint-buffer-polyfill)** | Buffer prototype extensions | `buf.writeBigIntBE()`, `buf.readBigUIntLE()` |
 
 ## Performance
 
 `bigint-buffer2` provides native Rust bindings that outperform pure JavaScript implementations:
 
-![Performance Comparison](./packages/bigint-buffer2/docs/benchmark-operations-BE.png)
+![Performance Comparison](https://raw.githubusercontent.com/vekexasia/bigint-swissknife/main/packages/bigint-buffer2/docs/benchmark-operations-BE.png)
 
 *The red bars (`toBufferBEInto`) show 30-40% speedup by writing directly into pre-allocated buffers.*
 
