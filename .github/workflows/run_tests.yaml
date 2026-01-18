@@ -35,12 +35,14 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Build native module
+        run: yarn build:native
+        working-directory: packages/bigint-buffer2
+
       - name: Build Typescript
-        run: |
-          yarn build
+        run: yarn build
 
       - name: Run tests
-        run: |
-          yarn test
+        run: yarn test
 
 
