@@ -17,13 +17,13 @@ This monorepo fills those gaps with **fast, type-safe, browser-compatible** pack
 
 ## Packages
 
-| Package | Description | Highlights |
-|---------|-------------|------------|
-| **[@vekexasia/bigint-buffer2](https://www.npmjs.com/package/@vekexasia/bigint-buffer2)** | BigInt ↔ Buffer conversion | 🦀 Rust native bindings, ~30% faster than alternatives |
-| **[@vekexasia/bigint-uint8array](https://www.npmjs.com/package/@vekexasia/bigint-uint8array)** | BigInt ↔ Uint8Array with bounds checking | Signed/unsigned, big/little endian |
-| **[@vekexasia/bigint-constrained](https://www.npmjs.com/package/@vekexasia/bigint-constrained)** | Bounded BigInts (u8, i32, u256, etc.) | Overflow protection on all operations |
-| **[@vekexasia/bigint-math](https://www.npmjs.com/package/@vekexasia/bigint-math)** | Math utilities for BigInt | abs, sign, max, min, rand, bitLength |
-| **[@vekexasia/bigint-buffer-polyfill](https://www.npmjs.com/package/@vekexasia/bigint-buffer-polyfill)** | Buffer prototype extensions | `buf.writeBigIntBE()`, `buf.readBigUIntLE()` |
+| Package | Version | Description | Highlights |
+|---------|---------|-------------|------------|
+| **[@vekexasia/bigint-buffer2](https://www.npmjs.com/package/@vekexasia/bigint-buffer2)** | [![npm](https://img.shields.io/npm/v/@vekexasia/bigint-buffer2.svg)](https://www.npmjs.com/package/@vekexasia/bigint-buffer2) | BigInt ↔ Buffer conversion | 🦀 Rust native bindings, ~30% faster than alternatives |
+| **[@vekexasia/bigint-uint8array](https://www.npmjs.com/package/@vekexasia/bigint-uint8array)** | [![npm](https://img.shields.io/npm/v/@vekexasia/bigint-uint8array.svg)](https://www.npmjs.com/package/@vekexasia/bigint-uint8array) | BigInt ↔ Uint8Array with bounds checking | Signed/unsigned, big/little endian |
+| **[@vekexasia/bigint-constrained](https://www.npmjs.com/package/@vekexasia/bigint-constrained)** | [![npm](https://img.shields.io/npm/v/@vekexasia/bigint-constrained.svg)](https://www.npmjs.com/package/@vekexasia/bigint-constrained) | Bounded BigInts (u8, i32, u256, etc.) | Overflow protection on all operations |
+| **[@vekexasia/bigint-math](https://www.npmjs.com/package/@vekexasia/bigint-math)** | [![npm](https://img.shields.io/npm/v/@vekexasia/bigint-math.svg)](https://www.npmjs.com/package/@vekexasia/bigint-math) | Math utilities for BigInt | abs, sign, max, min, rand, bitLength |
+| **[@vekexasia/bigint-buffer-polyfill](https://www.npmjs.com/package/@vekexasia/bigint-buffer-polyfill)** | [![npm](https://img.shields.io/npm/v/@vekexasia/bigint-buffer-polyfill.svg)](https://www.npmjs.com/package/@vekexasia/bigint-buffer-polyfill) | Buffer prototype extensions | `buf.writeBigIntBE()`, `buf.readBigUIntLE()` |
 
 ## Performance
 
