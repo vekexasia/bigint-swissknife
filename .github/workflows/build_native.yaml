@@ -101,7 +101,6 @@ jobs:
 
       - name: Move binaries to package root
         run: |
-          cd packages/bigint-buffer2
           find artifacts -name "*.node" -exec mv {} . \;
           ls -la *.node
 
