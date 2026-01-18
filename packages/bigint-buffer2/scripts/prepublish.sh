@@ -51,7 +51,7 @@ else
   echo "Found existing successful CI run: $RUN_INFO"
 fi
 
-# Check if we already have all binaries
+# Always download binaries from CI to ensure we have the correct artifacts
 EXPECTED_BINARIES=(
   "index.darwin-arm64.node"
   "index.darwin-x64.node"
@@ -60,35 +60,23 @@ EXPECTED_BINARIES=(
   "index.win32-x64-msvc.node"
 )
 
-MISSING_BINARIES=false
-for binary in "${EXPECTED_BINARIES[@]}"; do
-  if [ ! -f "$binary" ]; then
-    MISSING_BINARIES=true
-    echo "Missing: $binary"
-  fi
-done
+echo "Downloading artifacts from CI run $RUN_INFO..."
 
-if [ "$MISSING_BINARIES" = true ]; then
-  echo "Downloading artifacts from CI run $RUN_INFO..."
+# Clean up old artifacts
+rm -rf artifacts
+rm -f *.node
 
-  # Clean up old artifacts
-  rm -rf artifacts
-  rm -f *.node
+# Download artifacts
+gh run download "$RUN_INFO" -D artifacts
 
-  # Download artifacts
-  gh run download "$RUN_INFO" -D artifacts
+# Move binaries to package root
+find artifacts -name "*.node" -exec mv {} . \;
 
-  # Move binaries to package root
-  find artifacts -name "*.node" -exec mv {} . \;
+# Clean up artifacts directory
+rm -rf artifacts
 
-  # Clean up artifacts directory
-  rm -rf artifacts
-
-  echo "Downloaded binaries:"
-  ls -la *.node
-else
-  echo "All binaries already present"
-fi
+echo "Downloaded binaries:"
+ls -la *.node
 
 # Verify all binaries exist
 for binary in "${EXPECTED_BINARIES[@]}"; do
