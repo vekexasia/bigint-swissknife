@@ -66,9 +66,11 @@ export async function buildBundle(options) {
     replacements['"./native.js"'] = '"./browser.js"';
   }
 
-  // For CJS builds, replace dynamic imports with require
+  // For CJS builds, replace dynamic imports with require and remove other top-level awaits
   if (format === 'cjs') {
     replacements['await import('] = 'require(';
+    // Remove await for initNative - in CJS it's already fire-and-forget at module load
+    replacements['await initPromise;'] = '/* initPromise - native loads async in CJS */';
   }
 
   const plugins = [preprocessPlugin(replacements)];

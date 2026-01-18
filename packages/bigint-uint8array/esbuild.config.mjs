@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 async function build() {
   console.log('Building bigint-uint8array...');
 
-  const config = buildConfigs.browserAndNode('BigIntUint8Array', ['bigint-buffer']);
+  const config = buildConfigs.browserAndNode('BigIntUint8Array', ['@vekexasia/bigint-buffer2']);
 
   // IIFE/UMD shouldn't have bigint-buffer as external (it's bundled)
   // but crypto should be external

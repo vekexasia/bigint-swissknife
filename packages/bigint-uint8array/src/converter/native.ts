@@ -2,36 +2,32 @@ import {type UncheckedConverter} from './type'
 import {uncheckedConverter as fallback} from './browser.js';
 let _uncheckedConverter: UncheckedConverter = fallback;
 
-// Try bigint-buffer2 first (new Rust-based implementation with better performance)
+// Try bigint-buffer2 (Rust-based implementation with better performance)
 try {
-  const buffer2 = await import('@vekexasia/bigint-buffer2/adapter');
-  if (buffer2?.uncheckedConverter) {
-    _uncheckedConverter = buffer2.uncheckedConverter;
+  // For ESM: await import() waits for module, then we await initNative()
+  // For CJS: esbuild replaces "await import(" with "require(" making it sync,
+  //          initNative() is already called by bigint-buffer2 at load time
+  const module = await import('@vekexasia/bigint-buffer2');
+
+  if (module) {
+    // initNative returns a promise - awaiting it ensures native is ready for ESM
+    // For CJS this becomes a no-op since require() is sync and initNative already started
+    const initPromise = module.initNative();
+    if (initPromise && typeof initPromise.then === 'function') {
+      await initPromise;
+    }
+
+    _uncheckedConverter = {
+      bigEndianToNewArray: (num, bytes) => new Uint8Array(module.toBufferBE(num, bytes)),
+      bigEndianToArray: (num, dest) => module.toBufferBEInto(num, dest),
+      littleEndianToNewArray: (num, bytes) => new Uint8Array(module.toBufferLE(num, bytes)),
+      littleEndianToArray: (num, dest) => module.toBufferLEInto(num, dest),
+      arrayToLittleEndian: module.toBigIntLE,
+      arrayToBigEndian: module.toBigIntBE
+    }
   }
 } catch {
-  // bigint-buffer2 not available, try original bigint-buffer
-  try {
-    const module = await import('bigint-buffer');
-
-    if (module) {
-      _uncheckedConverter = {
-        bigEndianToNewArray: module.toBufferBE,
-        bigEndianToArray: (num: bigint, dest: Uint8Array) => {
-          const src = _uncheckedConverter.bigEndianToNewArray(num, dest.length)
-          dest.set(src)
-        },
-        littleEndianToNewArray: module.toBufferLE,
-        littleEndianToArray: (num: bigint, dest: Uint8Array) => {
-          const src = _uncheckedConverter.littleEndianToNewArray(num, dest.length)
-          dest.set(src)
-        },
-        arrayToLittleEndian: module.toBigIntLE as UncheckedConverter['arrayToLittleEndian'],
-        arrayToBigEndian: module.toBigIntBE as UncheckedConverter['arrayToBigEndian']
-      }
-    }
-  } catch {
-    // Neither bigint-buffer2 nor bigint-buffer available, use JS fallback
-  }
+  // bigint-buffer2 not available, use JS fallback (also from bigint-buffer2)
 }
 export const uncheckedConverter = _uncheckedConverter
 

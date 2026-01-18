@@ -7,6 +7,7 @@
 
 import type { BigIntBuffer2Extended } from '../types.js';
 import { fallback } from '../fallback.js';
+import { createSignedReader } from '../signed.js';
 
 /**
  * Native binding interface matching the napi-rs exports.
@@ -50,13 +51,18 @@ function getNativeModuleName(): string {
  * without any conversion - zero-copy access.
  */
 function createWrapper(binding: NativeBinding): BigIntBuffer2Extended {
+  const toBigIntBE = (buffer: Buffer | Uint8Array) => {
+    return binding.toBigintBe(buffer);
+  };
+  const toBigIntLE = (buffer: Buffer | Uint8Array) => {
+    return binding.toBigintLe(buffer);
+  };
+
   return {
-    toBigIntBE: (buffer: Buffer | Uint8Array) => {
-      return binding.toBigintBe(buffer);
-    },
-    toBigIntLE: (buffer: Buffer | Uint8Array) => {
-      return binding.toBigintLe(buffer);
-    },
+    toBigIntBE,
+    toBigIntLE,
+    toBigIntBESigned: createSignedReader(toBigIntBE),
+    toBigIntLESigned: createSignedReader(toBigIntLE),
     toBufferBE: (num: bigint, width: number) => {
       // Handle width <= 0 consistently with fallback (return empty buffer)
       if (width <= 0) {
@@ -104,22 +110,26 @@ function loadNative(): Promise<BigIntBuffer2Extended | null> {
       // Dynamically load the native module
       const { dirname, join } = await import('path');
       const { existsSync } = await import('fs');
-      const { createRequire } = await import('module');
 
-      // Create require function for loading .node files in ESM context
-      const require = createRequire(import.meta.url);
-
-      // Get the directory of this file
+      // Get the directory of this file and create require function
       let currentDir: string;
+      let esmRequire: NodeRequire;
 
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (typeof import.meta?.url === 'string') {
+        // ESM context
         const { fileURLToPath } = await import('url');
+        const { createRequire } = await import('module');
         currentDir = dirname(fileURLToPath(import.meta.url));
-      } else if (typeof __dirname === 'string') {
+        esmRequire = createRequire(import.meta.url);
+      } else if (typeof __dirname === 'string' && typeof require !== 'undefined') {
+        // CJS context
         currentDir = __dirname;
+        esmRequire = require;
       } else {
         currentDir = join(process.cwd(), 'dist');
+        const { createRequire } = await import('module');
+        esmRequire = createRequire(join(currentDir, 'index.js'));
       }
 
       // Try multiple paths to find the native module
@@ -131,7 +141,7 @@ function loadNative(): Promise<BigIntBuffer2Extended | null> {
 
       for (const nativePath of pathsToTry) {
         if (existsSync(nativePath)) {
-          const binding: NativeBinding = require(nativePath);
+          const binding: NativeBinding = esmRequire(nativePath);
           nativeBinding = createWrapper(binding);
           return nativeBinding;
         }
@@ -198,6 +208,12 @@ export const toBigIntBE = (buffer: Buffer | Uint8Array): bigint =>
 
 export const toBigIntLE = (buffer: Buffer | Uint8Array): bigint =>
   getNativeSync().toBigIntLE(buffer);
+
+export const toBigIntBESigned = (buffer: Buffer | Uint8Array): bigint =>
+  getNativeSync().toBigIntBESigned(buffer);
+
+export const toBigIntLESigned = (buffer: Buffer | Uint8Array): bigint =>
+  getNativeSync().toBigIntLESigned(buffer);
 
 export const toBufferBE = (num: bigint, width: number): Buffer | Uint8Array =>
   getNativeSync().toBufferBE(num, width);

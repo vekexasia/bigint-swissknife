@@ -14,13 +14,12 @@
   },
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "node": {
         "import": "./dist/node.esm.mjs",
         "default": "./dist/node.cjs.js"
       },
-      "default": "./dist/browser.esm.mjs",
-      "types": "./dist/types/index.d.ts",
-      "script": "./dist/browser.iife.js"
+      "default": "./dist/browser.esm.mjs"
     },
     "./umd": "./dist/browser.umd.js",
     "./iife": "./dist/browser.iife.js"
@@ -35,18 +34,14 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@vekexasia/bigint-buffer2": "*",
-    "bigint-buffer": "*"
+    "@vekexasia/bigint-buffer2": "*"
   },
   "peerDependenciesMeta": {
     "@vekexasia/bigint-buffer2": {
       "optional": true
-    },
-    "bigint-buffer": {
-      "optional": true
     }
   },
   "devDependencies": {
-    "bigint-buffer": "^1.1.5"
+    "@vekexasia/bigint-buffer2": "workspace:*"
   }
 }
