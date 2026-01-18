@@ -1,38 +1,77 @@
 # <img src=".github/swissknife.svg" height="40"/> bigint-swissknife
 
-[BigInt](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt) is a great addition to the JavaScript language, but it's still missing some utilities and features. This project aims to provide some missing utilities and features for BigInt.
+**The missing BigInt toolkit for JavaScript/TypeScript** — Fast buffer conversions, math utilities, bounded integers, and more.
 
-This is a mono-repository containing several packages that provide utilities for working with BigInts.
+<img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white"/> <img src="https://img.shields.io/badge/Rust-000000?style=for-the-badge&logo=rust&logoColor=white"/> <img src="https://img.shields.io/badge/vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white"/>
 
-A couple of examples:
+## Why?
 
-- `bigint` lacks support in `Math.max` and `Math.min` functions.
-- The `Buffer` class does not support `bigint` natively.
-- There is no way to work with bounded `BigInts` (e.g., `uint8`, `int8`, `uint16`, `int16`, etc.).
-- There is no way to work with `bigint` and `Uint8Array` natively converting between the two.
-- Generating a random `bigint` is not possible natively.
+JavaScript's `BigInt` is powerful but incomplete. The standard library leaves you without:
+
+- **Buffer conversion** — No native way to convert between `BigInt` and `Uint8Array`/`Buffer`
+- **Math functions** — `Math.max()`, `Math.min()`, `Math.abs()` don't work with BigInt
+- **Bounded integers** — No `u8`, `i32`, `u256` types with overflow protection
+- **Random generation** — No way to generate cryptographically random BigInts
+
+This monorepo fills those gaps with **fast, type-safe, browser-compatible** packages.
 
 ## Packages
 
-Currently, this repo is composed by the following packages:
+| Package | Description | Highlights |
+|---------|-------------|------------|
+| **[@vekexasia/bigint-buffer2](./packages/bigint-buffer2)** | BigInt ↔ Buffer conversion | 🦀 Rust native bindings, ~30% faster than alternatives |
+| **[@vekexasia/bigint-uint8array](./packages/bigint-uint8array)** | BigInt ↔ Uint8Array with bounds checking | Signed/unsigned, big/little endian |
+| **[@vekexasia/bigint-constrained](./packages/bigint-constrained)** | Bounded BigInts (u8, i32, u256, etc.) | Overflow protection on all operations |
+| **[@vekexasia/bigint-math](./packages/bigint-math)** | Math utilities for BigInt | abs, sign, max, min, rand, bitLength |
+| **[@vekexasia/bigint-buffer-polyfill](./packages/bigint-buffer-polyfill)** | Buffer prototype extensions | `buf.writeBigIntBE()`, `buf.readBigUIntLE()` |
 
-- [@vekexasia/bigint-buffer-polyfill](./packages/bigint-buffer-polyfill/README.md): Buffer polyfill for BigInt
-- [@vekexasia/bigint-constrained](./packages/bigint-constrained/README.md): Bounded BigInts
-- [@vekexasia/bigint-math](./packages/bigint-math/README.md): BigInt Math utils
-- [@vekexasia/bigint-uint8array](./packages/bigint-uint8array/README.md): Uint8Array conversion from/to BigInt
+## Performance
 
-All the packages are written in TypeScript and come with their own type definitions. 
+`bigint-buffer2` provides native Rust bindings that outperform pure JavaScript implementations:
 
-All the packages<sup>1</sup> also provide a browser compatible build. Check out the README of each package for more information.
+![Speedup Chart](./packages/bigint-buffer2/docs/benchmark-speedup.png)
 
-<sup>1</sup> exception made for `bigint-buffer-polyfill` which does not make sense in a browser environment.
+*~30-35% faster than the original bigint-buffer library across all buffer sizes.*
+
+## Quick Start
+
+```bash
+# Core buffer conversion (recommended starting point)
+npm install @vekexasia/bigint-buffer2
+
+# Or pick what you need
+npm install @vekexasia/bigint-uint8array  # bounds-checked conversions
+npm install @vekexasia/bigint-constrained # bounded integers
+npm install @vekexasia/bigint-math        # math utilities
+```
+
+### Examples
+
+```typescript
+// Buffer conversion (bigint-buffer2)
+import { toBigIntBE, toBufferBE } from '@vekexasia/bigint-buffer2';
+const num = toBigIntBE(new Uint8Array([0x01, 0x02, 0x03]));  // 66051n
+const buf = toBufferBE(12345n, 4);  // Uint8Array [0, 0, 48, 57]
+
+// Bounded integers (bigint-constrained)
+import { u8, i32 } from '@vekexasia/bigint-constrained';
+const byte = u8(255n);
+byte.add(1n);  // throws RangeError: overflow
+
+// Math utilities (bigint-math)
+import { BigIntMath } from '@vekexasia/bigint-math';
+BigIntMath.max(1n, 5n, 3n);        // 5n
+BigIntMath.rand(1000000000000n);   // random BigInt 0..1T
+```
+
+## Browser Support
+
+All packages work in browsers. `bigint-buffer2` automatically falls back to a pure JS implementation when native bindings aren't available.
 
 ## Documentation
 
-You can find the main typedoc documentation [here](https://vekexasia.github.io/bigint-swissknife/).
+Full API documentation: **[vekexasia.github.io/bigint-swissknife](https://vekexasia.github.io/bigint-swissknife/)**
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
-
-
+MIT License - see [LICENSE](./LICENSE.md) for details.

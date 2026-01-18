@@ -88,16 +88,23 @@ The library is entirely written in TypeScript and comes with its own type defini
 
 ## Performance
 
-This package provides significant performance improvements over pure JavaScript implementations:
+The `toBufferInto` methods provide **30-40% speedup** over the original bigint-buffer library by avoiding buffer allocation:
 
-| Operation | Native | JS Fallback |
-|-----------|--------|-------------|
-| toBigIntBE (64B) | ~2x faster | baseline |
-| toBufferBE (64B) | ~2x faster | baseline |
+![Speedup Chart](./docs/benchmark-speedup.png)
 
-Run benchmarks:
+### Detailed Comparison
+
+![toBufferBE Performance](./docs/benchmark-toBufferBE.png)
+
+The green line shows `toBufferBEInto` which writes directly into a pre-allocated buffer, eliminating allocation overhead.
+
+### Run Benchmarks
+
 ```bash
 npm run benchmark
+
+# Generate charts (requires chart.js)
+npx tsx scripts/generate-charts.ts
 ```
 
 ## License
