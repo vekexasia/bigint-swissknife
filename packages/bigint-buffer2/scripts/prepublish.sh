@@ -6,6 +6,20 @@ CURRENT_COMMIT=$(git rev-parse HEAD)
 
 echo "Current commit: $CURRENT_COMMIT"
 
+# Verify local commit is pushed to remote main
+echo "Checking if commit is pushed to remote main..."
+git fetch origin main --quiet
+REMOTE_MAIN=$(git rev-parse origin/main)
+
+if [ "$CURRENT_COMMIT" != "$REMOTE_MAIN" ]; then
+  echo "ERROR: Local HEAD ($CURRENT_COMMIT) does not match origin/main ($REMOTE_MAIN)"
+  echo ""
+  echo "Please push your changes first: git push"
+  exit 1
+fi
+
+echo "Commit is on remote main."
+
 # Find the latest successful workflow run for build_native.yaml on this commit
 echo "Looking for CI artifacts built at commit $CURRENT_COMMIT..."
 
