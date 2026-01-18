@@ -8,16 +8,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Install Node
         uses: ./.github/actions/setup-node
       - name: Build
         run: yarn build
       - name: Build Docs
         run: yarn typedoc
-      - uses: actions/upload-pages-artifact@v2
+      - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./docs  # This should be your TypeDoc "out" path.
+          path: ./docs
   deploy:
     runs-on: ubuntu-latest
     environment:
@@ -25,10 +25,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     needs: build
     permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
+      pages: write
+      id-token: write
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        # https://github.com/actions/deploy-pages
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
