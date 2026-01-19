@@ -67,6 +67,35 @@ describe('Issue #59 - buffer overflow', () => {
   });
 });
 
+describe('CVE-2025-3194 - null/invalid input handling', () => {
+  // The original bigint-buffer crashes when passing null to toBigIntLE/toBigIntBE
+  // Our implementation should throw a TypeError instead of crashing
+
+  it('toBigIntBE should throw on null input', () => {
+    expect(() => toBigIntBE(null as unknown as Uint8Array)).toThrow();
+  });
+
+  it('toBigIntLE should throw on null input', () => {
+    expect(() => toBigIntLE(null as unknown as Uint8Array)).toThrow();
+  });
+
+  it('toBigIntBE should throw on undefined input', () => {
+    expect(() => toBigIntBE(undefined as unknown as Uint8Array)).toThrow();
+  });
+
+  it('toBigIntLE should throw on undefined input', () => {
+    expect(() => toBigIntLE(undefined as unknown as Uint8Array)).toThrow();
+  });
+
+  it('fallback: toBigIntBE should throw on null input', () => {
+    expect(() => fallback.toBigIntBE(null as unknown as Uint8Array)).toThrow();
+  });
+
+  it('fallback: toBigIntLE should throw on null input', () => {
+    expect(() => fallback.toBigIntLE(null as unknown as Uint8Array)).toThrow();
+  });
+});
+
 describe('Issue #12 - first conversion returns zeros', () => {
   it('should return correct value on first call (BE)', () => {
     // This tests that initialization doesn't corrupt the first result
