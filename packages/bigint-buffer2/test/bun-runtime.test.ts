@@ -18,8 +18,10 @@ console.log(`\n🔍 Runtime: ${isBun ? 'Bun' : 'Node.js'} | Test framework: ${is
 let describe: any, it: any, expect: any;
 
 if (isBun) {
+  // Use computed import to hide from vitest static analysis
+  const bunTestModule = 'bun:' + 'test';
   // @ts-expect-error - Bun-specific import not recognized by TS
-  const bunTest = await import('bun:test');
+  const bunTest = await import(bunTestModule);
   describe = bunTest.describe;
   it = bunTest.it;
   expect = bunTest.expect;
