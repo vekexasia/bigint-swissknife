@@ -14,6 +14,7 @@
     "build:native": "napi build --platform --release --cargo-cwd rust/napi .",
     "lint": "npx eslint --ext .ts src test",
     "test": "vitest",
+    "test:bun": "bun test test/bun-runtime.test.ts",
     "benchmark": "vitest bench --run",
     "coverage": "vitest run --coverage",
     "pretest": "npm run build:native && npm run build",

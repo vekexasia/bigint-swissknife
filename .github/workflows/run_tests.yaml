@@ -45,4 +45,31 @@ jobs:
       - name: Run tests
         run: yarn test
 
+  bun-test:
+    name: "Bun Runtime Test"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      - name: Install Node
+        uses: ./.github/actions/setup-node
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Build native module
+        run: yarn build:native
+        working-directory: packages/bigint-buffer2
+
+      - name: Build Typescript
+        run: yarn build
+
+      - name: Run Bun tests
+        run: bun run test:bun
+        working-directory: packages/bigint-buffer2
