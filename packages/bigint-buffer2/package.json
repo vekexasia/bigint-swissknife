@@ -15,11 +15,14 @@
     "lint": "npx eslint --ext .ts src test",
     "test": "vitest",
     "test:bun": "bun test test/bun-runtime.test.ts",
+    "test:dist": "./test/dist-integration/run-all.sh",
+    "test:dist:cjs": "node test/dist-integration/node-cjs.test.cjs",
+    "test:dist:esm": "node test/dist-integration/node-esm.test.mjs",
     "benchmark": "vitest bench --run",
     "coverage": "vitest run --coverage",
     "pretest": "npm run build:native && npm run build",
     "posttest": "npm run lint",
-    "prepublishOnly": "./scripts/prepublish.sh && npm run build && vitest run"
+    "prepublishOnly": "./scripts/prepublish.sh && npm run build && vitest run && npm run test:dist"
   },
   "exports": {
     ".": {

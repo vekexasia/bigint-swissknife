@@ -8,6 +8,8 @@
 
 import type { BigIntBuffer2, BigIntBuffer2Extended, Implementation } from './types.js';
 import { fallback } from './fallback.js';
+// This import is aliased to native-stub.ts in browser builds via esbuild config
+import * as nativeLoader from './native/index.js';
 
 export type { BigIntBuffer2, BigIntBuffer2Extended, Implementation };
 
@@ -16,42 +18,25 @@ const isBrowser = IS_BROWSER;
 
 let _impl: BigIntBuffer2Extended = fallback;
 let _implType: Implementation = 'js';
-let _initPromise: Promise<void> | null = null;
+
+// Auto-initialize for Node.js (synchronous, native is ready immediately)
+if (!isBrowser && nativeLoader.isNativeAvailable()) {
+  _impl = nativeLoader.getNativeSync();
+  _implType = 'native';
+}
 
 /**
  * Initialize native bindings for Node.js environments.
  *
- * This is called automatically when the module loads, but you can
- * await this to ensure native bindings are ready before use.
+ * @deprecated Since 1.1.0 - Native bindings are now initialized automatically and synchronously on module import.
+ * This function is kept for backwards compatibility and will be removed in a future major version.
+ * You no longer need to call this function.
  *
- * @returns Promise that resolves when native bindings are loaded
+ * @returns Promise that resolves immediately (native bindings are already loaded)
  */
 export async function initNative(): Promise<void> {
-  if (isBrowser) return;
-
-  if (_initPromise) {
-    return _initPromise;
-  }
-
-  _initPromise = (async () => {
-    try {
-      const native = await import('./native/index.js');
-      const isAvailable = await native.isNativeAvailable();
-      if (isAvailable) {
-        _impl = await native.getNative();
-        _implType = 'native';
-      }
-    } catch {
-      // Native not available, stay with fallback
-    }
-  })();
-
-  return _initPromise;
-}
-
-// Auto-initialize for Node.js (fire and forget, users can await initNative if needed)
-if (!isBrowser) {
-  initNative();
+  // No-op: native is already initialized synchronously
+  return Promise.resolve();
 }
 
 /**
@@ -95,17 +80,11 @@ export async function setImplementation(impl: Implementation): Promise<void> {
     _impl = fallback;
     _implType = 'js';
   } else if (impl === 'native') {
-    if (!isBrowser) {
-      const native = await import('./native/index.js');
-      const isAvailable = await native.isNativeAvailable();
-      if (isAvailable) {
-        _impl = await native.getNative();
-        _implType = 'native';
-      } else {
-        throw new Error('Native implementation not available');
-      }
+    if (!isBrowser && nativeLoader.isNativeAvailable()) {
+      _impl = nativeLoader.getNativeSync();
+      _implType = 'native';
     } else {
-      throw new Error('Native implementation only available in Node.js environments');
+      throw new Error('Native implementation not available');
     }
   } else {
     throw new Error(`Unknown implementation: ${impl}`);

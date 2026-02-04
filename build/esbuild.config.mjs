@@ -60,10 +60,12 @@ export async function buildBundle(options) {
     'IS_BROWSER': String(isBrowser),
   };
 
-  // For browser builds, replace native.js imports with browser.js
+  // For browser builds, replace native module imports with stub
   if (isBrowser) {
     replacements["'./native.js'"] = "'./browser.js'";
     replacements['"./native.js"'] = '"./browser.js"';
+    replacements["'./native/index.js'"] = "'./native-stub.js'";
+    replacements['"./native/index.js"'] = '"./native-stub.js"';
   }
 
   // For CJS builds, replace dynamic imports with require and remove other top-level awaits

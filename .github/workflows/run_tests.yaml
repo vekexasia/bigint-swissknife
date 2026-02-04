@@ -45,6 +45,10 @@ jobs:
       - name: Run tests
         run: yarn test
 
+      - name: Run dist integration tests
+        run: ./test/dist-integration/run-all.sh
+        working-directory: packages/bigint-buffer2
+
   bun-test:
     name: "Bun Runtime Test"
     runs-on: ubuntu-latest

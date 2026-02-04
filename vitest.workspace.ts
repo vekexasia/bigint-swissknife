@@ -33,10 +33,15 @@ export default defineWorkspace([
     define: {
       IS_BROWSER: true,
     },
+    resolve: {
+      alias: {
+        './native/index.js': './native-stub.js',
+      },
+    },
     test: {
       root: './packages/bigint-buffer2',
-      include: ['test/api.test.ts', 'test/edge-cases.test.ts', 'test/signed.test.ts', 'test/impl/js.test.ts'],
-      exclude: ['**/benchmark/**', 'test/parity.test.ts', 'test/impl/native.test.ts'],
+      include: ['test/api.test.ts', 'test/edge-cases.test.ts', 'test/signed.test.ts', 'test/impl/js.test.ts', 'test/dist-integration/browser.test.ts'],
+      exclude: ['**/benchmark/**', 'test/parity.test.ts', 'test/impl/native.test.ts', 'test/bun-runtime.test.ts'],
       name: 'buffer2-browser-js',
       browser: {
         enabled: true,
