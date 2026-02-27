@@ -1,12 +1,25 @@
 /**
  * Native Node.js binding loader.
  *
- * This module attempts to load the Rust native bindings via napi-rs synchronously.
- * If loading fails, it provides the fallback implementation.
+ * This module loads the Rust native bindings via napi-rs synchronously.
+ * If loading fails, {@link getNativeSync} throws — this subpath does NOT provide a
+ * fallback implementation. Use the main package entry point for automatic fallback
+ * to the JS implementation.
  */
 
 import type { BigIntBuffer2Extended } from '../types.js';
-import { fallback } from '../fallback.js';
+
+/**
+ * Native-specific extended interface.
+ * - `toBufferBE`/`toBufferLE` return Node.js `Buffer`
+ * - `toBufferBEInto`/`toBufferLEInto` accept `Buffer` only
+ */
+export type NativeBigIntBuffer2Extended =
+  Omit<BigIntBuffer2Extended<Buffer>, 'toBufferBE' | 'toBufferLE'> & {
+    toBufferBE(num: bigint, width: number): Buffer;
+    toBufferLE(num: bigint, width: number): Buffer;
+  };
+
 import { createSignedReader } from '../signed.js';
 import { dirname, join } from 'path';
 import { existsSync } from 'fs';
@@ -26,7 +39,7 @@ interface NativeBinding {
   toBufferLeFast(num: bigint, buffer: Buffer | Uint8Array): void;
 }
 
-let nativeBinding: BigIntBuffer2Extended | null = null;
+let nativeBinding: NativeBigIntBuffer2Extended | null = null;
 let loadAttempted = false;
 
 /**
@@ -54,7 +67,7 @@ function getNativeModuleName(): string {
  * Note: With &[u8] slices in Rust, both Buffer and Uint8Array are accepted directly
  * without any conversion - zero-copy access.
  */
-function createWrapper(binding: NativeBinding): BigIntBuffer2Extended {
+function createWrapper(binding: NativeBinding): NativeBigIntBuffer2Extended {
   const toBigIntBE = (buffer: Buffer | Uint8Array) => {
     return binding.toBigintBe(buffer);
   };
@@ -87,10 +100,10 @@ function createWrapper(binding: NativeBinding): BigIntBuffer2Extended {
       binding.toBufferLeFast(num, buffer);
       return buffer;
     },
-    toBufferBEInto: (num: bigint, buffer: Buffer | Uint8Array) => {
+    toBufferBEInto: (num: bigint, buffer: Buffer) => {
       binding.toBufferBeFast(num, buffer);
     },
-    toBufferLEInto: (num: bigint, buffer: Buffer | Uint8Array) => {
+    toBufferLEInto: (num: bigint, buffer: Buffer) => {
       binding.toBufferLeFast(num, buffer);
     },
   };
@@ -100,7 +113,7 @@ function createWrapper(binding: NativeBinding): BigIntBuffer2Extended {
  * Attempt to load native bindings synchronously.
  * @returns The native binding wrapper, or null if not available
  */
-function loadNativeSync(): BigIntBuffer2Extended | null {
+function loadNativeSync(): NativeBigIntBuffer2Extended | null {
   if (loadAttempted) {
     return nativeBinding;
   }
@@ -146,19 +159,22 @@ function loadNativeSync(): BigIntBuffer2Extended | null {
 
     return null;
   } catch {
-    // Native binding not available, will use fallback
+    // Native binding not available for this runtime/platform.
     return null;
   }
 }
 
 /**
- * Get the native implementation synchronously, with fallback.
+ * Get the native implementation synchronously.
+ * Throws if native bindings are unavailable — this subpath has no fallback.
  *
- * @returns BigIntBuffer2Extended implementation (native if available, otherwise fallback)
+ * @returns NativeBigIntBuffer2Extended (native bindings, with Buffer-returning alloc methods and Buffer-only Into methods)
+ * @throws if native bindings failed to load
  */
-export function getNativeSync(): BigIntBuffer2Extended {
+export function getNativeSync(): NativeBigIntBuffer2Extended {
   const native = loadNativeSync();
-  return native ?? fallback;
+  if (!native) throw new Error('Native bindings not available');
+  return native;
 }
 
 /**
@@ -194,27 +210,27 @@ export const toBigIntBESigned = (buffer: Buffer | Uint8Array): bigint =>
 export const toBigIntLESigned = (buffer: Buffer | Uint8Array): bigint =>
   getNativeSync().toBigIntLESigned(buffer);
 
-export const toBufferBE = (num: bigint, width: number): Buffer | Uint8Array =>
+export const toBufferBE = (num: bigint, width: number): Buffer =>
   getNativeSync().toBufferBE(num, width);
 
-export const toBufferLE = (num: bigint, width: number): Buffer | Uint8Array =>
+export const toBufferLE = (num: bigint, width: number): Buffer =>
   getNativeSync().toBufferLE(num, width);
 
-export const toBufferBEInto = (num: bigint, buffer: Buffer | Uint8Array): void =>
+export const toBufferBEInto = (num: bigint, buffer: Buffer): void =>
   getNativeSync().toBufferBEInto(num, buffer);
 
-export const toBufferLEInto = (num: bigint, buffer: Buffer | Uint8Array): void =>
+export const toBufferLEInto = (num: bigint, buffer: Buffer): void =>
   getNativeSync().toBufferLEInto(num, buffer);
 
 // Backwards compatibility exports (deprecated)
 /**
  * @deprecated Use isNativeAvailable() instead. This now returns a resolved promise.
  */
-export async function getNative(): Promise<BigIntBuffer2Extended> {
+export async function getNative(): Promise<NativeBigIntBuffer2Extended> {
   return getNativeSync();
 }
 
 /**
  * @deprecated No longer needed. Native bindings are loaded synchronously on module import.
  */
-export const loadingPromise: Promise<BigIntBuffer2Extended | null> = Promise.resolve(nativeBinding);
+export const loadingPromise: Promise<NativeBigIntBuffer2Extended | null> = Promise.resolve(nativeBinding);

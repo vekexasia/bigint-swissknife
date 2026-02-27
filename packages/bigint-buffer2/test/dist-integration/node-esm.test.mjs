@@ -70,7 +70,7 @@ assert(signedNum === -1n, `toBigIntBESigned failed: expected -1n, got ${signedNu
 console.log('✓ toBigIntBESigned works');
 
 // Test into functions
-const intoBuf = new Uint8Array(4);
+const intoBuf = Buffer.alloc(4);
 toBufferBEInto(16909060n, intoBuf);
 assert(intoBuf[0] === 0x01 && intoBuf[1] === 0x02 && intoBuf[2] === 0x03 && intoBuf[3] === 0x04, 'toBufferBEInto failed');
 console.log('✓ toBufferBEInto works');

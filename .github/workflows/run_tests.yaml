@@ -1,6 +1,7 @@
 name: Run tests
 on:
   push:
+  pull_request:
 defaults:
   run:
     shell: bash
@@ -17,8 +18,8 @@ jobs:
       - name: Install Node
         uses: ./.github/actions/setup-node
 
-      - name: Run lint
-        run: yarn lint
+      - name: Run lint (CI mode, no auto-fix)
+        run: npx eslint --max-warnings=0 'packages/*/src/**/*.ts' 'packages/*/test/**/*.ts'
 
   build:
     name: "Build and Test"
@@ -41,6 +42,14 @@ jobs:
 
       - name: Build Typescript
         run: yarn build
+
+      - name: Run Rust unit tests (bigint-buffer2 napi)
+        run: cargo test --manifest-path rust/napi/Cargo.toml
+        working-directory: packages/bigint-buffer2
+
+      - name: Run type contract tests (bigint-buffer2)
+        run: yarn test:types
+        working-directory: packages/bigint-buffer2
 
       - name: Run tests
         run: yarn test

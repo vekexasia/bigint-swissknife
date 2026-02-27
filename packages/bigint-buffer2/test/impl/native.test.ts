@@ -101,6 +101,11 @@ describe('Native Implementation', () => {
       expect(Array.from(result)).toEqual([0x01, 0x02, 0x03, 0x04]);
     });
 
+    it('should return a Node.js Buffer', () => {
+      const result = toBufferBE(0x01020304n, 4);
+      expect(Buffer.isBuffer(result)).toBe(true);
+    });
+
     it('should handle width 0', () => {
       const result = toBufferBE(123n, 0);
       expect(result.length).toBe(0);
@@ -131,6 +136,11 @@ describe('Native Implementation', () => {
       expect(Array.from(result)).toEqual([0x04, 0x03, 0x02, 0x01]);
     });
 
+    it('should return a Node.js Buffer', () => {
+      const result = toBufferLE(0x01020304n, 4);
+      expect(Buffer.isBuffer(result)).toBe(true);
+    });
+
     it('should match JS fallback for random values', () => {
       for (let i = 0; i < 100; i++) {
         const bits = Math.floor(Math.random() * 256) + 1;
@@ -151,12 +161,8 @@ describe('Native Implementation', () => {
       toBufferBEInto(0x01020304n, buffer);
       expect(Array.from(buffer)).toEqual([0x01, 0x02, 0x03, 0x04]);
     });
-
-    it('should work with Uint8Array', () => {
-      const buffer = new Uint8Array(4);
-      toBufferBEInto(0x01020304n, buffer);
-      expect(Array.from(buffer)).toEqual([0x01, 0x02, 0x03, 0x04]);
-    });
+    // Note: the native subpath only accepts Buffer here (not plain Uint8Array).
+    // Uint8Array acceptance is tested in the fallback/browser test suite.
   });
 
   describe('toBufferLEInto', () => {
@@ -164,6 +170,22 @@ describe('Native Implementation', () => {
       const buffer = Buffer.alloc(4);
       toBufferLEInto(0x01020304n, buffer);
       expect(Array.from(buffer)).toEqual([0x04, 0x03, 0x02, 0x01]);
+    });
+
+  });
+
+  describe('BufferMut safety', () => {
+    it('should handle empty Buffer in toBufferBEInto without crash', () => {
+      const buffer = Buffer.alloc(0);
+      // Should not throw or crash — empty buffer, nothing to write
+      toBufferBEInto(0n, buffer);
+      expect(buffer.length).toBe(0);
+    });
+
+    it('should handle empty Buffer in toBufferLEInto without crash', () => {
+      const buffer = Buffer.alloc(0);
+      toBufferLEInto(0n, buffer);
+      expect(buffer.length).toBe(0);
     });
   });
 

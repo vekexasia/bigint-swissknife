@@ -160,8 +160,7 @@ export const fallback: BigIntBuffer2Extended = {
    */
   toBufferBEInto(num: bigint, buffer: Buffer | Uint8Array): void {
     const result = fallback.toBufferBE(num, buffer.length);
-    // result is already Uint8Array, no need to wrap it again
-    (buffer as Uint8Array).set(result);
+    buffer.set(result as Uint8Array);
   },
 
   /**
@@ -169,8 +168,7 @@ export const fallback: BigIntBuffer2Extended = {
    */
   toBufferLEInto(num: bigint, buffer: Buffer | Uint8Array): void {
     const result = fallback.toBufferLE(num, buffer.length);
-    // result is already Uint8Array, no need to wrap it again
-    (buffer as Uint8Array).set(result);
+    buffer.set(result as Uint8Array);
   },
 };
 

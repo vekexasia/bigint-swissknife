@@ -1,7 +1,26 @@
 /**
- * @vekexasia/bigint-buffer2
+ * \@vekexasia/bigint-buffer2
  *
  * Fast BigInt/Buffer conversion with Rust native bindings and JS fallback.
+ *
+ * ## Subpath API split
+ *
+ * | Import path                     | Into methods accept      | Alloc methods return     | Backend     |
+ * |---------------------------------|--------------------------|--------------------------|-------------|
+ * | `bigint-buffer2`                | `Buffer \| Uint8Array`   | `Buffer \| Uint8Array`   | auto-detect |
+ * | `bigint-buffer2/native`         | `Buffer` only            | `Buffer`                 | Rust/napi   |
+ * | `bigint-buffer2/fallback` (js)  | `Buffer \| Uint8Array`   | `Uint8Array`             | pure JS     |
+ *
+ * When using the **main entry** (`bigint-buffer2`), the active backend is selected
+ * automatically at module load: native Rust bindings on Node.js (when built), JS
+ * fallback otherwise. The **type signatures remain broad** (`Buffer | Uint8Array`)
+ * so callers compile regardless of which backend ends up active.
+ *
+ * If you import `/native` directly, the Into methods (`toBufferBEInto`, `toBufferLEInto`)
+ * **only accept `Buffer`** at the type level — plain `Uint8Array` is a compile error.
+ * This matches the napi-rs runtime requirement.
+ *
+ * Compile-time type contracts are verified by `npm run test:types`.
  *
  * @packageDocumentation
  */
@@ -20,8 +39,11 @@ let _impl: BigIntBuffer2Extended = fallback;
 let _implType: Implementation = 'js';
 
 // Auto-initialize for Node.js (synchronous, native is ready immediately)
+// The native impl has a narrower Into type (Buffer only) but is safely assignable
+// here since the main entry point's Into functions document that Node.js callers
+// should pass Buffer when native is active.
 if (!isBrowser && nativeLoader.isNativeAvailable()) {
-  _impl = nativeLoader.getNativeSync();
+  _impl = nativeLoader.getNativeSync() as BigIntBuffer2Extended;
   _implType = 'native';
 }
 
@@ -81,7 +103,7 @@ export async function setImplementation(impl: Implementation): Promise<void> {
     _implType = 'js';
   } else if (impl === 'native') {
     if (!isBrowser && nativeLoader.isNativeAvailable()) {
-      _impl = nativeLoader.getNativeSync();
+      _impl = nativeLoader.getNativeSync() as BigIntBuffer2Extended;
       _implType = 'native';
     } else {
       throw new Error('Native implementation not available');
@@ -160,7 +182,10 @@ export function toBigIntLESigned(buffer: Buffer | Uint8Array): bigint {
  *
  * @param num - BigInt value to convert
  * @param width - Desired buffer width in bytes
- * @returns Big-endian buffer of exactly `width` bytes
+ * @returns Big-endian buffer of exactly `width` bytes.
+ *          Returns `Buffer` when native backend is active, `Uint8Array` from the JS fallback.
+ *          This entry point types the return as `Buffer | Uint8Array`; import
+ *          `bigint-buffer2/native` directly for a narrow `Buffer` return type.
  *
  * @example
  * ```typescript
@@ -177,7 +202,10 @@ export function toBufferBE(num: bigint, width: number): Buffer | Uint8Array {
  *
  * @param num - BigInt value to convert
  * @param width - Desired buffer width in bytes
- * @returns Little-endian buffer of exactly `width` bytes
+ * @returns Little-endian buffer of exactly `width` bytes.
+ *          Returns `Buffer` when native backend is active, `Uint8Array` from the JS fallback.
+ *          This entry point types the return as `Buffer | Uint8Array`; import
+ *          `bigint-buffer2/native` directly for a narrow `Buffer` return type.
  *
  * @example
  * ```typescript
@@ -193,8 +221,17 @@ export function toBufferLE(num: bigint, width: number): Buffer | Uint8Array {
  * Convert BigInt to big-endian bytes, writing directly into a provided buffer.
  * This is an optimized version that avoids buffer allocation.
  *
+ * ### Buffer type by subpath
+ * - **Main entry (`bigint-buffer2`):** accepts `Buffer | Uint8Array` — but if the native
+ *   backend is active at runtime, `Buffer` is the supported contract for `into` methods.
+ *   A plain `Uint8Array` is not guaranteed to work across runtimes; pass `Buffer` when
+ *   native may be active.
+ * - **`/native`:** accepts `Buffer` only (enforced at the type level).
+ * - **`/fallback`:** accepts `Buffer | Uint8Array`.
+ *
  * @param num - BigInt value to convert
- * @param buffer - Pre-allocated buffer to write into (width is inferred from length)
+ * @param buffer - Pre-allocated buffer to write into (width is inferred from length).
+ *                 Pass `Buffer` when the native backend may be active.
  *
  * @example
  * ```typescript
@@ -211,8 +248,17 @@ export function toBufferBEInto(num: bigint, buffer: Buffer | Uint8Array): void {
  * Convert BigInt to little-endian bytes, writing directly into a provided buffer.
  * This is an optimized version that avoids buffer allocation.
  *
+ * ### Buffer type by subpath
+ * - **Main entry (`bigint-buffer2`):** accepts `Buffer | Uint8Array` — but if the native
+ *   backend is active at runtime, `Buffer` is the supported contract for `into` methods.
+ *   A plain `Uint8Array` is not guaranteed to work across runtimes; pass `Buffer` when
+ *   native may be active.
+ * - **`/native`:** accepts `Buffer` only (enforced at the type level).
+ * - **`/fallback`:** accepts `Buffer | Uint8Array`.
+ *
  * @param num - BigInt value to convert
- * @param buffer - Pre-allocated buffer to write into (width is inferred from length)
+ * @param buffer - Pre-allocated buffer to write into (width is inferred from length).
+ *                 Pass `Buffer` when the native backend may be active.
  */
 export function toBufferLEInto(num: bigint, buffer: Buffer | Uint8Array): void {
   _impl.toBufferLEInto(num, buffer);

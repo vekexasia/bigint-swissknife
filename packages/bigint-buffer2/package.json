@@ -18,6 +18,7 @@
     "test:dist": "./test/dist-integration/run-all.sh",
     "test:dist:cjs": "node test/dist-integration/node-cjs.test.cjs",
     "test:dist:esm": "node test/dist-integration/node-esm.test.mjs",
+    "test:types": "tsc -p test/types/tsconfig.json",
     "benchmark": "vitest bench --run",
     "coverage": "vitest run --coverage",
     "pretest": "npm run build:native && npm run build",

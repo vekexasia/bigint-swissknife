@@ -50,21 +50,26 @@ export interface BigIntBuffer2 {
 /**
  * Extended API with zero-copy buffer operations.
  * These functions write directly into a provided buffer, avoiding allocation.
+ *
+ * @typeParam TInto - Buffer type accepted by the `Into` methods.
+ *   - Native backend: `Buffer` only (`napi_get_buffer_info` does not support plain `Uint8Array`).
+ *   - JS/browser fallback: `Buffer | Uint8Array`.
+ *   Defaults to `Buffer | Uint8Array` for the auto-detecting main entry point.
  */
-export interface BigIntBuffer2Extended extends BigIntBuffer2 {
+export interface BigIntBuffer2Extended<TInto extends Uint8Array = Buffer | Uint8Array> extends BigIntBuffer2 {
   /**
    * Convert BigInt to big-endian bytes, writing directly into a provided buffer.
    * @param num - BigInt value to convert
    * @param buffer - Pre-allocated buffer to write into (width is inferred from length)
    */
-  toBufferBEInto(num: bigint, buffer: Buffer | Uint8Array): void;
+  toBufferBEInto(num: bigint, buffer: TInto): void;
 
   /**
    * Convert BigInt to little-endian bytes, writing directly into a provided buffer.
    * @param num - BigInt value to convert
    * @param buffer - Pre-allocated buffer to write into (width is inferred from length)
    */
-  toBufferLEInto(num: bigint, buffer: Buffer | Uint8Array): void;
+  toBufferLEInto(num: bigint, buffer: TInto): void;
 }
 
 /**

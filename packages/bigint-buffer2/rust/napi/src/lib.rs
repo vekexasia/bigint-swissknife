@@ -36,10 +36,12 @@ impl napi::bindgen_prelude::FromNapiValue for BufferMut {
             "Failed to get Buffer pointer and length"
         )?;
 
-        // Handle null pointer case (empty buffer)
-        let inner = match NonNull::new(buf as *mut u8) {
-            Some(buf) if len != 0 => buf,
-            _ => NonNull::dangling(),
+        // Handle null pointer case (empty/detached buffer).
+        // When ptr is null OR len is 0, use a dangling pointer AND zero len to
+        // prevent as_mut_slice() from ever dereferencing a dangling pointer.
+        let (inner, len) = match NonNull::new(buf as *mut u8) {
+            Some(ptr) if len != 0 => (ptr, len),
+            _ => (NonNull::dangling(), 0),
         };
 
         Ok(Self { inner, len })
@@ -263,8 +265,41 @@ pub fn to_bigint_le(buffer: &[u8]) -> BigInt {
 }
 
 #[cfg(test)]
+impl BufferMut {
+    fn from_raw_parts_checked(ptr: *mut u8, len: usize) -> Self {
+        let (inner, len) = match NonNull::new(ptr) {
+            Some(p) if len != 0 => (p, len),
+            _ => (NonNull::dangling(), 0),
+        };
+        Self { inner, len }
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_buffer_mut_null_ptr_non_zero_len_zeroes_len() {
+        let mut buf = BufferMut::from_raw_parts_checked(std::ptr::null_mut(), 42);
+        assert_eq!(buf.len(), 0);
+        assert!(buf.as_mut_slice().is_empty());
+    }
+
+    #[test]
+    fn test_buffer_mut_dangling_with_zero_len_returns_empty_slice() {
+        let mut buf = BufferMut::from_raw_parts_checked(std::ptr::null_mut(), 0);
+        assert_eq!(buf.len(), 0);
+        assert!(buf.as_mut_slice().is_empty());
+    }
+
+    #[test]
+    fn test_buffer_mut_valid_ptr_works() {
+        let mut data = vec![1u8, 2, 3, 4];
+        let mut buf = BufferMut::from_raw_parts_checked(data.as_mut_ptr(), data.len());
+        assert_eq!(buf.len(), 4);
+        assert_eq!(buf.as_mut_slice(), &[1, 2, 3, 4]);
+    }
 
     #[test]
     fn test_roundtrip_be() {
