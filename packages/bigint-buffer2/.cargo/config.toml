@@ -1,14 +1,15 @@
-# Enable SIMD and advanced CPU features for performance
-# This provides 10-30% improvement for vectorizable operations
-
-[target.x86_64-unknown-linux-gnu]
-rustflags = ["-C", "target-feature=+avx2,+bmi2"]
-
-[target.x86_64-apple-darwin]
-rustflags = ["-C", "target-feature=+avx2,+bmi2"]
+# CPU feature configuration for native builds
+#
+# x86_64: Build for baseline x86-64 (SSE2) to ensure portability across all
+# x86_64 CPUs, including Intel Atom/Celeron/Pentium without AVX support.
+# The compiler will still auto-vectorize with SSE2 where beneficial.
+#
+# aarch64: Enable crypto extensions (AES, SHA2) which are baseline on
+# Apple Silicon (M1+) and most modern ARM64 Linux targets.
+#
+# See: https://github.com/vekexasia/bigint-swissknife/issues/6
 
 [target.aarch64-apple-darwin]
-# M1/M2 Macs - NEON is enabled by default, add crypto extensions
 rustflags = ["-C", "target-feature=+aes,+sha2"]
 
 [target.aarch64-unknown-linux-gnu]
