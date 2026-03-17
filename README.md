@@ -72,27 +72,6 @@ All packages work in browsers. `bigint-buffer2` automatically falls back to a pu
 
 Full API documentation: **[vekexasia.github.io/bigint-swissknife](https://vekexasia.github.io/bigint-swissknife/)**
 
-## Investigating `bigint-buffer` downloads
-
-This repo includes a small CLI to estimate **which direct dependents are most likely driving npm downloads** for a package.
-
-```bash
-# Generic usage
-yarn downloads:drivers bigint-buffer --compare @vekexasia/bigint-buffer2
-
-# Ready-made report for the migration question
-yarn downloads:drivers:bigint-buffer
-```
-
-What it does:
-- pulls weekly npm downloads for the target package
-- discovers direct dependents via ecosyste.ms
-- fetches weekly downloads for each dependent
-- checks whether the dependent still uses the target in its **latest** published version or only in older versions
-- writes optional JSON/CSV reports under `artifacts/`
-
-Important: npm does **not** expose exact per-downloader attribution, so this is an **evidence-based estimator**, not an exact source-of-downloads audit.
-
 ## License
 
 MIT License - see [LICENSE](./LICENSE.md) for details.
