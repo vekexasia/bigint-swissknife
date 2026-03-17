@@ -7,7 +7,9 @@
   "scripts": {
     "lint": "eslint --fix 'packages/*/src/**/*.ts' 'packages/*/test/**/*.ts'",
     "test": "vitest run",
-    "build": "./build/build.sh"
+    "build": "./build/build.sh",
+    "downloads:drivers": "node scripts/find-download-drivers.mjs",
+    "downloads:drivers:bigint-buffer": "node scripts/find-download-drivers.mjs bigint-buffer --compare @vekexasia/bigint-buffer2 --top 25 --json artifacts/bigint-buffer-download-drivers.json --csv artifacts/bigint-buffer-download-drivers.csv"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
